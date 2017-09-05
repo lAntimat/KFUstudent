@@ -109,7 +109,7 @@ public class Mark {
 
     public String getNameString() {
         switch (mViewType) {
-            case RATING_TYPE: return "Рейтинг за " + semester + " семестр";
+            case RATING_TYPE: return "" + semester + " семестр";
             case SCORE_TYPE:  return name;
             case PRACTICE_TYPE:  return name + " практика" ;
             case COURSEWORK_TYPE:  return "Курсовая работа";

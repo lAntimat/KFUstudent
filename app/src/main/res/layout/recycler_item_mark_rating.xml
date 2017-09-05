@@ -20,11 +20,11 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="50dp"
-            android:layout_height="match_parent"
-            android:layout_alignBottom="@+id/tvDesc"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             card_view:srcCompat="@drawable/material_1" />
 
         <TextView
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvName"
             android:paddingTop="10dp"
-            android:text="5000 км"
+            android:text="5000 км \n dfgd \n dfdf"
             android:textSize="14sp" />
 
     </RelativeLayout>

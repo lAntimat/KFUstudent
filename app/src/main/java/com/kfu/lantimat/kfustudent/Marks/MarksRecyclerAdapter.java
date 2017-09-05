@@ -49,7 +49,7 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                 case Mark.RATING_TYPE:
                     ((RatingViewHolder) holder).mTitle.setText(itemText);
                     ((RatingViewHolder) holder).mDesc.setText(data);
-                    ((RatingViewHolder) holder).mImg.setImageResource(R.drawable.material_1);
+                    ((RatingViewHolder) holder).mImg.setImageResource(getImageByNumber(mList.get(position).getSemesterInt()));
                     break;
                 default:
                     ((SimpleViewHolder) holder).mTitle.setText(itemText);
@@ -72,6 +72,22 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         return 0;
     }
+
+    private int getImageByNumber(int i) {
+        switch (i) {
+            case 1: return R.drawable.material_1;
+            case 2: return R.drawable.material_2;
+            case 3: return R.drawable.material_3;
+            case 4: return R.drawable.material_4;
+            case 5: return R.drawable.material_5;
+            case 6: return R.drawable.material_6;
+            case 7: return R.drawable.material_7;
+            case 8: return R.drawable.material_8;
+            case 9: return R.drawable.material_9;
+        }
+        return 0;
+    }
+
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         private TextView mTitle;
         private TextView mDesc;
@@ -92,5 +108,4 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             mImg = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
-
 }
