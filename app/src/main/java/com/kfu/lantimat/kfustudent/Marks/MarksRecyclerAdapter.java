@@ -17,26 +17,49 @@ import java.util.ArrayList;
 
 public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public static final int SWITCH_TYPE = 0;
+    public static final int HISTORY_TYPE = 1;
 
-
-    private ArrayList<Mark> mList;
+    private  ArrayList<Mark> mList;
 
     public MarksRecyclerAdapter(ArrayList<Mark> itemList) {
         this.mList = itemList;
     }
-
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
+        /*switch (viewType) {
+            case SWITCH_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item, parent, false);
+                return new ControlRecyclerAdapter.CityViewHolder(view);
+            case HISTORY_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item, parent, false);
+                return new ControlRecyclerAdapter.EventViewHolder(view);
+        }*/
+
         view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
-        return new ItemViewHolder(view);
+        return new MarksRecyclerAdapter.SimpleViewHolder(view);
+
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        String itemText = mList.get(position).getNameString();
+        String data = mList.get(position).getTestString();
+        /*ControlItemsModel object = mList.get(position);
+        if (object != null) {
+            switch (object.getType()) {
+                case SWITCH_TYPE:
+                    ((ControlRecyclerAdapter.CityViewHolder) holder).mTitle.setText(object.getName());
+                    break;
+                case HISTORY_TYPE:
+                    ((ControlRecyclerAdapter.EventViewHolder) holder).mTitle.setText(object.getName());
+                    ((ControlRecyclerAdapter.EventViewHolder) holder).mDescription.setText(object.getDescription());
+                    break;
+            }
+        }*/
 
-        ((ItemViewHolder) holder).mTitle.setText(mList.get(position).getSubject());
-        ((ItemViewHolder) holder).mDesc.setText(mList.get(position).getTestString());
-
+        ((SimpleViewHolder) holder).mTitle.setText(itemText);
+        ((SimpleViewHolder) holder).mDesc.setText(data);
     }
     @Override
     public int getItemCount() {
@@ -54,15 +77,23 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         return 0;
     }
-
-    public static class ItemViewHolder extends RecyclerView.ViewHolder {
+    public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         private TextView mTitle;
         private TextView mDesc;
-
-        public ItemViewHolder(View itemView) {
+        public SimpleViewHolder(View itemView) {
             super(itemView);
             mTitle = (TextView) itemView.findViewById(R.id.tvName);
             mDesc = (TextView) itemView.findViewById(R.id.tvDesc);
         }
     }
+    public static class EventViewHolder extends RecyclerView.ViewHolder {
+        private TextView mTitle;
+        private TextView mDescription;
+        public EventViewHolder(View itemView) {
+            super(itemView);
+            //mTitle = (TextView) itemView.findViewById(R.id.textView);
+            //mDescription = (TextView) itemView.findViewById(R.id.textView2);
+        }
+    }
+
 }

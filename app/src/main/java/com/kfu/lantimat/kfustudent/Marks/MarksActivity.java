@@ -45,15 +45,14 @@ public class MarksActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        //setupViewPager(viewPager);
+        setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
         arBlock = new ArrayList<>();
-        getMarks();
-    }
 
+    }
     private void getMarks() {
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
             @Override
@@ -93,17 +92,11 @@ public class MarksActivity extends AppCompatActivity {
             for (int i = 0; i <marksBlock.size() ; i++) {
                 if (!marksBlock.get(i).toString().equalsIgnoreCase("<tr> \n" +
                         "</tr>")) {
-                    Mark mark = new Mark(marksBlock.get(i).toString());
-                    arBlock.add(mark);
-                    Log.d("MarksActivity", mark.getTestString());
+                    //Mark mark = new Mark(marksBlock.get(i).toString());
+                    //arBlock.add(mark);
+                    //Log.d("MarksActivity", mark.getTestString());
                 }
             }
-
-            adapter = new ViewPagerAdapter(getSupportFragmentManager());
-            adapter.addFragment(new MarksFragment(), "ONE");
-            adapter.addFragment(new MarksFragment(), "TWO");
-            adapter.addFragment(new MarksFragment(), "THREE");
-            adapter.addFragment(new MarksFragment().newInstance(arBlock), "BRS");
 
             return null;
         }
@@ -120,9 +113,9 @@ public class MarksActivity extends AppCompatActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new MarksFragment(), "ONE");
-        adapter.addFragment(new MarksFragment(), "TWO");
-        adapter.addFragment(new MarksFragment(), "THREE");
+        adapter.addFragment(new MarksFragment().newInstance(1), "1 курс");
+        adapter.addFragment(new MarksFragment().newInstance(2), "2 курс");
+        adapter.addFragment(new MarksFragment().newInstance(3), "3 курс");
         viewPager.setAdapter(adapter);
     }
 
