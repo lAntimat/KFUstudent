@@ -120,7 +120,7 @@ public class Mark {
     public String getTestString() {
         switch (mViewType) {
             case RATING_TYPE: return "Поздравляю, ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
-            case SCORE_TYPE:  return "полученный балл " + score + "\nбалл за работу в семестре " + finalScore + " " + date + "\nитоговая оценка: " + finalMark;
+            case SCORE_TYPE:  return "полученный балл " + score + "\nбалл за работу в семестре " + receivedScore + " " + date + "\nитоговая оценка: " + finalScore + " (" + finalMark + ")";
             case PRACTICE_TYPE:  return score + " " + date;
             case COURSEWORK_TYPE:  return name + "\n" + score + " " + date;
         }
