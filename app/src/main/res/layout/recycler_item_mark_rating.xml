@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        android:padding="15dp">
+        <!--android:background="@drawable/click_bg">-->
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/tvDesc"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            card_view:srcCompat="@drawable/material_1" />
+
+        <TextView
+            android:id="@+id/tvName"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="left"
+            android:text="Общий пробег"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvDesc"
+            style="@android:style/TextAppearance.Holo.Widget.ActionMode.Subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvName"
+            android:paddingTop="10dp"
+            android:text="5000 км"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

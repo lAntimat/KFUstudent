@@ -103,6 +103,10 @@ public class Mark {
         return finalMark;
     }
 
+    public int getmViewType() {
+        return mViewType;
+    }
+
     public String getNameString() {
         switch (mViewType) {
             case RATING_TYPE: return "Рейтинг за " + semester + " семестр";
@@ -116,9 +120,9 @@ public class Mark {
     public String getTestString() {
         switch (mViewType) {
             case RATING_TYPE: return "Поздравляю, ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
-            case SCORE_TYPE:  return "полученный балл " + score + "\nбалл за работу в семестре " + finalScore + " (" + date + ")\nитоговая оценка: " + finalMark;
-            case PRACTICE_TYPE:  return score + " (" + date + ")";
-            case COURSEWORK_TYPE:  return name + "\n" + score + "(" + date + ")";
+            case SCORE_TYPE:  return "полученный балл " + score + "\nбалл за работу в семестре " + finalScore + " " + date + "\nитоговая оценка: " + finalMark;
+            case PRACTICE_TYPE:  return score + " " + date;
+            case COURSEWORK_TYPE:  return name + "\n" + score + " " + date;
         }
         return "";
     }

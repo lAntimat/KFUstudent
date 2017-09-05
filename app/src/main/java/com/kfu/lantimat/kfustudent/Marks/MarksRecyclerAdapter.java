@@ -1,9 +1,11 @@
 package com.kfu.lantimat.kfustudent.Marks;
 
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -17,9 +19,6 @@ import java.util.ArrayList;
 
 public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public static final int SWITCH_TYPE = 0;
-    public static final int HISTORY_TYPE = 1;
-
     private  ArrayList<Mark> mList;
 
     public MarksRecyclerAdapter(ArrayList<Mark> itemList) {
@@ -28,38 +27,37 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
-        /*switch (viewType) {
-            case SWITCH_TYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item, parent, false);
-                return new ControlRecyclerAdapter.CityViewHolder(view);
-            case HISTORY_TYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item, parent, false);
-                return new ControlRecyclerAdapter.EventViewHolder(view);
-        }*/
+        switch (viewType) {
+            case Mark.RATING_TYPE:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark_rating, parent, false);
+                return new RatingViewHolder(view);
+            default:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
+                return new SimpleViewHolder(view);
+        }
 
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
-        return new MarksRecyclerAdapter.SimpleViewHolder(view);
+        /*view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
+        return new MarksRecyclerAdapter.SimpleViewHolder(view);*/
 
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         String itemText = mList.get(position).getNameString();
         String data = mList.get(position).getTestString();
-        /*ControlItemsModel object = mList.get(position);
-        if (object != null) {
-            switch (object.getType()) {
-                case SWITCH_TYPE:
-                    ((ControlRecyclerAdapter.CityViewHolder) holder).mTitle.setText(object.getName());
+
+            switch (getItemViewType(position)) {
+                case Mark.RATING_TYPE:
+                    ((RatingViewHolder) holder).mTitle.setText(itemText);
+                    ((RatingViewHolder) holder).mDesc.setText(data);
+                    ((RatingViewHolder) holder).mImg.setImageResource(R.drawable.material_1);
                     break;
-                case HISTORY_TYPE:
-                    ((ControlRecyclerAdapter.EventViewHolder) holder).mTitle.setText(object.getName());
-                    ((ControlRecyclerAdapter.EventViewHolder) holder).mDescription.setText(object.getDescription());
+                default:
+                    ((SimpleViewHolder) holder).mTitle.setText(itemText);
+                    ((SimpleViewHolder) holder).mDesc.setText(data);
                     break;
             }
-        }*/
 
-        ((SimpleViewHolder) holder).mTitle.setText(itemText);
-        ((SimpleViewHolder) holder).mDesc.setText(data);
+
     }
     @Override
     public int getItemCount() {
@@ -70,10 +68,7 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public int getItemViewType(int position) {
         if (mList != null) {
-            //ControlItemsModel object = mList.get(position);
-            //if (object != null) {
-            // return object.getType();
-            //  }
+            return mList.get(position).getmViewType();
         }
         return 0;
     }
@@ -86,13 +81,15 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             mDesc = (TextView) itemView.findViewById(R.id.tvDesc);
         }
     }
-    public static class EventViewHolder extends RecyclerView.ViewHolder {
+    public static class RatingViewHolder extends RecyclerView.ViewHolder {
         private TextView mTitle;
-        private TextView mDescription;
-        public EventViewHolder(View itemView) {
+        private TextView mDesc;
+        private ImageView mImg;
+        public RatingViewHolder(View itemView) {
             super(itemView);
-            //mTitle = (TextView) itemView.findViewById(R.id.textView);
-            //mDescription = (TextView) itemView.findViewById(R.id.textView2);
+            mTitle = (TextView) itemView.findViewById(R.id.tvName);
+            mDesc = (TextView) itemView.findViewById(R.id.tvDesc);
+            mImg = (ImageView) itemView.findViewById(R.id.imageView);
         }
     }
 

@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.R;
+import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.jsoup.Jsoup;
@@ -45,14 +46,18 @@ public class MarksActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
         arBlock = new ArrayList<>();
 
+        initViewPager();
     }
+
+
+
+
     private void getMarks() {
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
             @Override
@@ -68,7 +73,7 @@ public class MarksActivity extends AppCompatActivity {
     }
 
     public class ParseMarks extends AsyncTask<byte[], Void, Void> {
-
+        int count;
 
         @Override
         protected Void doInBackground(byte[]... params) {
@@ -85,19 +90,18 @@ public class MarksActivity extends AppCompatActivity {
             }
 
             Document doc = Jsoup.parse(str);
-            Log.d("docToString", doc.toString());
-            Elements marksBlock = doc.select("tbody");
-            marksBlock = marksBlock.select("tr");
+            //Log.d("docToString", doc.toString());
+            Elements courses = doc.select("div.courses");
+            count = courses.toString().split("</span>").length;
 
-            for (int i = 0; i <marksBlock.size() ; i++) {
-                if (!marksBlock.get(i).toString().equalsIgnoreCase("<tr> \n" +
-                        "</tr>")) {
-                    //Mark mark = new Mark(marksBlock.get(i).toString());
-                    //arBlock.add(mark);
-                    //Log.d("MarksActivity", mark.getTestString());
+            if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
+                adapter = new ViewPagerAdapter(getSupportFragmentManager());
+                for (int i = 1; i < count - 1; i++) {
+                    adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
                 }
             }
 
+            SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
             return null;
         }
 
@@ -106,17 +110,26 @@ public class MarksActivity extends AppCompatActivity {
             //feedsRecyclerAdapter.notifyDataSetChanged();
             //progressBar.setVisibility(View.INVISIBLE);
 
+            viewPager.setOffscreenPageLimit(count);
             viewPager.setAdapter(adapter);
             super.onPostExecute(aVoid);
         }
     }
 
-    private void setupViewPager(ViewPager viewPager) {
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new MarksFragment().newInstance(1), "1 курс");
-        adapter.addFragment(new MarksFragment().newInstance(2), "2 курс");
-        adapter.addFragment(new MarksFragment().newInstance(3), "3 курс");
-        viewPager.setAdapter(adapter);
+    private void initViewPager() {
+
+        int count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1);
+        if(count != -1) {
+            adapter = new ViewPagerAdapter(getSupportFragmentManager());
+            for (int i = 1; i < count - 1; i++) {
+                adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
+            }
+
+            viewPager.setOffscreenPageLimit(count);
+            viewPager.setAdapter(adapter);
+        }
+        getMarks();
+
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

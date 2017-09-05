@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(byte[]... params) {
 
-            Log.d("MainActivity", "ParseFeed");
+            //Log.d("MainActivity", "ParseFeed");
 
             String str = null;
             try {
@@ -99,9 +99,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Document doc = Jsoup.parse(str);
-            Log.d("docToStrng", doc.toString());
+            //Log.d("docToStrng", doc.toString());
             Elements title = doc.select("tr");
-            Log.d("title", title.text());
+            //Log.d("title", title.text());
 
             /*
             //Elements feed = doc.select("table.center-center.big");
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(byte[]... params) {
 
-            Log.d("MainActivity", "ParseFeed");
+            //Log.d("MainActivity", "ParseFeed");
 
             String str = null;
             try {
@@ -180,10 +180,10 @@ public class MainActivity extends AppCompatActivity {
             //client.addHeader("s_id", p2);
             //client.addHeader("h_id", p_h);
 
-            Log.d("cookieStorySize", String.valueOf(myCookieStore.getCookies().size()));
+            //Log.d("cookieStorySize", String.valueOf(myCookieStore.getCookies().size()));
             if(!myCookieStore.getCookies().isEmpty()) {
                 for (int i = 0; i <myCookieStore.getCookies().size() ; i++) {
-                    Log.d("", myCookieStore.getCookies().get(i).toString());
+                    //Log.d("", myCookieStore.getCookies().get(i).toString());
                 }
             }
 
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                     KFURestClient.get("e-ksu/SITE_STUDENT_SH_PR_AC.score_list_book_subject", params2, new AsyncHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                            Log.d("MainActivity", "listBookSucces");
+                            //Log.d("MainActivity", "listBookSucces");
                             //PersistentCookieStore p = myCookieStore;
                             new ParseFeeds().execute(responseBody);
                         }
