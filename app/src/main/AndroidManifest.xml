@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Marks.MarksActivity"></activity>
+        <activity android:name=".Schedule.ScheduleActivity"></activity>
     </application>
 
 </manifest>

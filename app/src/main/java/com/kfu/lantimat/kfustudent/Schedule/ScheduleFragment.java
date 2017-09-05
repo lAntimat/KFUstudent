@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Marks;
+package com.kfu.lantimat.kfustudent.Schedule;
 
 /**
  * Created by GabdrakhmanovII on 04.09.2017.
@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
+import com.kfu.lantimat.kfustudent.Marks.Mark;
+import com.kfu.lantimat.kfustudent.Marks.MarksRecyclerAdapter;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -39,14 +41,14 @@ import butterknife.Unbinder;
 import cz.msebera.android.httpclient.Header;
 
 
-public class MarksFragment extends Fragment {
+public class ScheduleFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
 
     RecyclerView recyclerView;
-    MarksRecyclerAdapter marksRecyclerAdapter;
+    ScheduleRecyclerAdapter scheduleRecyclerAdapter;
     ArrayList<String> arBlock = new ArrayList<>();
-    ArrayList<Mark> arMarks;
+    ArrayList<Schedule> arSchedule;
     String course = "";
     @BindView(R.id.textView2)
     TextView textView;
@@ -56,15 +58,15 @@ public class MarksFragment extends Fragment {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
 
-    public MarksFragment() {
+    public ScheduleFragment() {
         // Required empty public constructor
     }
 
-    public static MarksFragment newInstance(int course) {
-        MarksFragment fragment = new MarksFragment();
+    public static ScheduleFragment newInstance(String str) {
+        ScheduleFragment fragment = new ScheduleFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, String.valueOf(course));
+        args.putString(ARG_PARAM1, str);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,13 +79,13 @@ public class MarksFragment extends Fragment {
             course = getArguments().getString(ARG_PARAM1);
         }
 
-        arMarks = new ArrayList<>();
-        marksRecyclerAdapter = new MarksRecyclerAdapter(arMarks);
+        arSchedule = new ArrayList<>();
+        scheduleRecyclerAdapter = new ScheduleRecyclerAdapter(arSchedule);
     }
 
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), OrientationHelper.VERTICAL, false));
-        recyclerView.setAdapter(marksRecyclerAdapter);
+        recyclerView.setAdapter(scheduleRecyclerAdapter);
     }
 
     @Override
@@ -96,9 +98,10 @@ public class MarksFragment extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
-        String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
+        parseMarksFromString(course);
+        /*String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
         if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
-        getMarks();
+        getMarks();*/
 
         return v;
 
@@ -123,57 +126,28 @@ public class MarksFragment extends Fragment {
     }
 
     private void parseMarksFromString(String str) {
-        ArrayList<Mark> arMarksTemp = new ArrayList<>();
+        ArrayList<Schedule> arScheduleTemp = new ArrayList<>();
 
-        Document doc = Jsoup.parse(str);
-        Log.d("docToString", doc.toString());
-        Elements marksBlockBody = doc.select("tbody");  //Тело баллов/курсовых/рейтингов
-        Elements marksBlockHeader = doc.select("thead"); //Заголовок блока с баллами/курсовыми/рейтингом
-        int scopeType = -1;
+        arScheduleTemp.add(new Schedule(str));
 
-        for (int i = 0; i < marksBlockHeader.size(); i++) {
-            Elements marksBlock = marksBlockBody.get(i).select("tr");
-            Pattern pattern = Pattern.compile(">(.*)<\\/");
-            Matcher matcher = pattern.matcher(marksBlockHeader.get(i).toString());
-            while (matcher.find()) {
-                if (matcher.group(1).equalsIgnoreCase("Семестровый рейтинг"))
-                    scopeType = Mark.RATING_TYPE;
-                if (matcher.group(1).equalsIgnoreCase("Дисциплина")) scopeType = Mark.SCORE_TYPE;
-                if (matcher.group(1).equalsIgnoreCase("Практики")) scopeType = Mark.PRACTICE_TYPE;
-                if (matcher.group(1).equalsIgnoreCase("Курсовые")) scopeType = Mark.COURSEWORK_TYPE;
-            }
-            for (int j = 0; j < marksBlock.size(); j++) {
-                if (!marksBlock.get(j).toString().equalsIgnoreCase("<tr> \n" +
-                        "</tr>")) {
-
-                    Mark mark = new Mark(scopeType, marksBlock.get(j).toString());
-                    arMarksTemp.add(mark);
-
-                    Collections.sort(arMarksTemp, Mark.COMPARE_BY_SEMESTER);
-
-                    Log.d("MarksActivity", mark.getTestString());
-                }
-            }
-        }
-
-        arMarks.clear();
-        arMarks.addAll(arMarksTemp);
+        arSchedule.clear();
+        arSchedule.addAll(arScheduleTemp);
 
 
     }
 
     private void onPreExecuteMethod() {
-        if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
+        if(arSchedule.isEmpty()) progressBar.setVisibility(View.VISIBLE);
     }
 
     private void onPostExecuteMethod() {
         progressBar.setVisibility(View.INVISIBLE);
-        marksRecyclerAdapter.notifyDataSetChanged();
+        scheduleRecyclerAdapter.notifyDataSetChanged();
         emptyPic();
     }
 
     private void emptyPic() {
-        if (arMarks.size() == 0) {
+        if (arSchedule.size() == 0) {
             imageView.setVisibility(View.VISIBLE);
             textView.setVisibility(View.VISIBLE);
         } else {

@@ -2,44 +2,29 @@ package com.kfu.lantimat.kfustudent;
 
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.kfu.lantimat.kfustudent.Marks.MarksActivity;
-import com.kfu.lantimat.kfustudent.Marks.MarksFragment;
-import com.loopj.android.http.AsyncHttpClient;
+import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
-
-/*import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;*/
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.cookie.Cookie;
-import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,16 +47,22 @@ public class MainActivity extends AppCompatActivity {
 
         KFURestClient.client.setCookieStore(myCookieStore);
 
+        //final String login = "DAJuzikeev";
+        //final String pass = "sjp4bq74";
+
+        final String login = "IlIGabdrahmanov";
+        final String pass = "AnTi89600747198";
+
         getLocale(new Success() {
             @Override
             public void succes() {
-                login("IlIGabdrahmanov", "AnTi89600747198", new Logged() {
+                login(login, pass, new Logged() {
                     @Override
                     public void logged(String link) {
                         getProfile(link, new Response() {
                             @Override
                             public void succes(String responce) {
-                                Log.wtf("ПРОФИЛЬ", responce);
+                                Log.d("ПРОФИЛЬ", responce);
                             }
                         });
                     }
@@ -238,6 +229,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, MarksActivity.class);
         startActivity(intent);
     }
+    public void btnClick2(View view) {
+        Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
+        startActivity(intent);
+    }
 
     public void getLocale(final Success success){
         KFURestClient.getUrl("http://kpfu.ru/?p_sub=3", new RequestParams(), new TextHttpResponseHandler() {
@@ -310,6 +305,14 @@ public class MainActivity extends AppCompatActivity {
                     basicClientCookie.setDomain("kpfu.ru");
                     basicClientCookie.setPath("/");
                     myCookieStore.addCookie(basicClientCookie);
+                }
+
+                pattern = Pattern.compile("<a class = \"ico\" href = \"(.*)\" title");
+                matcher = pattern.matcher(responseString);
+                matcher.find();
+                if(matcher.find()){
+                    SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), "scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
+                    Log.d("scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
                 }
 
                 String text= "";
