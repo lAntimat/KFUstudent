@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
         params.add("p_login", "IlIGabdrahmanov");
         params.add("p_pass", "AnTi89600747198");
         //KFURestClient.setCookieStore(myCookieStore);
-        myCookieStore = new PersistentCookieStore(this);
+       // myCookieStore = new PersistentCookieStore(this);
 
-        KFURestClient.client.setCookieStore(myCookieStore);
+        //KFURestClient.client.setCookieStore(myCookieStore);
 
         //final String login = "DAJuzikeev";
         //final String pass = "sjp4bq74";
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         final String login = "IlIGabdrahmanov";
         final String pass = "AnTi89600747198";
 
-        getLocale(new Success() {
+        /*getLocale(new Success() {
             @Override
             public void succes() {
                 login(login, pass, new Logged() {
@@ -68,153 +68,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
-        });
+        });*/
 
     }
 
-    public class ParseFeeds extends AsyncTask<byte[], Void, Void> {
 
-
-        @Override
-        protected Void doInBackground(byte[]... params) {
-
-            //Log.d("MainActivity", "ParseFeed");
-
-            String str = null;
-            try {
-
-                //str = new String(params[0], "UTF-8");
-                str = new String(params[0], "windows-1251");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            Document doc = Jsoup.parse(str);
-            //Log.d("docToStrng", doc.toString());
-            Elements title = doc.select("tr");
-            //Log.d("title", title.text());
-
-            /*
-            //Elements feed = doc.select("table.center-center.big");
-            //feed = feed.select("a");
-            /*Elements title = feed.select("a[title]");
-            Elements imgUrl = feed.select("[src]");
-            Elements url = feed.select("a[title]");
-            for (int j = 0; j < feed.size(); j++) {
-                //arFeeds.add(new Feed(title.get(j).attr("title").replace("Permalink to ", ""), feed.get(j).select("div.excerpt-stats").text(), imgUrl.get(j).attr("src"), url.get(j).attr("href"), ""));
-            }*/
-
-            //Toast.makeText(getApplicationContext(), feed.text(), Toast.LENGTH_SHORT).show();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            //feedsRecyclerAdapter.notifyDataSetChanged();
-            //progressBar.setVisibility(View.INVISIBLE);
-            super.onPostExecute(aVoid);
-        }
-    }
-
-    public class ParseParametrs extends AsyncTask<byte[], Void, Void> {
-
-        String p2;
-        String p_h;
-
-        @Override
-        protected Void doInBackground(byte[]... params) {
-
-            //Log.d("MainActivity", "ParseFeed");
-
-            String str = null;
-            try {
-
-                //str = new String(params[0], "UTF-8");
-                str = new String(params[0], "windows-1251");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            /*Document doc = Jsoup.parse(str);
-
-            Log.d("Parseparamtrs", doc.toString());*/
-            /*if(doc.toString().contains("p2=")) {
-                p2 = doc.toString().substring(doc.toString().indexOf("p2=") + 3, doc.toString().indexOf("&p_h="));
-                Log.d("p2 ", p2);
-                p_h = doc.toString().substring(doc.toString().indexOf("p_h") + 4, doc.toString().indexOf("'</script>"));
-                Log.d("p_h ", p_h);
-            }*/
-
-            //Elements feed = doc.select("table.center-center.big");
-            //feed = feed.select("a");
-            /*Elements title = feed.select("a[title]");
-            Elements imgUrl = feed.select("[src]");
-            Elements url = feed.select("a[title]");
-            for (int j = 0; j < feed.size(); j++) {
-                //arFeeds.add(new Feed(title.get(j).attr("title").replace("Permalink to ", ""), feed.get(j).select("div.excerpt-stats").text(), imgUrl.get(j).attr("src"), url.get(j).attr("href"), ""));
-            }*/
-
-            //Toast.makeText(getApplicationContext(), feed.text(), Toast.LENGTH_SHORT).show();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            //feedsRecyclerAdapter.notifyDataSetChanged();
-            //progressBar.setVisibility(View.INVISIBLE);
-
-
-            RequestParams params1 = new RequestParams();
-            params1.add("p2", p2);
-            params1.add("p_h", p_h);
-
-            //client.addHeader("s_id", p2);
-            //client.addHeader("h_id", p_h);
-
-            //Log.d("cookieStorySize", String.valueOf(myCookieStore.getCookies().size()));
-            if(!myCookieStore.getCookies().isEmpty()) {
-                for (int i = 0; i <myCookieStore.getCookies().size() ; i++) {
-                    //Log.d("", myCookieStore.getCookies().get(i).toString());
-                }
-            }
-
-            BasicClientCookie newCookie = new BasicClientCookie("s_id", p2);
-            myCookieStore.addCookie(newCookie);
-            newCookie = new BasicClientCookie("h_id", p_h);
-            myCookieStore.addCookie(newCookie);
-
-            KFURestClient.get("e-ksu/main_blocks.startpage", params1, new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-                    new ParseFeeds().execute(responseBody);
-
-                    RequestParams params2 = new RequestParams();
-                    params2.add("p_menu", "7");
-
-                    KFURestClient.get("e-ksu/SITE_STUDENT_SH_PR_AC.score_list_book_subject", params2, new AsyncHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                            //Log.d("MainActivity", "listBookSucces");
-                            //PersistentCookieStore p = myCookieStore;
-                            new ParseFeeds().execute(responseBody);
-                        }
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
-                }
-            });
-            super.onPostExecute(aVoid);
-        }
-    }
     interface Success{
         void succes();
     }
@@ -231,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
     }
     public void btnClick2(View view) {
         Intent intent = new Intent(MainActivity.this, ScheduleActivity.class);
+        startActivity(intent);
+    }
+
+    public void btnClick3(View view) {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
 

@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -33,14 +34,21 @@ public class LoginActivity extends AppCompatActivity {
         loginEditText = (EditText) findViewById(R.id.loginEditText);
         passEditText = (EditText) findViewById(R.id.passEditText);
 
+        final String login = "IlIGabdrahmanov";
+        final String pass = "AnTi89600747198";
+
+        loginEditText.setText(login);
+        passEditText.setText(pass);
 
         //KFURestClient.setCookieStore(myCookieStore);
         myCookieStore = new PersistentCookieStore(this);
 
         KFURestClient.client.setCookieStore(myCookieStore);
+
         loginButton.setOnClickListener(view -> {
             String email = loginEditText.getText().toString();
             String password = passEditText.getText().toString();
+
             checkLogin(new CheckLogin() {
                 @Override
                 public void succes() {
@@ -50,10 +58,18 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void notLogged() {
-                    login(email, password, link -> getProfile(link, responce -> {
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent); //TODO:  куда напрвить после авторизаци
-                    }));
+                    login(login, pass, new Logged() {
+                        @Override
+                        public void logged(String link) {
+                            getProfile(link, new Response() {
+                                @Override
+                                public void succes(String responce) {
+                                    //Log.d("ПРОФИЛЬ", responce);
+                                    Log.d("getProfile", "Succes");
+                                }
+                            });
+                        }
+                    });
                 }
             });
         });
@@ -80,19 +96,30 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void checkLogin(final CheckLogin success) {
-        KFURestClient.getUrl("http://shelly.kpfu.ru/e-ksu/main_blocks.startpage", new RequestParams(), new TextHttpResponseHandler() {
+        KFURestClient.getUrl("http://shelly.kpfu.ru/e-ksu/main_blocks.startpage", new RequestParams(), new AsyncHttpResponseHandler() {
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.d("checkLogin", "onSuccess");
+                String str = "";
+                try {
+                    str = new String(responseBody, "windows-1251");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
 
+                Log.d("responseString", str);
+
+                if (str.contains("Извините, устарела сессия работы с системой")) {
+                    success.notLogged();
+                    Log.d("CheckLogin", "not logged");
+                } else {
+                    success.succes();
+                }
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                if (responseString.contains("self.parent.location=\"http://www.kpfu.ru")) {
-                    success.succes();
-                } else {
-                    success.notLogged();
-                }
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.d("checkLogin", "onFailure");
             }
         });
     }
@@ -121,6 +148,20 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    public void getLocale(final MainActivity.Success success){
+        KFURestClient.getUrl("http://kpfu.ru/?p_sub=3", new RequestParams(), new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                success.succes();
+            }
+        });
+    }
+
     public void getProfile(String link, final Response response) {
 
         KFURestClient.get(link, new RequestParams(), new TextHttpResponseHandler() {
@@ -138,6 +179,9 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                Log.d("getProfile", "onSuccess");
+
+
                 Pattern pattern = Pattern.compile("h_id=(.*);domain");
                 Matcher matcher = pattern.matcher(responseString);
                 if (matcher.find()) {

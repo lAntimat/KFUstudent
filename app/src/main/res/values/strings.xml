@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">KFU student</string>
+
+    <string-array name="spinner_list_item_array">
+        <item>Верхняя неделя</item>"
+        <item>Нижняя неделя</item>
+    </string-array>
 </resources>

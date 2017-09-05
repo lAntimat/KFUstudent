@@ -97,7 +97,7 @@ public class MarksFragment extends Fragment {
         initRecyclerView();
 
         String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
-        if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
+        //if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
         getMarks();
 
         return v;

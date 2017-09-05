@@ -28,7 +28,7 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         View view;
         switch (viewType) {
             case Mark.RATING_TYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark_rating, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
                 return new RatingViewHolder(view);
             default:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);

@@ -6,10 +6,18 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
@@ -30,6 +38,7 @@ import cz.msebera.android.httpclient.Header;
 public class ScheduleActivity extends AppCompatActivity {
 
     ArrayList<Mark> arBlock;
+    Spinner spinner;
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -40,13 +49,16 @@ public class ScheduleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_marks);
+        setContentView(R.layout.activity_schedule);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("");
 
+        spinner = (Spinner) findViewById(R.id.spinner_nav);
+        initSpinner();
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -58,15 +70,57 @@ public class ScheduleActivity extends AppCompatActivity {
 
         scheduleUrl = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), "scheduleUrl", "");
 
-        getMarks();
+        //getScheduleTopWeek();
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
 
+        return true;
+    }
 
-    private void getMarks() {
+    private void initSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.spinner_list_item_array, R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
 
-        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_menu=1&p_type_menu=3", null, new AsyncHttpResponseHandler() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0:
+                        Toast.makeText(getApplicationContext(), "Pressed " + i, Toast.LENGTH_SHORT).show();
+                        getScheduleBottomWeek();
+                        break;
+                    case 1: getScheduleTopWeek();
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+    private void getScheduleTopWeek() {
+        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=13.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                new ParseMarks().execute(responseBody);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        });
+    }
+    private void getScheduleBottomWeek() {
+
+        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=20.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 new ParseMarks().execute(responseBody);
@@ -107,10 +161,10 @@ public class ScheduleActivity extends AppCompatActivity {
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
                 adapter.addFragment(new ScheduleFragment().newInstance(courses.get(0).toString()), "Понедельник");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(1).toString()), "Вторник");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(2).toString()), "Среда");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(3).toString()), "Четверг");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(4).toString()), "Пятница");
+                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(2).toString()), "Вторник");
+                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(4).toString()), "Среда");
+                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(1).toString()), "Четверг");
+                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(3).toString()), "Пятница");
                 adapter.addFragment(new ScheduleFragment().newInstance(courses.get(5).toString()), "Суббота");
                 adapter.addFragment(new ScheduleFragment().newInstance(courses.get(6).toString()), "Воскресенье");
 
@@ -125,8 +179,9 @@ public class ScheduleActivity extends AppCompatActivity {
             //feedsRecyclerAdapter.notifyDataSetChanged();
             //progressBar.setVisibility(View.INVISIBLE);
 
-            viewPager.setOffscreenPageLimit(count);
+            viewPager.setOffscreenPageLimit(0);
             viewPager.setAdapter(adapter);
+            viewPager.invalidate();
             super.onPostExecute(aVoid);
         }
     }

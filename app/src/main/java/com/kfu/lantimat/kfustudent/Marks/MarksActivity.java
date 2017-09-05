@@ -34,6 +34,7 @@ public class MarksActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     ViewPagerAdapter adapter;
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,6 @@ public class MarksActivity extends AppCompatActivity {
     }
 
     public class ParseMarks extends AsyncTask<byte[], Void, Void> {
-        int count;
 
         @Override
         protected Void doInBackground(byte[]... params) {
@@ -90,15 +90,20 @@ public class MarksActivity extends AppCompatActivity {
             }
 
             Document doc = Jsoup.parse(str);
-            //Log.d("docToString", doc.toString());
+            Log.d("docToString", doc.toString());
             Elements courses = doc.select("div.courses");
             count = courses.toString().split("</span>").length;
 
-            if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
+            /*if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
                 for (int i = 1; i < count - 1; i++) {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
                 }
+            }*/
+
+            adapter = new ViewPagerAdapter(getSupportFragmentManager());
+            for (int i = 1; i < count - 1; i++) {
+                adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
             }
 
             SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
@@ -118,7 +123,7 @@ public class MarksActivity extends AppCompatActivity {
 
     private void initViewPager() {
 
-        int count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1);
+        /*count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1);
         if(count != -1) {
             adapter = new ViewPagerAdapter(getSupportFragmentManager());
             for (int i = 1; i < count - 1; i++) {
@@ -127,7 +132,7 @@ public class MarksActivity extends AppCompatActivity {
 
             viewPager.setOffscreenPageLimit(count);
             viewPager.setAdapter(adapter);
-        }
+        }*/
         getMarks();
 
     }

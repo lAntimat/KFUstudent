@@ -11,37 +11,42 @@ import java.util.regex.Pattern;
 public class Schedule {
 
 
-    String date;
-    ArrayList<String> time;
-    ArrayList<String> subjectName;
-    ArrayList<String> place;
+    private String date = "";
+    private ArrayList<String> time = new ArrayList<>();
+    private ArrayList<String> subjectName = new ArrayList<>();
+    private ArrayList<String> place = new ArrayList<>();
 
 
     public Schedule(String str) {
-        Pattern datePattern = Pattern.compile("<font class=\"table_h1\">(.*) <\\/font>\n" +
-                "<table");
+        Pattern datePattern = Pattern.compile(">(.*) <\\/font>");
 
         Matcher dateMatcher = datePattern.matcher(str.replaceAll("", ""));
-        if (dateMatcher.find()) date = dateMatcher.group(4);
+        if (dateMatcher.find()) date = dateMatcher.group(1);
 
-        Pattern schedulePattern = Pattern.compile("nowrap=\"\">(.*)<\\/td><td class=\"table_td\" width=\"180\" style=\"\">  (.*) <\\/td><td class=\"table_td\">(.*)<\\/td><\\/tr>");
+        Pattern schedulePattern = Pattern.compile("nowrap> (.*)<\\/td>|<td class=\"table_td\" width=\"180\" style=\"\"> (.*)<\\/td>|<td class=\"table_td\">(.*)<\\/td>");
 
-        Matcher sheduleMatcher = schedulePattern.matcher(str.replaceAll("", ""));
+        Matcher sheduleMatcher = schedulePattern.matcher(str);
 
         while (sheduleMatcher.find()) {
-            time.add(dateMatcher.group(1));
-            subjectName.add(dateMatcher.group(2));
-            place.add(dateMatcher.group(3));
+             time.add(sheduleMatcher.group(1));
+            if(sheduleMatcher.find()) subjectName.add(sheduleMatcher.group(2));
+            if(sheduleMatcher.find()) place.add(sheduleMatcher.group(3));
         }
     }
 
     public String getDate() {
-        return date;
+        if(date.contains("//")) {
+            return date.substring(date.indexOf("//") + 3);
+        } else return "";
     }
 
     public String getSchedule() {
-        if (time != null) {
-            return time.get(0) + "\n" + subjectName.get(0) + "\n" + place.get(0) + "\n";
-        } else return "Робит";
+        if (time.size()>0 &subjectName.size()>0 & place.size()>0) {
+            String str = "";
+            for (int i = 0; i <time.size() ; i++) {
+                str += time.get(i) + "\n" + subjectName.get(i) + "\n" + place.get(i) + "\n\n";
+            }
+            return str;
+        } else return "Пар нет";
     }
 }
