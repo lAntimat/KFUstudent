@@ -10,8 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.FrameLayout;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
+import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -26,11 +28,11 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-public class MarksActivity extends AppCompatActivity {
+public class MarksActivity extends MainActivity {
 
     ArrayList<Mark> arBlock;
 
-    private Toolbar toolbar;
+    //private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     ViewPagerAdapter adapter;
@@ -39,12 +41,15 @@ public class MarksActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_marks);
+        //setContentView(R.layout.activity_marks);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
+        getLayoutInflater().inflate(R.layout.activity_marks, v);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 

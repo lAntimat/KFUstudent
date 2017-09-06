@@ -110,7 +110,7 @@ public class ScheduleActivity extends MainActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i) {
                     case 0:
-                        Toast.makeText(getApplicationContext(), "Pressed " + i, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Pressed " + i, Toast.LENGTH_SHORT).show();
                         getScheduleBottomWeek();
                         break;
                     case 1: getScheduleTopWeek();

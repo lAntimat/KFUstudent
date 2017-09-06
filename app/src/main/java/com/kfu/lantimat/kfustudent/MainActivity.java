@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });*/
 
-        checkAuth();
+        //checkAuth();
 
     }
 
@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
     private void initAccountHeader() {
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                //.withHeaderBackground(R.drawable.kamaz_bg)
+                .withHeaderBackground(R.drawable.bg)
                 //.withCompactStyle(true)
                 /*.addProfiles(
                         new ProfileDrawerItem()
