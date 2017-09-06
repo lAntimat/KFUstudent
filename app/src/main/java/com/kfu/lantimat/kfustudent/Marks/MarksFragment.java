@@ -105,6 +105,7 @@ public class MarksFragment extends Fragment {
     }
 
     private void getMarks() {
+        if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7&p_course=" + course, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {

@@ -4,6 +4,15 @@ apply plugin: 'com.jakewharton.butterknife'
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
+    repositories {
+        maven { url 'http://repo1.maven.org/maven2' }
+        mavenCentral()
+        jcenter({ url "http://jcenter.bintray.com/" })
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
     defaultConfig {
         applicationId "com.kfu.lantimat.kfustudent"
         minSdkVersion 15
@@ -41,4 +50,9 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.8.1'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.github.vipulasri:timelineview:1.0.5'
+    compile('com.mikepenz:materialdrawer:5.9.4@aar') {
+        transitive = true
+    }
 }

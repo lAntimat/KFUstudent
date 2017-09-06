@@ -6,7 +6,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -16,10 +15,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
+import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
@@ -35,12 +36,12 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ScheduleActivity extends AppCompatActivity {
+public class ScheduleActivity extends MainActivity {
 
     ArrayList<Mark> arBlock;
-    Spinner spinner;
+    //Spinner spinner;
 
-    private Toolbar toolbar;
+    //private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
     ViewPagerAdapter adapter;
@@ -49,15 +50,20 @@ public class ScheduleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule);
+        //setContentView(R.layout.activity_schedule);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
+        getLayoutInflater().inflate(R.layout.activity_schedule, v);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("");
+        //toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
-        spinner = (Spinner) findViewById(R.id.spinner_nav);
+
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setTitle("");
+
+        //spinner = (Spinner) v.findViewById(R.id.spinner_nav);
         initSpinner();
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
@@ -80,10 +86,23 @@ public class ScheduleActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //Menu
+        switch (item.getItemId()) {
+            //When home is clicked
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void initSpinner() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.spinner_list_item_array, R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        spinner.setVisibility(View.VISIBLE);
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -109,7 +128,7 @@ public class ScheduleActivity extends AppCompatActivity {
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=13.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                new ParseMarks().execute(responseBody);
+                new ParseSchedule().execute(responseBody);
             }
 
             @Override
@@ -123,7 +142,7 @@ public class ScheduleActivity extends AppCompatActivity {
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=20.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                new ParseMarks().execute(responseBody);
+                new ParseSchedule().execute(responseBody);
             }
 
             @Override
@@ -133,7 +152,7 @@ public class ScheduleActivity extends AppCompatActivity {
         });
     }
 
-    public class ParseMarks extends AsyncTask<byte[], Void, Void> {
+    public class ParseSchedule extends AsyncTask<byte[], Void, Void> {
         int count;
 
         @Override

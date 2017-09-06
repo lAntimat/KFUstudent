@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,21 +18,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
-import com.kfu.lantimat.kfustudent.Marks.Mark;
-import com.kfu.lantimat.kfustudent.Marks.MarksRecyclerAdapter;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -98,20 +88,20 @@ public class ScheduleFragment extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
-        parseMarksFromString(course);
+        parseScheduleFromString(course);
         /*String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
-        if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
-        getMarks();*/
+        if (!marksCashStr.equalsIgnoreCase("-1")) getScheduleFromCash(marksCashStr);
+        getSchedule();*/
 
         return v;
 
     }
 
-    private void getMarks() {
+    private void getSchedule() {
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7&p_course=" + course, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                new ParseMarks().execute(responseBody);
+                new ParseSchedule().execute(responseBody);
             }
 
             @Override
@@ -121,18 +111,17 @@ public class ScheduleFragment extends Fragment {
         });
     }
 
-    private void getMarksFromCash(String str) {
-        new LoadMarksFromCash().execute(str);
+    private void getScheduleFromCash(String str) {
+        new LoadScheduleFromCash().execute(str);
     }
 
-    private void parseMarksFromString(String str) {
+    private void parseScheduleFromString(String str) {
         ArrayList<Schedule> arScheduleTemp = new ArrayList<>();
 
         arScheduleTemp.add(new Schedule(str));
 
         arSchedule.clear();
         arSchedule.addAll(arScheduleTemp);
-
 
     }
 
@@ -162,7 +151,7 @@ public class ScheduleFragment extends Fragment {
         unbinder.unbind();
     }
 
-    public class ParseMarks extends AsyncTask<byte[], Void, Void> {
+    public class ParseSchedule extends AsyncTask<byte[], Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -183,7 +172,7 @@ public class ScheduleFragment extends Fragment {
             }
 
             SharedPreferenceHelper.setSharedPreferenceString(getContext(), "marks" + course, str);
-            parseMarksFromString(str);
+            parseScheduleFromString(str);
 
             return null;
         }
@@ -198,7 +187,7 @@ public class ScheduleFragment extends Fragment {
         }
     }
 
-    public class LoadMarksFromCash extends AsyncTask<String, Void, Void> {
+    public class LoadScheduleFromCash extends AsyncTask<String, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -213,7 +202,7 @@ public class ScheduleFragment extends Fragment {
 
             String str = null;
             str = String.valueOf(params[0]);
-            parseMarksFromString(str);
+            parseScheduleFromString(str);
 
             return null;
         }

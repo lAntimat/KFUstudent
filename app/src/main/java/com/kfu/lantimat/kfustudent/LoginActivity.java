@@ -7,7 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
@@ -45,29 +47,24 @@ public class LoginActivity extends AppCompatActivity {
 
         KFURestClient.client.setCookieStore(myCookieStore);
 
+        checkAuth();
+
         loginButton.setOnClickListener(view -> {
             String email = loginEditText.getText().toString();
             String password = passEditText.getText().toString();
 
-            checkLogin(new CheckLogin() {
+            login(login, pass, new LoginCallback() {
                 @Override
-                public void succes() {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent); //TODO:  куда напрвить после авторизаци
-                }
-
-                @Override
-                public void notLogged() {
-                    login(login, pass, new Logged() {
+                public void onSuccess(String url) {
+                    saveSessionCookies(url, new SaveSessionCookieCallback() {
                         @Override
-                        public void logged(String link) {
-                            getProfile(link, new Response() {
-                                @Override
-                                public void succes(String responce) {
-                                    //Log.d("ПРОФИЛЬ", responce);
-                                    Log.d("getProfile", "Succes");
-                                }
-                            });
+                        public void onSuccess(String response) {
+                            Toast.makeText(getApplicationContext(), "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(LoginActivity.this, TimeLineActivity.class);
+                            startActivity(intent);
+                            finish();
+                            //Log.d("ПРОФИЛЬ", responce);
+                            Log.d("saveSessionCookies", "Succes");
                         }
                     });
                 }
@@ -82,20 +79,38 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     interface CheckLogin {
-        void succes();
+        void onLoggedIn();
 
-        void notLogged();
+        void onNotLoggedIn();
     }
 
-    interface Logged {
-        void logged(String link);
+    interface LoginCallback {
+        void onSuccess(String url);
     }
 
-    interface Response {
-        void succes(String responce);
+    interface SaveSessionCookieCallback {
+        void onSuccess(String response);
     }
 
-    public void checkLogin(final CheckLogin success) {
+    public void checkAuth() {
+        checkLogin(new CheckLogin() {
+            @Override
+            public void onLoggedIn() {
+                Toast.makeText(getApplicationContext(), "Сессия еще жива", Toast.LENGTH_SHORT).show();
+                //Intent intent = new Intent(LoginActivity.this, TimeLineActivity.class);
+                //startActivity(intent);
+                finish();
+
+            }
+
+            @Override
+            public void onNotLoggedIn() {
+                Toast.makeText(getApplicationContext(), "Сессия устарела, необходима авторизация", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void checkLogin(final CheckLogin checkLogin) {
         KFURestClient.getUrl("http://shelly.kpfu.ru/e-ksu/main_blocks.startpage", new RequestParams(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -110,10 +125,10 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("responseString", str);
 
                 if (str.contains("Извините, устарела сессия работы с системой")) {
-                    success.notLogged();
-                    Log.d("CheckLogin", "not logged");
+                    checkLogin.onNotLoggedIn();
+                    Log.d("CheckLogin", "not onSuccess");
                 } else {
-                    success.succes();
+                    checkLogin.onLoggedIn();
                 }
             }
 
@@ -124,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void login(String email, String pass, final Logged success) {
+    public void login(String email, String pass, final LoginCallback success) {
         final RequestParams params = new RequestParams();
         params.add("p_login", email);
         params.add("p_pass", pass);
@@ -143,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (matcher.find()) {
                     url = matcher.group(1);
                 }
-                success.logged(url);
+                success.onSuccess(url);
             }
         });
     }
@@ -162,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void getProfile(String link, final Response response) {
+    public void saveSessionCookies(String link, final SaveSessionCookieCallback response) {
 
         KFURestClient.get(link, new RequestParams(), new TextHttpResponseHandler() {
             @Override
@@ -179,8 +194,8 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Log.d("getProfile", "onSuccess");
-
+                Log.d("saveSessionCookies", "onSuccess");
+                Log.d("saveSessionCookies", responseString);
 
                 Pattern pattern = Pattern.compile("h_id=(.*);domain");
                 Matcher matcher = pattern.matcher(responseString);
@@ -201,6 +216,14 @@ public class LoginActivity extends AppCompatActivity {
                     myCookieStore.addCookie(basicClientCookie);
                 }
 
+                pattern = Pattern.compile("<a class = \"ico\" href = \"(.*)\" title");
+                matcher = pattern.matcher(responseString);
+                matcher.find();
+                if(matcher.find()){
+                    SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), "scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
+                    Log.d("scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
+                }
+
                 String text = "";
                 try {
 
@@ -210,7 +233,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
 
-                response.succes(text);
+                response.onSuccess(text);
 
             }
         });
