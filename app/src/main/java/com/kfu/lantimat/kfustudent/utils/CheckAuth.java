@@ -1,16 +1,14 @@
-package com.kfu.lantimat.kfustudent;
+package com.kfu.lantimat.kfustudent.utils;
 
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import com.kfu.lantimat.kfustudent.KFURestClient;
+import com.kfu.lantimat.kfustudent.LoginActivity;
+import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
-import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
@@ -23,111 +21,86 @@ import java.util.regex.Pattern;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
 
-public class LoginActivity extends AppCompatActivity {
+import static com.kfu.lantimat.kfustudent.LoginActivity.LOGIN;
+import static com.kfu.lantimat.kfustudent.LoginActivity.PASSWORD;
 
-    public static final String LOGIN = "login";
-    public static final String PASSWORD = "password";
+/**
+ * Created by GabdrakhmanovII on 07.09.2017.
+ */
 
-    Button loginButton, forgotButton;
-    EditText loginEditText, passEditText;
-    PersistentCookieStore myCookieStore;
+public class CheckAuth {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        loginButton = (Button) findViewById(R.id.loginButton);
-        forgotButton = (Button) findViewById(R.id.forgotButton);
-        loginEditText = (EditText) findViewById(R.id.loginEditText);
-        passEditText = (EditText) findViewById(R.id.passEditText);
-        String login = "IlIGabdrahmanov";
-        String pass = "AnTi89600747198";
+    Context context;
 
-        //loginEditText.setText(login);
-        //passEditText.setText(pass);
-
-        if(!SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), LOGIN, "not").isEmpty()) {
-            loginEditText.setText(SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(),LOGIN, ""));
-            passEditText.setText(SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(),PASSWORD, ""));
-        }
-
-        //KFURestClient.setCookieStore(myCookieStore);
-
-
-        //checkAuth();
-
-        loginButton.setOnClickListener(view -> {
-            String login2 = loginEditText.getText().toString();
-            String pass2 = passEditText.getText().toString();
-
-            SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
-            SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
-
-            CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
-                @Override
-                public void onSuccess(String url) {
-                    startActivity(new Intent(LoginActivity.this, TimeLineActivity.class));
-                }
-
-                @Override
-                public void onLoginAndPassFail() {
-
-                }
-            });
-        });
-
-
-        forgotButton.setOnClickListener(view -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kpfu.ru/change_user_pass.forget_pass_form?p_lang=1"));
-            startActivity(browserIntent);
-        });
-    }
-
-    /*interface CheckLoginCallback {
+    public interface AuthCallback {
         void onLoggedIn();
-
         void onNotLoggedIn();
-
         void onOldSession();
     }
-
-    interface LoginCallback {
+    public interface LoginCallback {
         void onSuccess(String url);
         void onLoginAndPassFail();
     }
-
     interface SaveSessionCookieCallback {
         void onSuccess(String response);
     }
 
-    public void checkAuth() {
-        checkLogin(new CheckLoginCallback() {
+    PersistentCookieStore myCookieStore;
+
+    public CheckAuth(Context context, AuthCallback authCallback) {
+        myCookieStore = KFURestClient.getCookieStore();
+        this.context = context;
+        checkAuth(authCallback);
+    }
+
+    public void checkAuth(AuthCallback authCallback) {
+
+        checkLogin(new AuthCallback() {
             @Override
             public void onLoggedIn() {
-                Toast.makeText(getApplicationContext(), "Сессия еще жива", Toast.LENGTH_SHORT).show();
-                //Intent intent = new Intent(LoginActivity.this, TimeLineActivity.class);
-                //startActivity(intent);
-                //finish();
-
+                Toast.makeText(context, "Сессия еще жива и авторизация норм", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNotLoggedIn() {
-                Toast.makeText(getApplicationContext(), "Сессия устарела, необходима авторизация", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
             public void onOldSession() {
+                Toast.makeText(context, "Сессия устарела, необходима переавторизация", Toast.LENGTH_SHORT).show();
+                String login = "";
+                String password = "";
+                if(!SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) {
+                    login = SharedPreferenceHelper.getSharedPreferenceString(context,LOGIN, "");
+                    password = SharedPreferenceHelper.getSharedPreferenceString(context, PASSWORD, "");
+                    login(login, password, new LoginCallback() {
+                        @Override
+                        public void onSuccess(String url) {
+                            saveSessionCookies(url, response -> {
+                                Toast.makeText(context, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                                //Log.d("ПРОФИЛЬ", responce);
+                                Log.d("saveSessionCookies", "Success");
+                            });
+                        }
+
+                        @Override
+                        public void onLoginAndPassFail() {
+                            Toast.makeText(context, "Извините, неверно введены имя или пароль", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
 
             }
         });
     }
 
-    public void checkLogin(final CheckLoginCallback checkLogin) {
+    public void checkLogin(AuthCallback authCallback) {
         KFURestClient.getUrl("http://shelly.kpfu.ru/e-ksu/main_blocks.startpage", new RequestParams(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                //Log.d("checkLogin", "onSuccess");
+                Log.d("checkLogin", "onSuccess");
                 String str = "";
                 try {
                     str = new String(responseBody, "windows-1251");
@@ -135,13 +108,19 @@ public class LoginActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                //Log.d("responseString", str);
+                Log.d("responseString", str);
 
                 if (str.contains("Извините, устарела сессия работы с системой")) {
-                    checkLogin.onNotLoggedIn();
-                    Log.d("CheckLoginCallback", "not onSuccess");
+                    if(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) {
+                        authCallback.onNotLoggedIn();
+                        Log.d("CheckLogin", "onNotLoggedIn");
+                    } else {
+                        authCallback.onOldSession();
+                        Log.d("CheckLogin", "onOldSession");
+                    }
+
                 } else {
-                    checkLogin.onLoggedIn();
+                    authCallback.onLoggedIn();
                 }
             }
 
@@ -152,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void login(String email, String pass, final LoginCallback loginCallback) {
+    public static void login(String email, String pass, final LoginCallback loginCallback) {
         final RequestParams params = new RequestParams();
         params.add("p_login", email);
         params.add("p_pass", pass);
@@ -189,8 +168,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
-    public void saveSessionCookies(String link, final SaveSessionCookieCallback response) {
+    public void saveSessionCookies(String link, final SaveSessionCookieCallback saveSessionCookieCallback) {
 
         KFURestClient.get(link, new RequestParams(), new TextHttpResponseHandler() {
             @Override
@@ -233,7 +211,7 @@ public class LoginActivity extends AppCompatActivity {
                 matcher = pattern.matcher(responseString);
                 matcher.find();
                 if(matcher.find()){
-                    SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), "scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
+                    SharedPreferenceHelper.setSharedPreferenceString(context, "scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
                     Log.d("scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
                 }
 
@@ -246,23 +224,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
 
-                response.onSuccess(text);
+                saveSessionCookieCallback.onSuccess(text);
 
             }
         });
     }
-
-    public void getLocale(final LoginCallback success){
-        KFURestClient.getUrl("http://kpfu.ru/?p_sub=3", new RequestParams(), new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-            }
-        });
-    }*/
 
 }

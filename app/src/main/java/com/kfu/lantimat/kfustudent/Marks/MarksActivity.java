@@ -55,6 +55,7 @@ public class MarksActivity extends MainActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        toolbar.setTitle("Успеваемость");
 
         arBlock = new ArrayList<>();
 

@@ -16,7 +16,9 @@ import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Timeline.model.OrderStatus;
 import com.kfu.lantimat.kfustudent.Timeline.model.Orientation;
 import com.kfu.lantimat.kfustudent.Timeline.model.TimeLineModel;
+import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.PersistentCookieStore;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -64,6 +66,25 @@ public class TimeLineActivity extends MainActivity {
 
         initView();
         getEventTimeLine();
+
+        PersistentCookieStore myCookieStore = new PersistentCookieStore(this); /**Обязательно один раз нужно задать CookieStore*/
+        KFURestClient.setCookieStore(myCookieStore);
+        new CheckAuth(getApplicationContext(), new CheckAuth.AuthCallback() {
+            @Override
+            public void onLoggedIn() {
+
+            }
+
+            @Override
+            public void onNotLoggedIn() {
+
+            }
+
+            @Override
+            public void onOldSession() {
+
+            }
+        });
 
     }
 
