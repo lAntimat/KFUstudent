@@ -1,18 +1,21 @@
 package com.kfu.lantimat.kfustudent.Marks;
 
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
+import com.kfu.lantimat.kfustudent.LoginActivity;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
@@ -26,11 +29,19 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
+
+import static com.kfu.lantimat.kfustudent.LoginActivity.AUTH;
 
 public class MarksActivity extends MainActivity {
 
     ArrayList<Mark> arBlock;
+    @BindView(R.id.textView)
+    TextView textView;
+    @BindView(R.id.button)
+    Button button;
 
     //private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -47,9 +58,11 @@ public class MarksActivity extends MainActivity {
         //setSupportActionBar(toolbar);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_marks, v);
+
+        ButterKnife.bind(this);
+
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
@@ -63,7 +76,14 @@ public class MarksActivity extends MainActivity {
     }
 
 
+    public void showNeedLogin() {
+        textView.setVisibility(View.VISIBLE);
+        button.setVisibility(View.VISIBLE);
+    }
 
+    public void btnClick(View view) {
+        startActivity(new Intent(this, LoginActivity.class));
+    }
 
     private void getMarks() {
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
@@ -139,7 +159,8 @@ public class MarksActivity extends MainActivity {
             viewPager.setOffscreenPageLimit(count);
             viewPager.setAdapter(adapter);
         }*/
-        getMarks();
+        if (SharedPreferenceHelper.getSharedPreferenceBoolean(getApplicationContext(), AUTH, false)) getMarks();
+        else showNeedLogin();
 
     }
 
@@ -172,4 +193,4 @@ public class MarksActivity extends MainActivity {
         }
     }
 
-    }
+}

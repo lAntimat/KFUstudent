@@ -1,16 +1,16 @@
 package com.kfu.lantimat.kfustudent.Timeline;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
-import com.kfu.lantimat.kfustudent.LoginActivity;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Timeline.model.OrderStatus;
@@ -27,6 +27,8 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -34,6 +36,8 @@ import cz.msebera.android.httpclient.Header;
  */
 public class TimeLineActivity extends MainActivity {
 
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
     private RecyclerView mRecyclerView;
     private TimeLineAdapter mTimeLineAdapter;
     private List<TimeLineModel> mDataList = new ArrayList<>();
@@ -49,16 +53,18 @@ public class TimeLineActivity extends MainActivity {
         //setSupportActionBar(toolbar);
 
         //if(getSupportActionBar()!=null)
-            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_timeline, v);
 
+        ButterKnife.bind(this);
+
         //mOrientation = (Orientation) getIntent().getSerializableExtra(MainActivity.EXTRA_ORIENTATION);
         //mWithLinePadding = getIntent().getBooleanExtra(MainActivity.EXTRA_WITH_LINE_PADDING, false);
 
-        if(getSupportActionBar()!=null)
-        getSupportActionBar().setTitle("Таймлайн");
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle("Таймлайн");
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(getLinearLayoutManager());
@@ -72,7 +78,7 @@ public class TimeLineActivity extends MainActivity {
         new CheckAuth(getApplicationContext(), new CheckAuth.AuthCallback() {
             @Override
             public void onLoggedIn() {
-
+                setupNavigationDrawer();
             }
 
             @Override
@@ -103,21 +109,21 @@ public class TimeLineActivity extends MainActivity {
     }
 
     private void getEventTimeLine() {
-     KFURestClient.getUrl("https://media.kpfu.ru/events/month", null, new AsyncHttpResponseHandler() {
-         @Override
-         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-             new ParseStrFromByte().execute(responseBody);
-         }
+        KFURestClient.getUrl("https://media.kpfu.ru/events/month", null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                new ParseStrFromByte().execute(responseBody);
+            }
 
-         @Override
-         public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
 
-         }
-     });
+            }
+        });
     }
 
 
-    private void setDataListItems(){
+    private void setDataListItems() {
         mDataList.add(new TimeLineModel("Item successfully delivered", "", OrderStatus.INACTIVE));
         mDataList.add(new TimeLineModel("Courier is out to delivery your order", "2017-02-12 08:00", OrderStatus.ACTIVE));
         mDataList.add(new TimeLineModel("Item has reached courier facility at New Delhi", "2017-02-11 21:00", OrderStatus.COMPLETED));
@@ -143,7 +149,7 @@ public class TimeLineActivity extends MainActivity {
 
             Log.d("event-list.uk-active", elements.get(2).toString());
 
-            for (int i = 0; i <elements.size() ; i++) {
+            for (int i = 0; i < elements.size(); i++) {
                 String date = elements.get(i).select("div.eventItem-date").text();
                 String title = elements.get(i).select("div.eventItem-title").text();
                 String place = elements.get(i).select("div.eventItem-place").text();
@@ -155,6 +161,7 @@ public class TimeLineActivity extends MainActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+            progressBar.setVisibility(View.INVISIBLE);
             mTimeLineAdapter.notifyDataSetChanged();
             super.onPostExecute(aVoid);
         }
@@ -175,7 +182,7 @@ public class TimeLineActivity extends MainActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
-        if(mOrientation!=null)
+        if (mOrientation != null)
             savedInstanceState.putSerializable(MainActivity.EXTRA_ORIENTATION, mOrientation);
         super.onSaveInstanceState(savedInstanceState);
     }

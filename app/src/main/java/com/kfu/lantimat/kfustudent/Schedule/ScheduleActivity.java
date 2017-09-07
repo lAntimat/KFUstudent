@@ -7,8 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,8 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
@@ -34,11 +31,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class ScheduleActivity extends MainActivity {
 
     ArrayList<Mark> arBlock;
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
     //Spinner spinner;
 
     //private Toolbar toolbar;
@@ -55,9 +56,9 @@ public class ScheduleActivity extends MainActivity {
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_schedule, v);
 
+        ButterKnife.bind(this);
         //toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
-
 
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -113,7 +114,8 @@ public class ScheduleActivity extends MainActivity {
                         //Toast.makeText(getApplicationContext(), "Pressed " + i, Toast.LENGTH_SHORT).show();
                         getScheduleBottomWeek();
                         break;
-                    case 1: getScheduleTopWeek();
+                    case 1:
+                        getScheduleTopWeek();
                         break;
                 }
             }
@@ -124,6 +126,7 @@ public class ScheduleActivity extends MainActivity {
             }
         });
     }
+
     private void getScheduleTopWeek() {
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=13.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
             @Override
@@ -137,6 +140,7 @@ public class ScheduleActivity extends MainActivity {
             }
         });
     }
+
     private void getScheduleBottomWeek() {
 
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=20.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
@@ -176,18 +180,18 @@ public class ScheduleActivity extends MainActivity {
 
             Log.d("div.big_td", courses.toString());
 
-          //  if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
-                adapter = new ViewPagerAdapter(getSupportFragmentManager());
+            //  if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
+            adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(0).toString()), "Понедельник");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(2).toString()), "Вторник");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(4).toString()), "Среда");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(1).toString()), "Четверг");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(3).toString()), "Пятница");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(5).toString()), "Суббота");
-                adapter.addFragment(new ScheduleFragment().newInstance(courses.get(6).toString()), "Воскресенье");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(0).toString()), "Понедельник");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(2).toString()), "Вторник");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(4).toString()), "Среда");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(1).toString()), "Четверг");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(3).toString()), "Пятница");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(5).toString()), "Суббота");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(6).toString()), "Воскресенье");
 
-           // }
+            // }
 
             //SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
             return null;
@@ -198,6 +202,7 @@ public class ScheduleActivity extends MainActivity {
             //feedsRecyclerAdapter.notifyDataSetChanged();
             //progressBar.setVisibility(View.INVISIBLE);
 
+            progressBar.setVisibility(View.INVISIBLE);
             viewPager.setOffscreenPageLimit(0);
             viewPager.setAdapter(adapter);
             viewPager.invalidate();
@@ -250,4 +255,4 @@ public class ScheduleActivity extends MainActivity {
         }
     }
 
-    }
+}

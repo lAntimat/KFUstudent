@@ -17,7 +17,6 @@
         android:layout_below="@+id/progressBar"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="49dp"
-        android:text="Опс, что то пошло не так :("
         android:textSize="18sp"
         android:visibility="gone" />
 
@@ -25,14 +24,12 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="103dp"
         android:adjustViewBounds="false"
-        android:padding="100dp"
+        android:scaleType="centerCrop"
         android:visibility="gone"
-        app:srcCompat="@drawable/empty_score" />
+        app:srcCompat="@drawable/back_to_the_future" />
 
     <ProgressBar
         android:id="@+id/progressBar"

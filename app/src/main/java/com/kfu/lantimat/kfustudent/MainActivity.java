@@ -17,6 +17,7 @@ import com.kfu.lantimat.kfustudent.Schedule.Schedule;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.kfu.lantimat.kfustudent.Timeline.model.Orientation;
+import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
@@ -164,14 +165,16 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
-    private void setupNavigationDrawer() {
+    public void setupNavigationDrawer() {
 
         //if you want to update the items at a later time it is recommended to keep it in a variable
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Таймлайн");
-        PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
+        //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName("Расписание");
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName("Успеваемость");
-        SecondaryDrawerItem item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти");
+        SecondaryDrawerItem item10;
+        if(CheckAuth.isAuth()) item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Выйти");
+        else item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти");
 
         //create the drawer and remember the `Drawer` result object
         result = new DrawerBuilder()
@@ -181,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
                 .withActionBarDrawerToggle(true)
                 .addDrawerItems(
                         item1,
-                        item2,
                         item3,
                         item4,
                         new DividerDrawerItem(),
@@ -193,15 +195,16 @@ public class MainActivity extends AppCompatActivity {
                         switch (position) {
                             case 1: drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
                                 break;
-                            case 2: //drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
+                            case 10: //drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
                                 break;
-                            case 3: drawerIntent = new Intent(MainActivity.this, ScheduleActivity.class);
+                            case 2: drawerIntent = new Intent(MainActivity.this, ScheduleActivity.class);
                                 break;
-                            case 4:
+                            case 3:
                                 drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
                                 break;
-                            case 6:
-                                drawerIntent = new Intent(MainActivity.this, LoginActivity.class);
+                            case 5:
+                                if(CheckAuth.isAuth()) KFURestClient.myCookieStore.clear();
+                                else drawerIntent = new Intent(MainActivity.this, LoginActivity.class);
                                 break;
                         }
                         result.closeDrawer();

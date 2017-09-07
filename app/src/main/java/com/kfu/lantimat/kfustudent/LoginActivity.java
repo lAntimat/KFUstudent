@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final String LOGIN = "login";
     public static final String PASSWORD = "password";
+    public static final String AUTH = "auth";
 
     Button loginButton, forgotButton;
     EditText loginEditText, passEditText;
@@ -66,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
                 @Override
                 public void onSuccess(String url) {
+                    SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
                     startActivity(new Intent(LoginActivity.this, TimeLineActivity.class));
                 }
 

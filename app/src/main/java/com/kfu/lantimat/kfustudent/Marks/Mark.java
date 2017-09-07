@@ -119,7 +119,15 @@ public class Mark {
 
     public String getTestString() {
         switch (mViewType) {
-            case RATING_TYPE: return "Поздравляю, ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
+            case RATING_TYPE:
+                try {
+                    if(Integer.parseInt(placeInGroup) < 4)
+                        return "Поздравляю, ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
+                    else return "Ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
+                } catch (Exception e) {
+                    return "Ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
+                }
+
             case SCORE_TYPE:  return "полученный балл " + score + "\nбалл за работу в семестре " + receivedScore + " " + date + "\nитоговая оценка: " + finalScore + " (" + finalMark + ")";
             case PRACTICE_TYPE:  return score + " " + date;
             case COURSEWORK_TYPE:  return name + "\n" + score + " " + date;

@@ -45,7 +45,8 @@ public class CheckAuth {
         void onSuccess(String response);
     }
 
-    PersistentCookieStore myCookieStore;
+    static PersistentCookieStore myCookieStore;
+    static boolean isAuth = false;
 
     public CheckAuth(Context context, AuthCallback authCallback) {
         myCookieStore = KFURestClient.getCookieStore();
@@ -58,12 +59,14 @@ public class CheckAuth {
         checkLogin(new AuthCallback() {
             @Override
             public void onLoggedIn() {
+                isAuth = true;
                 Toast.makeText(context, "Сессия еще жива и авторизация норм", Toast.LENGTH_SHORT).show();
+                authCallback.onNotLoggedIn();
             }
 
             @Override
             public void onNotLoggedIn() {
-
+                isAuth = false;
             }
 
             @Override
@@ -228,6 +231,10 @@ public class CheckAuth {
 
             }
         });
+    }
+
+    public static Boolean isAuth() {
+        return isAuth;
     }
 
 }
