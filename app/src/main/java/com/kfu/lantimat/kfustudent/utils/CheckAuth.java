@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.impl.cookie.BasicClientCookie;
 
+import static com.kfu.lantimat.kfustudent.LoginActivity.AUTH;
 import static com.kfu.lantimat.kfustudent.LoginActivity.LOGIN;
 import static com.kfu.lantimat.kfustudent.LoginActivity.PASSWORD;
 
@@ -30,7 +31,7 @@ import static com.kfu.lantimat.kfustudent.LoginActivity.PASSWORD;
 
 public class CheckAuth {
 
-    Context context;
+    static Context context;
 
     public interface AuthCallback {
         void onLoggedIn();
@@ -60,6 +61,7 @@ public class CheckAuth {
             @Override
             public void onLoggedIn() {
                 isAuth = true;
+                SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, true);
                 Toast.makeText(context, "Сессия еще жива и авторизация норм", Toast.LENGTH_SHORT).show();
                 authCallback.onNotLoggedIn();
             }
@@ -67,6 +69,7 @@ public class CheckAuth {
             @Override
             public void onNotLoggedIn() {
                 isAuth = false;
+                SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, false);
             }
 
             @Override
@@ -74,7 +77,7 @@ public class CheckAuth {
                 Toast.makeText(context, "Сессия устарела, необходима переавторизация", Toast.LENGTH_SHORT).show();
                 String login = "";
                 String password = "";
-                if(!SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) {
+                if(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not")!=null) {
                     login = SharedPreferenceHelper.getSharedPreferenceString(context,LOGIN, "");
                     password = SharedPreferenceHelper.getSharedPreferenceString(context, PASSWORD, "");
                     login(login, password, new LoginCallback() {
@@ -82,6 +85,7 @@ public class CheckAuth {
                         public void onSuccess(String url) {
                             saveSessionCookies(url, response -> {
                                 Toast.makeText(context, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                                authCallback.onLoggedIn();
                                 //Log.d("ПРОФИЛЬ", responce);
                                 Log.d("saveSessionCookies", "Success");
                             });
@@ -114,12 +118,14 @@ public class CheckAuth {
                 Log.d("responseString", str);
 
                 if (str.contains("Извините, устарела сессия работы с системой")) {
-                    if(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) {
+                    if(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) { //Если не вводили логин и пароль
                         authCallback.onNotLoggedIn();
                         Log.d("CheckLogin", "onNotLoggedIn");
                     } else {
-                        authCallback.onOldSession();
-                        Log.d("CheckLogin", "onOldSession");
+                        if(SharedPreferenceHelper.getSharedPreferenceBoolean(context, AUTH, false)) {
+                            authCallback.onOldSession(); //Иначе если логин и пароль сохранены, но пользователь нажал выйти
+                            Log.d("CheckLogin", "onOldSession");
+                        }
                     }
 
                 } else {
@@ -234,7 +240,16 @@ public class CheckAuth {
     }
 
     public static Boolean isAuth() {
-        return isAuth;
+        try {
+            return SharedPreferenceHelper.getSharedPreferenceBoolean(context, AUTH, false);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static void exit() {
+        KFURestClient.clearCookie();
+        SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, false);
     }
 
 }

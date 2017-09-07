@@ -19,6 +19,7 @@ import com.kfu.lantimat.kfustudent.LoginActivity;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
+import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.jsoup.Jsoup;
@@ -40,7 +41,7 @@ public class MarksActivity extends MainActivity {
     ArrayList<Mark> arBlock;
     @BindView(R.id.textView)
     TextView textView;
-    @BindView(R.id.button)
+    @BindView(R.id.btnSign)
     Button button;
 
     //private Toolbar toolbar;
@@ -63,6 +64,8 @@ public class MarksActivity extends MainActivity {
 
         ButterKnife.bind(this);
 
+        textView.setVisibility(View.INVISIBLE);
+        button.setVisibility(View.INVISIBLE);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
@@ -73,6 +76,7 @@ public class MarksActivity extends MainActivity {
         arBlock = new ArrayList<>();
 
         initViewPager();
+        result.setSelection(4, false);
     }
 
 
@@ -81,7 +85,7 @@ public class MarksActivity extends MainActivity {
         button.setVisibility(View.VISIBLE);
     }
 
-    public void btnClick(View view) {
+    public void btnLoginClick(View view) {
         startActivity(new Intent(this, LoginActivity.class));
     }
 
@@ -159,8 +163,9 @@ public class MarksActivity extends MainActivity {
             viewPager.setOffscreenPageLimit(count);
             viewPager.setAdapter(adapter);
         }*/
-        if (SharedPreferenceHelper.getSharedPreferenceBoolean(getApplicationContext(), AUTH, false)) getMarks();
+        if (CheckAuth.isAuth()) getMarks();
         else showNeedLogin();
+
 
     }
 

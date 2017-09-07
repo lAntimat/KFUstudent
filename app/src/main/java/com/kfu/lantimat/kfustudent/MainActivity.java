@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     public Toolbar toolbar;
     public Spinner spinner;
     AccountHeader headerResult;
-    Drawer result;
+    public Drawer result;
     FrameLayout frameLayout;
     Intent drawerIntent = null;
 
@@ -152,6 +152,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void btnLoginClick(View view) {
+        startActivity(new Intent(this, LoginActivity.class));
+    }
+
     private void initAccountHeader() {
         headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -168,13 +172,15 @@ public class MainActivity extends AppCompatActivity {
     public void setupNavigationDrawer() {
 
         //if you want to update the items at a later time it is recommended to keep it in a variable
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Таймлайн");
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Таймлайн").withIcon(R.drawable.ic_chart_timeline_grey600_24dp);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName("Расписание");
-        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName("Успеваемость");
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName("Расписание").withIcon(R.drawable.ic_school_grey600_24dp);
+        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName("Успеваемость").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp);
         SecondaryDrawerItem item10;
         if(CheckAuth.isAuth()) item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Выйти");
         else item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти");
+
+        PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(4).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp);
 
         //create the drawer and remember the `Drawer` result object
         result = new DrawerBuilder()
@@ -187,13 +193,15 @@ public class MainActivity extends AppCompatActivity {
                         item3,
                         item4,
                         new DividerDrawerItem(),
-                        item10
+                        item10,
+                        item5
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         switch (position) {
-                            case 1: drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
+                            case 1:
+                                drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
                                 break;
                             case 10: //drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
                                 break;
@@ -203,8 +211,16 @@ public class MainActivity extends AppCompatActivity {
                                 drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
                                 break;
                             case 5:
-                                if(CheckAuth.isAuth()) KFURestClient.myCookieStore.clear();
+                                if(CheckAuth.isAuth()) {
+                                    CheckAuth.exit();
+                                    startActivity(new Intent(MainActivity.this, TimeLineActivity.class));
+                                    finish();
+                                }
                                 else drawerIntent = new Intent(MainActivity.this, LoginActivity.class);
+                                break;
+                            case 6:
+                                Intent intent = new Intent(MainActivity.this, MainIntroActivity.class);
+                                startActivity(intent);
                                 break;
                         }
                         result.closeDrawer();
@@ -223,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(drawerIntent);
                             overridePendingTransition(0, 0);
                             drawerIntent = null;
+                            finish();
                         }
                     }
 

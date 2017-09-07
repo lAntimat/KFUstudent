@@ -13,14 +13,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
+import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.jsoup.Jsoup;
@@ -35,11 +38,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
+import static com.kfu.lantimat.kfustudent.LoginActivity.AUTH;
+
 public class ScheduleActivity extends MainActivity {
 
     ArrayList<Mark> arBlock;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    @BindView(R.id.btnSign)
+    Button buttonSignEmpty;
+    @BindView(R.id.textView3)
+    TextView textViewEmpty;
     //Spinner spinner;
 
     //private Toolbar toolbar;
@@ -57,6 +66,10 @@ public class ScheduleActivity extends MainActivity {
         getLayoutInflater().inflate(R.layout.activity_schedule, v);
 
         ButterKnife.bind(this);
+        textViewEmpty.setVisibility(View.INVISIBLE);
+        buttonSignEmpty.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+
         //toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
@@ -65,7 +78,10 @@ public class ScheduleActivity extends MainActivity {
         //getSupportActionBar().setTitle("");
 
         //spinner = (Spinner) v.findViewById(R.id.spinner_nav);
-        initSpinner();
+
+        if (CheckAuth.isAuth()) initSpinner();
+        else showNeedLogin();
+
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -77,6 +93,7 @@ public class ScheduleActivity extends MainActivity {
 
         scheduleUrl = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), "scheduleUrl", "");
 
+        result.setSelection(3, false);
         //getScheduleTopWeek();
     }
 
@@ -127,7 +144,15 @@ public class ScheduleActivity extends MainActivity {
         });
     }
 
+    public void showNeedLogin() {
+        progressBar.setVisibility(View.INVISIBLE);
+        textViewEmpty.setVisibility(View.VISIBLE);
+        buttonSignEmpty.setVisibility(View.VISIBLE);
+        toolbar.setTitle("Расписание");
+    }
+
     private void getScheduleTopWeek() {
+        progressBar.setVisibility(View.VISIBLE);
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=13.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {

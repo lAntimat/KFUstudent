@@ -50,6 +50,9 @@ public class KFURestClient {
         myCookieStore = cookieStore;
         client.setCookieStore(myCookieStore);
     }
+    public static void clearCookie() {
+        myCookieStore.clear();
+    }
     public static PersistentCookieStore getCookieStore() {
         return myCookieStore;
     }

@@ -69,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onSuccess(String url) {
                     SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
                     startActivity(new Intent(LoginActivity.this, TimeLineActivity.class));
+                    finish();
                 }
 
                 @Override

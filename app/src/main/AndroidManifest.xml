@@ -22,6 +22,8 @@
         <activity android:name=".Schedule.ScheduleActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".MainIntroActivity"
+            android:theme="@style/Theme.Intro"/>
     </application>
 
 </manifest>

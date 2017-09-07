@@ -24,7 +24,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -43,6 +46,7 @@ public class TimeLineActivity extends MainActivity {
     private List<TimeLineModel> mDataList = new ArrayList<>();
     private Orientation mOrientation;
     private boolean mWithLinePadding;
+    int positionForScroll = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,14 +87,16 @@ public class TimeLineActivity extends MainActivity {
 
             @Override
             public void onNotLoggedIn() {
-
+                setupNavigationDrawer();
             }
 
             @Override
             public void onOldSession() {
-
+                setupNavigationDrawer();
             }
         });
+
+        result.setSelection(1, false);
 
     }
 
@@ -149,12 +155,17 @@ public class TimeLineActivity extends MainActivity {
 
             Log.d("event-list.uk-active", elements.get(2).toString());
 
+            Calendar calendar = Calendar.getInstance();
+            Date dateCalendar = calendar.getTime();
+            String full = new SimpleDateFormat("dd.MM.yyyy").format(dateCalendar);
             for (int i = 0; i < elements.size(); i++) {
                 String date = elements.get(i).select("div.eventItem-date").text();
                 String title = elements.get(i).select("div.eventItem-title").text();
                 String place = elements.get(i).select("div.eventItem-place").text();
                 String format = elements.get(i).select("div.eventItem-format").text();
                 mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.COMPLETED));
+                if(date.contains(full)) positionForScroll = i;
+                full = "";
             }
             return null;
         }
@@ -163,6 +174,7 @@ public class TimeLineActivity extends MainActivity {
         protected void onPostExecute(Void aVoid) {
             progressBar.setVisibility(View.INVISIBLE);
             mTimeLineAdapter.notifyDataSetChanged();
+            mRecyclerView.scrollToPosition(positionForScroll);
             super.onPostExecute(aVoid);
         }
     }
