@@ -14,8 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -27,7 +25,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,13 +36,13 @@ import cz.msebera.android.httpclient.Header;
 
 public class ScheduleFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "param1";
+    private final String ARG_PARAM1 = "param1";
 
     RecyclerView recyclerView;
     ScheduleRecyclerAdapter scheduleRecyclerAdapter;
     ArrayList<String> arBlock = new ArrayList<>();
     ArrayList<Schedule> arSchedule;
-    String course = "";
+    String string = "";
     @BindView(R.id.textView)
     TextView textView;
     @BindView(R.id.imageView)
@@ -60,12 +57,13 @@ public class ScheduleFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static ScheduleFragment newInstance(String str) {
-        ScheduleFragment fragment = new ScheduleFragment();
+    public ScheduleFragment newInstance(String str) {
 
+        ScheduleFragment fragment = new ScheduleFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, str);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -74,7 +72,7 @@ public class ScheduleFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            course = getArguments().getString(ARG_PARAM1);
+            string = getArguments().getString(ARG_PARAM1);
         }
 
         arSchedule = new ArrayList<>();
@@ -96,8 +94,8 @@ public class ScheduleFragment extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
-        parseScheduleFromString(course);
-        /*String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
+        parseScheduleFromString(string);
+        /*String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + string, "-1"); //Достаем из памяти строку с успеваемостью;
         if (!marksCashStr.equalsIgnoreCase("-1")) getScheduleFromCash(marksCashStr);
         getSchedule();*/
 
@@ -105,23 +103,6 @@ public class ScheduleFragment extends Fragment {
 
     }
 
-    private void getSchedule() {
-        KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7&p_course=" + course, null, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                parseSchedule = new ParseSchedule().execute(responseBody);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
-            }
-        });
-    }
-
-    private void getScheduleFromCash(String str) {
-        loadScheduleFromCash = new LoadScheduleFromCash().execute(str);
-    }
 
     private void parseScheduleFromString(String str) {
         ArrayList<Schedule> arScheduleTemp = new ArrayList<>();
@@ -145,6 +126,12 @@ public class ScheduleFragment extends Fragment {
 
         arSchedule.clear();
         arSchedule.addAll(arScheduleTemp);
+
+        progressBar.setVisibility(View.INVISIBLE);
+        scheduleRecyclerAdapter.notifyDataSetChanged();
+        recyclerView.invalidate();
+
+        //emptyPic();
 
     }
 
@@ -170,15 +157,15 @@ public class ScheduleFragment extends Fragment {
 
     @Override
     public void onStop() {
-        if(loadScheduleFromCash!=null) loadScheduleFromCash.cancel(true);
-        if(parseSchedule!=null) parseSchedule.cancel(true);
+        //if(loadScheduleFromCash!=null) loadScheduleFromCash.cancel(true);
+        //if(parseSchedule!=null) parseSchedule.cancel(true);
         super.onStop();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
+        Log.d("ScheduleFragment", "destroyVIew");
         unbinder.unbind();
     }
 
@@ -202,7 +189,6 @@ public class ScheduleFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            SharedPreferenceHelper.setSharedPreferenceString(getContext(), "marks" + course, str);
             parseScheduleFromString(str);
 
             return null;

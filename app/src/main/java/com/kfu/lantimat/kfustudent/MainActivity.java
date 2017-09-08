@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     public Drawer result;
     FrameLayout frameLayout;
     Intent drawerIntent = null;
+    boolean dontFinish = false;
 
 
     @Override
@@ -157,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnLoginClick(View view) {
         startActivity(new Intent(this, LoginActivity.class));
-        finish();
     }
 
     private void initAccountHeader() {
@@ -247,7 +247,10 @@ public class MainActivity extends AppCompatActivity {
                                     startActivity(new Intent(MainActivity.this, TimeLineActivity.class));
                                     finish();
                                 }
-                                else drawerIntent = new Intent(MainActivity.this, LoginActivity.class);
+                                else {
+                                    drawerIntent = new Intent(MainActivity.this, LoginActivity.class);
+                                    dontFinish = true;
+                                }
                                 break;
                             case 6:
                                 Intent intent = new Intent(MainActivity.this, MainIntroActivity.class);
@@ -272,7 +275,8 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(drawerIntent);
                             overridePendingTransition(0, 0);
                             drawerIntent = null;
-                            finish();
+                            if(!dontFinish) finish();
+                            dontFinish = false;
                         }
                     }
 

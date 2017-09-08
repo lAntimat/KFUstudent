@@ -98,8 +98,10 @@ public class ScheduleActivity extends MainActivity {
         else showNeedLogin();
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(adapter);
         //viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -114,7 +116,7 @@ public class ScheduleActivity extends MainActivity {
             public void onPageScrollStateChanged(int state) {
 
             }
-        });
+        });*/
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -166,9 +168,6 @@ public class ScheduleActivity extends MainActivity {
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spinner.setVisibility(View.VISIBLE);
         spinner.setAdapter(adapter);
-        if(nowWeek.equals(EVEN_WEEK)) spinner.setSelection(0);
-        else spinner.setSelection(1);
-
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -189,6 +188,9 @@ public class ScheduleActivity extends MainActivity {
 
             }
         });
+
+        /*if(nowWeek.equals(EVEN_WEEK)) spinner.setSelection(0);
+        else spinner.setSelection(1);*/
     }
 
     public void showNeedLogin() {
@@ -206,7 +208,7 @@ public class ScheduleActivity extends MainActivity {
         progressBar.setVisibility(View.VISIBLE);
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), ODD_WEEK, "");
 
-        if (!week.isEmpty()) setScheduleToViewPager(week, ODD_WEEK);
+        //if (!week.isEmpty()) setScheduleToViewPager(week, ODD_WEEK);
 
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=13.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
@@ -217,6 +219,7 @@ public class ScheduleActivity extends MainActivity {
                         //str = new String(params[0], "UTF-8");
                         str = new String(responseBody, "windows-1251");
                         setScheduleToViewPager(str, ODD_WEEK);
+                        SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), ODD_WEEK, str);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -232,7 +235,7 @@ public class ScheduleActivity extends MainActivity {
     private void getScheduleEvenWeek() {
         progressBar.setVisibility(View.VISIBLE);
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), EVEN_WEEK, "");
-        if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
+        //if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
 
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=20.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
@@ -243,6 +246,7 @@ public class ScheduleActivity extends MainActivity {
                         //str = new String(params[0], "UTF-8");
                         str = new String(responseBody, "windows-1251");
                         setScheduleToViewPager(str, EVEN_WEEK);
+                        SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), EVEN_WEEK, str);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -263,7 +267,8 @@ public class ScheduleActivity extends MainActivity {
         Elements courses = doc.select("div.big_td");
         Log.d("div.big_td", courses.toString());
         //  if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
+
+        adapter.clear();
         adapter.addFragment(new ScheduleFragment().newInstance(courses.get(0).toString()), "Понедельник");
         adapter.addFragment(new ScheduleFragment().newInstance(courses.get(2).toString()), "Вторник");
         adapter.addFragment(new ScheduleFragment().newInstance(courses.get(4).toString()), "Среда");
@@ -271,19 +276,17 @@ public class ScheduleActivity extends MainActivity {
         adapter.addFragment(new ScheduleFragment().newInstance(courses.get(3).toString()), "Пятница");
         adapter.addFragment(new ScheduleFragment().newInstance(courses.get(5).toString()), "Суббота");
         adapter.addFragment(new ScheduleFragment().newInstance(courses.get(6).toString()), "Воскресенье");
+        adapter.notifyDataSetChanged();
 
         progressBar.setVisibility(View.INVISIBLE);
-        viewPager.setOffscreenPageLimit(0);
-        viewPager.setAdapter(adapter);
-        if(selectedDayOfWeek!=-1) {
+        viewPager.setOffscreenPageLimit(7);
+        //viewPager.setAdapter(adapter);
+        /*if(selectedDayOfWeek!=-1) {
             viewPager.setCurrentItem(selectedDayOfWeek);
-            viewPager.computeScroll();
         } else {
             viewPager.setCurrentItem(dayOfWeek-1);
-            viewPager.computeScroll();
-        }
+        }*/
         viewPager.invalidate();
-        SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), week, str);
     }
 
     public class ParseSchedule extends AsyncTask<byte[], Void, Void> {
@@ -363,6 +366,13 @@ public class ScheduleActivity extends MainActivity {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
+
+        public void clear() {
+            mFragmentList.clear();
+            mFragmentTitleList.clear();
+        }
+
+
 
         @Override
         public CharSequence getPageTitle(int position) {
