@@ -204,7 +204,7 @@ public class ScheduleActivity extends MainActivity {
     }
     private void getScheduleTopWeek() {
         progressBar.setVisibility(View.VISIBLE);
-        String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), ODD_WEEK, "");
+        final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), ODD_WEEK, "");
 
         if (!week.isEmpty()) setScheduleToViewPager(week, ODD_WEEK);
 
@@ -231,7 +231,7 @@ public class ScheduleActivity extends MainActivity {
 
     private void getScheduleBottomWeek() {
         progressBar.setVisibility(View.VISIBLE);
-        String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), EVEN_WEEK, "");
+        final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), EVEN_WEEK, "");
         if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
 
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=20.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {

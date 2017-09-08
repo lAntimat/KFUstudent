@@ -63,7 +63,7 @@ public class CheckAuth {
         checkAuth(authCallback);
     }
 
-    public void checkAuth(AuthCallback authCallback) {
+    public void checkAuth(final AuthCallback authCallback) {
 
         checkLogin(new AuthCallback() {
             @Override
@@ -93,11 +93,14 @@ public class CheckAuth {
                     login(login, password, new LoginCallback() {
                         @Override
                         public void onSuccess(String url) {
-                            saveSessionCookies(url, response -> {
-                                Toast.makeText(context, "Авторизация успешна", Toast.LENGTH_SHORT).show();
-                                authCallback.onLoggedIn();
-                                //Log.d("ПРОФИЛЬ", responce);
-                                Log.d("saveSessionCookies", "Success");
+                            saveSessionCookies(url, new SaveSessionCookieCallback() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    Toast.makeText(context, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                                    authCallback.onLoggedIn();
+                                    //Log.d("ПРОФИЛЬ", responce);
+                                    Log.d("saveSessionCookies", "Success");
+                                }
                             });
                         }
 
@@ -118,7 +121,7 @@ public class CheckAuth {
         });
     }
 
-    public void checkLogin(AuthCallback authCallback) {
+    public void checkLogin(final AuthCallback authCallback) {
         KFURestClient.getUrl("http://shelly.kpfu.ru/e-ksu/main_blocks.startpage", new RequestParams(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
