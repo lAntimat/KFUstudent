@@ -18,6 +18,7 @@ import com.kfu.lantimat.kfustudent.Schedule.Schedule;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.kfu.lantimat.kfustudent.Timeline.model.Orientation;
+import com.kfu.lantimat.kfustudent.utils.About;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
@@ -209,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         else item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти").withIconColor(color);
 
         PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(4).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem about = new PrimaryDrawerItem().withIdentifier(5).withName("About").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
 
         //create the drawer and remember the `Drawer` result object
         result = new DrawerBuilder()
@@ -222,7 +224,8 @@ public class MainActivity extends AppCompatActivity {
                         item4,
                         new DividerDrawerItem(),
                         item10,
-                        item5
+                        item5,
+                        about
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -250,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
                                 Intent intent = new Intent(MainActivity.this, MainIntroActivity.class);
                                 startActivity(intent);
                                 break;
+                            case 7: //TODO: вызов абаут
+                                new About().onCreateDialog(MainActivity.this).show();
                         }
                         result.closeDrawer();
                         return true;
