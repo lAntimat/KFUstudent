@@ -49,7 +49,7 @@ public class MainIntroActivity extends IntroActivity{
 
         addSlide(new SimpleSlide.Builder()
                 .title("Успеваемость")
-                .description("И не забывай смотреть за баллами")
+                .description("А так же не забывай смотреть за баллами")
                 .image(R.drawable.study_circle_flat)
                 .background(R.color.md_deep_purple_800)
                 //.backgroundDark(R.color.background_dark_1)
