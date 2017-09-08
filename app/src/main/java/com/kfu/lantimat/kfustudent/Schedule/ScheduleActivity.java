@@ -128,7 +128,7 @@ public class ScheduleActivity extends MainActivity {
 
 
         result.setSelection(3, false);
-        //getScheduleTopWeek();
+        //getScheduleOddWeek();
     }
 
 
@@ -176,10 +176,10 @@ public class ScheduleActivity extends MainActivity {
                 switch (i) {
                     case 0:
                         //Toast.makeText(getApplicationContext(), "Pressed " + i, Toast.LENGTH_SHORT).show();
-                        getScheduleBottomWeek();
+                        getScheduleEvenWeek();
                         break;
                     case 1:
-                        getScheduleTopWeek();
+                        getScheduleOddWeek();
                         break;
                 }
             }
@@ -202,7 +202,7 @@ public class ScheduleActivity extends MainActivity {
         progressBar.setVisibility(View.INVISIBLE);
         Toast.makeText(getApplicationContext(), "Ошибка соединения", Toast.LENGTH_SHORT).show();
     }
-    private void getScheduleTopWeek() {
+    private void getScheduleOddWeek() {
         progressBar.setVisibility(View.VISIBLE);
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), ODD_WEEK, "");
 
@@ -229,7 +229,7 @@ public class ScheduleActivity extends MainActivity {
             });
     }
 
-    private void getScheduleBottomWeek() {
+    private void getScheduleEvenWeek() {
         progressBar.setVisibility(View.VISIBLE);
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), EVEN_WEEK, "");
         if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
