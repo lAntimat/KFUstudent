@@ -12,7 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
@@ -101,6 +103,8 @@ public class TimeLineActivity extends MainActivity {
 
         result.setSelection(1, false);
 
+
+
     }
 
     private LinearLayoutManager getLinearLayoutManager() {
@@ -117,6 +121,11 @@ public class TimeLineActivity extends MainActivity {
         mRecyclerView.setAdapter(mTimeLineAdapter);
     }
 
+    public void onFailureMethod() {
+        progressBar.setVisibility(View.INVISIBLE);
+        Toast.makeText(getApplicationContext(), "Ошибка соединения", Toast.LENGTH_SHORT).show();
+    }
+
     private void getEventTimeLine() {
         KFURestClient.getUrl("https://media.kpfu.ru/events/month", null, new AsyncHttpResponseHandler() {
             @Override
@@ -126,7 +135,7 @@ public class TimeLineActivity extends MainActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
+                onFailureMethod();
             }
         });
     }

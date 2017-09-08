@@ -171,11 +171,11 @@ public class MainActivity extends AppCompatActivity {
                 profileDrawerItem = new ProfileDrawerItem()
                         .withName(fullName)
                         .withEmail("Группа " + group)
-                        .withIcon(R.drawable.avator_icon);
+                        .withIcon(R.mipmap.ic_launcher);
             } else {
                 profileDrawerItem = new ProfileDrawerItem()
                         .withName(fullName)
-                        .withIcon(R.drawable.avator_icon);
+                        .withIcon(R.mipmap.ic_launcher);
             }
 
         }

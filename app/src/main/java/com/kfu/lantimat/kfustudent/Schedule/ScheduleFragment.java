@@ -27,6 +27,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +46,7 @@ public class ScheduleFragment extends Fragment {
     ArrayList<String> arBlock = new ArrayList<>();
     ArrayList<Schedule> arSchedule;
     String course = "";
-    @BindView(R.id.textView2)
+    @BindView(R.id.textView)
     TextView textView;
     @BindView(R.id.imageView)
     ImageView imageView;

@@ -28,8 +28,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,7 +51,7 @@ public class MarksFragment extends Fragment {
     ArrayList<String> arBlock = new ArrayList<>();
     ArrayList<Mark> arMarks;
     String course = "";
-    @BindView(R.id.textView2)
+    @BindView(R.id.textView)
     TextView textView;
     @BindView(R.id.imageView)
     ImageView imageView;
@@ -181,6 +184,11 @@ public class MarksFragment extends Fragment {
             if (arMarks.size() == 0) {
                 imageView.setVisibility(View.VISIBLE);
                 textView.setVisibility(View.VISIBLE);
+                Calendar calendar = Calendar.getInstance();
+                Date dateCalendar = calendar.getTime();
+                String full = new SimpleDateFormat("hh:mm").format(dateCalendar);
+                textView.setText("Погоди-ка… минуточку, Док! Сейчас что, " + full + "?");
+
             } else {
                 imageView.setVisibility(View.GONE);
                 textView.setVisibility(View.GONE);
