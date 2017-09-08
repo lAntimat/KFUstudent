@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "712131982195",
+    "firebase_url": "https://kfustudent-35e12.firebaseio.com",
+    "project_id": "kfustudent-35e12",
+    "storage_bucket": "kfustudent-35e12.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712131982195:android:7770ebf2be5dbe6e",
+        "android_client_info": {
+          "package_name": "com.kfu.lantimat.kfustudent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712131982195-h9c0gtpkkkdaejk4ieajm7nl4l70i5gt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM2twmW9w80lJdl-BC02ZuHDpUJCwnZes"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
