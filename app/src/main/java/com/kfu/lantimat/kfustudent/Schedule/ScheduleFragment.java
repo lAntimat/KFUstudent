@@ -10,9 +10,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,6 +27,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +52,8 @@ public class ScheduleFragment extends Fragment {
     Unbinder unbinder;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    AsyncTask<byte[], Void, Void> parseSchedule;
+    AsyncTask<String, Void, Void> loadScheduleFromCash;
 
     public ScheduleFragment() {
         // Required empty public constructor
@@ -101,7 +108,7 @@ public class ScheduleFragment extends Fragment {
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7&p_course=" + course, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                new ParseSchedule().execute(responseBody);
+                parseSchedule = new ParseSchedule().execute(responseBody);
             }
 
             @Override
@@ -112,13 +119,28 @@ public class ScheduleFragment extends Fragment {
     }
 
     private void getScheduleFromCash(String str) {
-        new LoadScheduleFromCash().execute(str);
+        loadScheduleFromCash = new LoadScheduleFromCash().execute(str);
     }
 
     private void parseScheduleFromString(String str) {
         ArrayList<Schedule> arScheduleTemp = new ArrayList<>();
+        Schedule schedule;
 
-        arScheduleTemp.add(new Schedule(str));
+        /*Pattern datePattern = Pattern.compile(">(.*) <\\/font>");
+        Matcher dateMatcher = datePattern.matcher(str.replaceAll("", ""));
+        if (dateMatcher.find()) schedule.setDate(dateMatcher.group(1));*/
+
+
+        Pattern schedulePattern = Pattern.compile("nowrap> (.*)<\\/td>|<td class=\"table_td\" width=\"180\" style=\"\"> (.*)<\\/td>|<td class=\"table_td\">(.*)<\\/td>");
+        Matcher sheduleMatcher = schedulePattern.matcher(str);
+
+        while (sheduleMatcher.find()) {
+            schedule = new Schedule();
+            schedule.setTime(sheduleMatcher.group(1));
+            if (sheduleMatcher.find()) schedule.setSubjectName(sheduleMatcher.group(2));
+            if (sheduleMatcher.find()) schedule.setPlace(sheduleMatcher.group(3));
+            arScheduleTemp.add(schedule);
+        }
 
         arSchedule.clear();
         arSchedule.addAll(arScheduleTemp);
@@ -146,8 +168,16 @@ public class ScheduleFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        if(loadScheduleFromCash!=null) loadScheduleFromCash.cancel(true);
+        if(parseSchedule!=null) parseSchedule.cancel(true);
+        super.onStop();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
+
         unbinder.unbind();
     }
 

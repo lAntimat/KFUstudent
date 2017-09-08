@@ -14,6 +14,10 @@ import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,8 +33,11 @@ import static com.kfu.lantimat.kfustudent.LoginActivity.PASSWORD;
  * Created by GabdrakhmanovII on 07.09.2017.
  */
 
+
 public class CheckAuth {
 
+    public final static String FULL_NAME = "fullName";
+    public final static String GROUP = "group";
     static Context context;
 
     public interface AuthCallback {
@@ -41,6 +48,7 @@ public class CheckAuth {
     public interface LoginCallback {
         void onSuccess(String url);
         void onLoginAndPassFail();
+        void onConnectFail();
     }
     interface SaveSessionCookieCallback {
         void onSuccess(String response);
@@ -62,8 +70,10 @@ public class CheckAuth {
             public void onLoggedIn() {
                 isAuth = true;
                 SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, true);
-                Toast.makeText(context, "Сессия еще жива и авторизация норм", Toast.LENGTH_SHORT).show();
-                authCallback.onNotLoggedIn();
+                //Toast.makeText(context, "Сессия еще жива и авторизация норм", Toast.LENGTH_SHORT).show();
+                authCallback.onLoggedIn();
+                getFullName();
+
             }
 
             @Override
@@ -74,7 +84,7 @@ public class CheckAuth {
 
             @Override
             public void onOldSession() {
-                Toast.makeText(context, "Сессия устарела, необходима переавторизация", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Сессия устарела, необходима переавторизация", Toast.LENGTH_SHORT).show();
                 String login = "";
                 String password = "";
                 if(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not")!=null) {
@@ -93,7 +103,12 @@ public class CheckAuth {
 
                         @Override
                         public void onLoginAndPassFail() {
-                            Toast.makeText(context, "Извините, неверно введены имя или пароль", Toast.LENGTH_SHORT).show();
+                            authCallback.onNotLoggedIn();
+                        }
+
+                        @Override
+                        public void onConnectFail() {
+                            authCallback.onNotLoggedIn();
                         }
                     });
 
@@ -158,9 +173,10 @@ public class CheckAuth {
                 Pattern pattern = Pattern.compile("href=\\'(.*)\\'</");
                 Matcher matcher = pattern.matcher(str);
                 String url = "";
-                Log.d("login", str);
+                Log.d("CheckAuthLogin", str);
 
-                if(str.contains("Извините, неверно введены имя или пароль")) {
+                if(str.toLowerCase().contains("неверно введены имя или пароль")) {
+                    Toast.makeText(context, "Извините, неверно введены имя или пароль", Toast.LENGTH_SHORT).show();
                     loginCallback.onLoginAndPassFail();
                 } else {
                     if (matcher.find()) {
@@ -173,6 +189,9 @@ public class CheckAuth {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Log.wtf("login", "loged");
+                Toast.makeText(context, "Ошибка соединения", Toast.LENGTH_SHORT).show();
+                loginCallback.onConnectFail();
+
             }
         });
     }
@@ -239,6 +258,35 @@ public class CheckAuth {
         });
     }
 
+    private static void getFullName() {
+        if(SharedPreferenceHelper.getSharedPreferenceString(context, FULL_NAME, "").equalsIgnoreCase("")) {
+
+                KFURestClient.get("new_stud_personal.stud_anketa", null, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        try {
+                            String str = new String(responseBody, "windows-1251");
+                            Document doc = Jsoup.parse(str);
+                            Elements elements = doc.select("span.value");
+                            if(!elements.isEmpty()) {
+                                if(elements.get(0).hasText()) SharedPreferenceHelper.setSharedPreferenceString(context, FULL_NAME, elements.get(0).text());
+                                if(elements.get(5).hasText())SharedPreferenceHelper.setSharedPreferenceString(context, GROUP, elements.get(5).text());
+                            }
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                    }
+                });
+        }
+
+
+    }
+
     public static Boolean isAuth() {
         try {
             return SharedPreferenceHelper.getSharedPreferenceBoolean(context, AUTH, false);
@@ -250,6 +298,8 @@ public class CheckAuth {
     public static void exit() {
         KFURestClient.clearCookie();
         SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, false);
+        SharedPreferenceHelper.clearSharedPreference(context, FULL_NAME);
+        SharedPreferenceHelper.clearSharedPreference(context, GROUP);
     }
 
 }

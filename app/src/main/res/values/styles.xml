@@ -20,6 +20,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyEditTextTheme">
+        <!-- Used for the bottom line when not selected / focused -->
+        <item name="colorControlNormal">#9e9e9e</item>
+        <!-- colorControlActivated & colorControlHighlight use the colorAccent color by default -->
+    </style>
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -29,5 +34,33 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.RaisedButton">
+        <item name="buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
+    </style>
+
+    <style name="AppTheme.RaisedButton.Primary">
+        <item name="colorAccent">@color/primary</item>
+    </style>
+
+    <style name="AppTheme.RaisedButton.Accent">
+    </style>
+
+    <style name="AppTheme.FlatButton">
+        <item name="buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="colorControlHighlight">@color/md_light_blue_500</item>
+    </style>
+
+    <style name="AppTheme.FlatButton.Primary">
+        <item name="colorAccent">@color/primary</item>
+    </style>
+
+    <style name="AppTheme.FlatButton.Accent">
+    </style>
+
+
+    <style name="ButtonAppTheme" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">@color/primary</item>
+    </style>
 
 </resources>

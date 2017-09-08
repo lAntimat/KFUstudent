@@ -55,6 +55,8 @@ public class MarksFragment extends Fragment {
     Unbinder unbinder;
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    AsyncTask<byte[], Void, Void> parseMarks;
+
 
     public MarksFragment() {
         // Required empty public constructor
@@ -96,8 +98,6 @@ public class MarksFragment extends Fragment {
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
-        String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
-        //if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
         getMarks();
 
         return v;
@@ -106,10 +106,12 @@ public class MarksFragment extends Fragment {
 
     private void getMarks() {
         if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
+        String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
+        if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7&p_course=" + course, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                new ParseMarks().execute(responseBody);
+                parseMarks = new ParseMarks().execute(responseBody);
             }
 
             @Override
@@ -120,7 +122,8 @@ public class MarksFragment extends Fragment {
     }
 
     private void getMarksFromCash(String str) {
-        new LoadMarksFromCash().execute(str);
+        parseMarksFromString(str);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void parseMarksFromString(String str) {
@@ -164,23 +167,31 @@ public class MarksFragment extends Fragment {
     }
 
     private void onPreExecuteMethod() {
-        if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
+        //if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
     }
 
     private void onPostExecuteMethod() {
-        progressBar.setVisibility(View.INVISIBLE);
+        if(progressBar!=null) progressBar.setVisibility(View.INVISIBLE);
         marksRecyclerAdapter.notifyDataSetChanged();
         emptyPic();
     }
 
     private void emptyPic() {
-        if (arMarks.size() == 0) {
-            imageView.setVisibility(View.VISIBLE);
-            textView.setVisibility(View.VISIBLE);
-        } else {
-            imageView.setVisibility(View.GONE);
-            textView.setVisibility(View.GONE);
+        if(imageView!=null & textView!=null) {
+            if (arMarks.size() == 0) {
+                imageView.setVisibility(View.VISIBLE);
+                textView.setVisibility(View.VISIBLE);
+            } else {
+                imageView.setVisibility(View.GONE);
+                textView.setVisibility(View.GONE);
+            }
         }
+    }
+
+    @Override
+    public void onStop() {
+        if(parseMarks!=null) parseMarks.cancel(true);
+        super.onStop();
     }
 
     @Override
@@ -190,6 +201,8 @@ public class MarksFragment extends Fragment {
     }
 
     public class ParseMarks extends AsyncTask<byte[], Void, Void> {
+
+
 
         @Override
         protected void onPreExecute() {

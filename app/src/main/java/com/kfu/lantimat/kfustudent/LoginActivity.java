@@ -5,8 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
@@ -31,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
     Button loginButton, forgotButton;
     EditText loginEditText, passEditText;
+    ProgressBar progressBar;
     PersistentCookieStore myCookieStore;
 
     @Override
@@ -41,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         forgotButton = (Button) findViewById(R.id.forgotButton);
         loginEditText = (EditText) findViewById(R.id.loginEditText);
         passEditText = (EditText) findViewById(R.id.passEditText);
+        progressBar = (ProgressBar) findViewById(R.id.login_progress);
         String login = "IlIGabdrahmanov";
         String pass = "AnTi89600747198";
 
@@ -64,6 +68,8 @@ public class LoginActivity extends AppCompatActivity {
             SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
             SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
 
+            progressBar.setVisibility(View.VISIBLE);
+
             CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
                 @Override
                 public void onSuccess(String url) {
@@ -74,7 +80,12 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onLoginAndPassFail() {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
 
+                @Override
+                public void onConnectFail() {
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
             });
         });

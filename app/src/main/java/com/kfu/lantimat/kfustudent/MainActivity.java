@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,6 +29,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
@@ -154,33 +156,59 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnLoginClick(View view) {
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     private void initAccountHeader() {
-        headerResult = new AccountHeaderBuilder()
-                .withActivity(this)
-                .withHeaderBackground(R.drawable.bg)
-                //.withCompactStyle(true)
-                /*.addProfiles(
-                        new ProfileDrawerItem()
-                                .withName("Mike Penz")
-                                .withEmail("mikepenz@gmail.com"))*/
+        String fullName = "";
+        String group = "";
+        ProfileDrawerItem profileDrawerItem = null;
 
-                .build();
+        if(!SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.FULL_NAME, "").isEmpty()) {
+            fullName = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.FULL_NAME, "");
+            if(!SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.GROUP, "").isEmpty()) {
+                group = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.GROUP, "");
+                profileDrawerItem = new ProfileDrawerItem()
+                        .withName(fullName)
+                        .withEmail("Группа " + group)
+                        .withIcon(R.drawable.avator_icon);
+            } else {
+                profileDrawerItem = new ProfileDrawerItem()
+                        .withName(fullName)
+                        .withIcon(R.drawable.avator_icon);
+            }
+
+        }
+
+        if(profileDrawerItem!=null) {
+            headerResult = new AccountHeaderBuilder()
+                    .withActivity(this)
+                    .withHeaderBackground(R.drawable.bg)
+                    //.withCompactStyle(true)
+                    .addProfiles(profileDrawerItem)
+                    .build();
+        } else {
+            headerResult = new AccountHeaderBuilder()
+                    .withActivity(this)
+                    .withHeaderBackground(R.drawable.bg)
+                    //.withCompactStyle(true)
+                    .build();
+        }
     }
 
     public void setupNavigationDrawer() {
 
+        int color = ContextCompat.getColor(getApplicationContext(), R.color.accent);
         //if you want to update the items at a later time it is recommended to keep it in a variable
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Таймлайн").withIcon(R.drawable.ic_chart_timeline_grey600_24dp);
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Таймлайн").withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName("Расписание").withIcon(R.drawable.ic_school_grey600_24dp);
-        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName("Успеваемость").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp);
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName("Расписание").withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName("Успеваемость").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem item10;
-        if(CheckAuth.isAuth()) item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Выйти");
-        else item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти");
+        if(CheckAuth.isAuth()) item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Выйти").withIconColor(color);
+        else item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти").withIconColor(color);
 
-        PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(4).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp);
+        PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(4).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
 
         //create the drawer and remember the `Drawer` result object
         result = new DrawerBuilder()

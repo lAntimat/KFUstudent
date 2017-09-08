@@ -85,10 +85,6 @@ public class MarksActivity extends MainActivity {
         button.setVisibility(View.VISIBLE);
     }
 
-    public void btnLoginClick(View view) {
-        startActivity(new Intent(this, LoginActivity.class));
-    }
-
     private void getMarks() {
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
             @Override
@@ -124,19 +120,13 @@ public class MarksActivity extends MainActivity {
             Elements courses = doc.select("div.courses");
             count = courses.toString().split("</span>").length;
 
-            /*if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
+            if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
                 for (int i = 1; i < count - 1; i++) {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
                 }
-            }*/
-
-            adapter = new ViewPagerAdapter(getSupportFragmentManager());
-            for (int i = 1; i < count - 1; i++) {
-                adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
             }
-
-            SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
+            if(count>2) SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
             return null;
         }
 
@@ -153,17 +143,22 @@ public class MarksActivity extends MainActivity {
 
     private void initViewPager() {
 
-        /*count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1);
-        if(count != -1) {
-            adapter = new ViewPagerAdapter(getSupportFragmentManager());
-            for (int i = 1; i < count - 1; i++) {
-                adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
+
+        if (CheckAuth.isAuth()) {
+
+            count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1);
+            if(count != -1) {
+                adapter = new ViewPagerAdapter(getSupportFragmentManager());
+                for (int i = 1; i < count - 1; i++) {
+                    adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
+                }
+
+                viewPager.setOffscreenPageLimit(count);
+                viewPager.setAdapter(adapter);
             }
 
-            viewPager.setOffscreenPageLimit(count);
-            viewPager.setAdapter(adapter);
-        }*/
-        if (CheckAuth.isAuth()) getMarks();
+            getMarks();
+        }
         else showNeedLogin();
 
 

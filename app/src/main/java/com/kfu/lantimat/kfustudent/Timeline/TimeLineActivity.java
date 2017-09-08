@@ -1,5 +1,8 @@
 package com.kfu.lantimat.kfustudent.Timeline;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -128,6 +131,21 @@ public class TimeLineActivity extends MainActivity {
         });
     }
 
+    private void firstCreateMsg() {
+        SharedPreferences sp = getSharedPreferences("FIRST_CREATE2",
+                Context.MODE_PRIVATE);
+        // проверяем, первый ли раз открывается программа
+        boolean hasVisited = sp.getBoolean("hasVisited", false);
+
+        if (!hasVisited) {
+            // выводим нужную активность
+
+            SharedPreferences.Editor e = sp.edit();
+            e.putBoolean("hasVisited", true);
+            e.commit(); // не забудьте подтвердить изменения
+
+        }
+    }
 
     private void setDataListItems() {
         mDataList.add(new TimeLineModel("Item successfully delivered", "", OrderStatus.INACTIVE));

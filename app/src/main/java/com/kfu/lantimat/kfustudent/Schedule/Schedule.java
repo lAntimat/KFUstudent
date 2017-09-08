@@ -12,13 +12,15 @@ public class Schedule {
 
 
     private String date = "";
-    private ArrayList<String> time = new ArrayList<>();
-    private ArrayList<String> subjectName = new ArrayList<>();
-    private ArrayList<String> place = new ArrayList<>();
+    private String time = "";
+    private String subjectName = "";
+    private String place = "";
 
+    public Schedule() {
+    }
 
     public Schedule(String str) {
-        Pattern datePattern = Pattern.compile(">(.*) <\\/font>");
+        /*Pattern datePattern = Pattern.compile(">(.*) <\\/font>");
 
         Matcher dateMatcher = datePattern.matcher(str.replaceAll("", ""));
         if (dateMatcher.find()) date = dateMatcher.group(1);
@@ -31,7 +33,7 @@ public class Schedule {
              time.add(sheduleMatcher.group(1));
             if(sheduleMatcher.find()) subjectName.add(sheduleMatcher.group(2));
             if(sheduleMatcher.find()) place.add(sheduleMatcher.group(3));
-        }
+        }*/
     }
 
     public String getDate() {
@@ -40,13 +42,35 @@ public class Schedule {
         } else return "";
     }
 
-    public String getSchedule() {
-        if (time.size()>0 &subjectName.size()>0 & place.size()>0) {
-            String str = "";
-            for (int i = 0; i <time.size() ; i++) {
-                str += time.get(i) + "\n" + subjectName.get(i) + "\n" + place.get(i) + "\n\n";
-            }
-            return str;
-        } else return "Пар нет";
+
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+
+    public void setPlace(String place) {
+        this.place = place;
     }
 }

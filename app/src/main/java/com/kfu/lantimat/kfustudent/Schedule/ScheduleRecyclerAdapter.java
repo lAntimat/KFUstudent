@@ -31,7 +31,7 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
                 return new RatingViewHolder(view);
             default:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_schedule, parent, false);
                 return new SimpleViewHolder(view);
         }
 
@@ -41,18 +41,19 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        String itemText = mList.get(position).getDate();
-        String data = mList.get(position).getSchedule();
+        String time = mList.get(position).getTime();
+        String name = mList.get(position).getSubjectName();
+        String place = mList.get(position).getPlace();
 
             switch (getItemViewType(position)) {
                 case Mark.RATING_TYPE:
-                    ((RatingViewHolder) holder).mTitle.setText(itemText);
-                    ((RatingViewHolder) holder).mDesc.setText(data);
+
                     //((RatingViewHolder) holder).mImg.setImageResource(getImageByNumber(mList.get(position).getSemesterInt()));
                     break;
                 default:
-                    ((SimpleViewHolder) holder).mTitle.setText(itemText);
-                    ((SimpleViewHolder) holder).mDesc.setText(data);
+                    ((SimpleViewHolder) holder).mTime.setText(time);
+                    ((SimpleViewHolder) holder).mName.setText(name);
+                    ((SimpleViewHolder) holder).mPlace.setText(place);
                     break;
             }
 
@@ -67,33 +68,20 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemViewType(int position) {
         if (mList != null) {
-            return Mark.RATING_TYPE;
-        }
-        return 0;
-    }
-
-    private int getImageByNumber(int i) {
-        switch (i) {
-            case 1: return R.drawable.material_1;
-            case 2: return R.drawable.material_2;
-            case 3: return R.drawable.material_3;
-            case 4: return R.drawable.material_4;
-            case 5: return R.drawable.material_5;
-            case 6: return R.drawable.material_6;
-            case 7: return R.drawable.material_7;
-            case 8: return R.drawable.material_8;
-            case 9: return R.drawable.material_9;
+            return Mark.SCORE_TYPE;
         }
         return 0;
     }
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
-        private TextView mTitle;
-        private TextView mDesc;
+        private TextView mName;
+        private TextView mTime;
+        private TextView mPlace;
         public SimpleViewHolder(View itemView) {
             super(itemView);
-            mTitle = (TextView) itemView.findViewById(R.id.tvName);
-            mDesc = (TextView) itemView.findViewById(R.id.tvDesc);
+            mName = (TextView) itemView.findViewById(R.id.tvName);
+            mTime = (TextView) itemView.findViewById(R.id.tvTime);
+            mPlace = (TextView) itemView.findViewById(R.id.tvPlace);
         }
     }
     public static class RatingViewHolder extends RecyclerView.ViewHolder {

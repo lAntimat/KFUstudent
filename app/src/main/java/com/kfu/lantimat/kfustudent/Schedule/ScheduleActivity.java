@@ -24,6 +24,7 @@ import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
+import com.kfu.lantimat.kfustudent.utils.ZoomOutPageTransformer;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.jsoup.Jsoup;
@@ -83,6 +84,7 @@ public class ScheduleActivity extends MainActivity {
         else showNeedLogin();
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        //viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
