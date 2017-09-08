@@ -61,39 +61,45 @@ public class LoginActivity extends AppCompatActivity {
 
         //checkAuth();
 
-        loginButton.setOnClickListener(view -> {
-            String login2 = loginEditText.getText().toString();
-            String pass2 = passEditText.getText().toString();
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String login2 = loginEditText.getText().toString();
+                String pass2 = passEditText.getText().toString();
 
-            SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
-            SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
+                SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
+                SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
 
-            progressBar.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
 
-            CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
-                @Override
-                public void onSuccess(String url) {
-                    SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
-                    startActivity(new Intent(LoginActivity.this, TimeLineActivity.class));
-                    finish();
-                }
+                CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
+                    @Override
+                    public void onSuccess(String url) {
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
+                        startActivity(new Intent(LoginActivity.this, TimeLineActivity.class));
+                        finish();
+                    }
 
-                @Override
-                public void onLoginAndPassFail() {
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
+                    @Override
+                    public void onLoginAndPassFail() {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
 
-                @Override
-                public void onConnectFail() {
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            });
+                    @Override
+                    public void onConnectFail() {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
+            }
         });
 
 
-        forgotButton.setOnClickListener(view -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kpfu.ru/change_user_pass.forget_pass_form?p_lang=1"));
-            startActivity(browserIntent);
+        forgotButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kpfu.ru/change_user_pass.forget_pass_form?p_lang=1"));
+                startActivity(browserIntent);
+            }
         });
     }
 
