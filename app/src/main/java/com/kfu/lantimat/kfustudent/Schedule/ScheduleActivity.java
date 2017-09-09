@@ -63,11 +63,9 @@ public class ScheduleActivity extends MainActivity {
     int dayOfWeek;
     int selectedDayOfWeek = -1;
 
-    public static enum Week {
-        EVEN, ODD
+    public interface UpdateableFragment {
+        public void update(String xyzData, int day);
     }
-
-    public static Week week;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +128,7 @@ public class ScheduleActivity extends MainActivity {
 
 
         result.setSelection(3, false);
+        initViewPager();
         //getScheduleOddWeek();
     }
 
@@ -189,8 +188,8 @@ public class ScheduleActivity extends MainActivity {
             }
         });
 
-        /*if(nowWeek.equals(EVEN_WEEK)) spinner.setSelection(0);
-        else spinner.setSelection(1);*/
+        if(nowWeek.equals(EVEN_WEEK)) spinner.setSelection(0);
+        else spinner.setSelection(1);
     }
 
     public void showNeedLogin() {
@@ -208,7 +207,7 @@ public class ScheduleActivity extends MainActivity {
         progressBar.setVisibility(View.VISIBLE);
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), ODD_WEEK, "");
 
-        //if (!week.isEmpty()) setScheduleToViewPager(week, ODD_WEEK);
+        if (!week.isEmpty()) setScheduleToViewPager(week, ODD_WEEK);
 
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=13.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
@@ -235,7 +234,7 @@ public class ScheduleActivity extends MainActivity {
     private void getScheduleEvenWeek() {
         progressBar.setVisibility(View.VISIBLE);
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), EVEN_WEEK, "");
-        //if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
+        if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
 
         KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=20.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
@@ -260,6 +259,22 @@ public class ScheduleActivity extends MainActivity {
             });
     }
 
+
+    public void initViewPager() {
+        viewPager.setOffscreenPageLimit(7);
+
+        adapter.addFragment(new ScheduleFragment().newInstance(0), "Понедельник");
+        adapter.addFragment(new ScheduleFragment().newInstance(1), "Вторник");
+        adapter.addFragment(new ScheduleFragment().newInstance(2), "Среда");
+        adapter.addFragment(new ScheduleFragment().newInstance(3), "Четверг");
+        adapter.addFragment(new ScheduleFragment().newInstance(4), "Пятница");
+        adapter.addFragment(new ScheduleFragment().newInstance(5), "Суббота");
+        adapter.addFragment(new ScheduleFragment().newInstance(6), "Воскресенье");
+
+        viewPager.setCurrentItem(dayOfWeek-1, true);
+
+        adapter.notifyDataSetChanged();
+    }
     private void setScheduleToViewPager(String str, String week) {
 
         Document doc = Jsoup.parse(str);
@@ -268,24 +283,17 @@ public class ScheduleActivity extends MainActivity {
         Log.d("div.big_td", courses.toString());
         //  if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
 
-        adapter.clear();
-        adapter.addFragment(new ScheduleFragment().newInstance(courses.get(0).toString()), "Понедельник");
-        adapter.addFragment(new ScheduleFragment().newInstance(courses.get(2).toString()), "Вторник");
-        adapter.addFragment(new ScheduleFragment().newInstance(courses.get(4).toString()), "Среда");
-        adapter.addFragment(new ScheduleFragment().newInstance(courses.get(1).toString()), "Четверг");
-        adapter.addFragment(new ScheduleFragment().newInstance(courses.get(3).toString()), "Пятница");
-        adapter.addFragment(new ScheduleFragment().newInstance(courses.get(5).toString()), "Суббота");
-        adapter.addFragment(new ScheduleFragment().newInstance(courses.get(6).toString()), "Воскресенье");
-        adapter.notifyDataSetChanged();
+        adapter.update(courses.get(0).toString(), 0);
+        adapter.update(courses.get(2).toString(), 1);
+        adapter.update(courses.get(4).toString(), 2);
+        adapter.update(courses.get(1).toString(), 3);
+        adapter.update(courses.get(3).toString(), 4);
+        adapter.update(courses.get(5).toString(), 5);
+        adapter.update(courses.get(6).toString(), 6);
 
         progressBar.setVisibility(View.INVISIBLE);
-        viewPager.setOffscreenPageLimit(7);
         //viewPager.setAdapter(adapter);
-        /*if(selectedDayOfWeek!=-1) {
-            viewPager.setCurrentItem(selectedDayOfWeek);
-        } else {
-            viewPager.setCurrentItem(dayOfWeek-1);
-        }*/
+
         viewPager.invalidate();
     }
 
@@ -316,13 +324,13 @@ public class ScheduleActivity extends MainActivity {
             //  if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
             adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(0).toString()), "Понедельник");
+            /*adapter.addFragment(new ScheduleFragment().newInstance(courses.get(0).toString()), "Понедельник");
             adapter.addFragment(new ScheduleFragment().newInstance(courses.get(2).toString()), "Вторник");
             adapter.addFragment(new ScheduleFragment().newInstance(courses.get(4).toString()), "Среда");
             adapter.addFragment(new ScheduleFragment().newInstance(courses.get(1).toString()), "Четверг");
             adapter.addFragment(new ScheduleFragment().newInstance(courses.get(3).toString()), "Пятница");
             adapter.addFragment(new ScheduleFragment().newInstance(courses.get(5).toString()), "Суббота");
-            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(6).toString()), "Воскресенье");
+            adapter.addFragment(new ScheduleFragment().newInstance(courses.get(6).toString()), "Воскресенье");*/
 
             // }
 
@@ -347,6 +355,8 @@ public class ScheduleActivity extends MainActivity {
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
+        String updateData;
+        int day;
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -370,6 +380,22 @@ public class ScheduleActivity extends MainActivity {
         public void clear() {
             mFragmentList.clear();
             mFragmentTitleList.clear();
+        }
+
+        //call this method to update fragments in ViewPager dynamically
+        public void update(String xyzData, int day) {
+            this.updateData = xyzData;
+            this.day = day;
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            if (object instanceof UpdateableFragment) {
+                ((UpdateableFragment) object).update(updateData, day);
+            }
+            //don't return POSITION_NONE, avoid fragment recreation.
+            return super.getItemPosition(object);
         }
 
 

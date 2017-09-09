@@ -134,7 +134,6 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Войти"
-                android:textStyle="bold"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="@+id/textInputLayout4"
                 app:layout_constraintRight_toRightOf="@+id/textInputLayout4"

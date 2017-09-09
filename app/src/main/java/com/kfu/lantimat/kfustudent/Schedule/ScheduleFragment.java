@@ -34,7 +34,8 @@ import butterknife.Unbinder;
 import cz.msebera.android.httpclient.Header;
 
 
-public class ScheduleFragment extends Fragment {
+public class ScheduleFragment extends Fragment implements
+        ScheduleActivity.UpdateableFragment {
 
     private final String ARG_PARAM1 = "param1";
 
@@ -42,7 +43,7 @@ public class ScheduleFragment extends Fragment {
     ScheduleRecyclerAdapter scheduleRecyclerAdapter;
     ArrayList<String> arBlock = new ArrayList<>();
     ArrayList<Schedule> arSchedule;
-    String string = "";
+    int day;
     @BindView(R.id.textView)
     TextView textView;
     @BindView(R.id.imageView)
@@ -53,15 +54,18 @@ public class ScheduleFragment extends Fragment {
     AsyncTask<byte[], Void, Void> parseSchedule;
     AsyncTask<String, Void, Void> loadScheduleFromCash;
 
+
+
+
     public ScheduleFragment() {
         // Required empty public constructor
     }
 
-    public ScheduleFragment newInstance(String str) {
+    public ScheduleFragment newInstance(int day) {
 
         ScheduleFragment fragment = new ScheduleFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, str);
+        args.putInt(ARG_PARAM1, day);
         fragment.setArguments(args);
 
         return fragment;
@@ -72,7 +76,7 @@ public class ScheduleFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            string = getArguments().getString(ARG_PARAM1);
+            day = getArguments().getInt(ARG_PARAM1);
         }
 
         arSchedule = new ArrayList<>();
@@ -88,13 +92,13 @@ public class ScheduleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_marks, null);
+        View v = inflater.inflate(R.layout.fragment_schedule, null);
         unbinder = ButterKnife.bind(this, v);
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
-        parseScheduleFromString(string);
+        //parseScheduleFromString(string);
         /*String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + string, "-1"); //Достаем из памяти строку с успеваемостью;
         if (!marksCashStr.equalsIgnoreCase("-1")) getScheduleFromCash(marksCashStr);
         getSchedule();*/
@@ -103,6 +107,10 @@ public class ScheduleFragment extends Fragment {
 
     }
 
+    @Override
+    public void update(String xyzData, int day) {
+        if(this.day==day) parseScheduleFromString(xyzData);
+    }
 
     private void parseScheduleFromString(String str) {
         ArrayList<Schedule> arScheduleTemp = new ArrayList<>();
@@ -131,7 +139,7 @@ public class ScheduleFragment extends Fragment {
         scheduleRecyclerAdapter.notifyDataSetChanged();
         recyclerView.invalidate();
 
-        //emptyPic();
+        if(arSchedule.size() == 0) emptyPic();
 
     }
 
