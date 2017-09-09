@@ -32,7 +32,7 @@ public class MainIntroActivity extends IntroActivity{
                 .description("Это приложения для удобного доступа к личному кабинету сайта КФУ. Пока что это первая версия (бета), в которой возможны незначительные неполадки :) ")
                 .image(R.drawable.icon)
                 .background(R.color.md_cyan_800)
-                .backgroundDark(R.color.colorTransparent)
+                .backgroundDark(R.color.primary_dark)
                 .scrollable(true)
                 //.permission(Manifest.permission.CAMERA)
                 .build());
@@ -42,7 +42,8 @@ public class MainIntroActivity extends IntroActivity{
                 .description("Cмотри расписание в удобном виде и не пропускай пары ;)")
                 .image(R.drawable.calendar_flat_intro)
                 .background(R.color.md_teal_800)
-                .backgroundDark(R.color.colorTransparent)
+                .backgroundDark(R.color.primary_dark)
+
                 .scrollable(false)
                 //.permission(Manifest.permission.CAMERA)
                 .build());
@@ -52,7 +53,7 @@ public class MainIntroActivity extends IntroActivity{
                 .description("А так же не забывай следить за баллами и не набирать долгов. Удачной учебы!")
                 .image(R.drawable.study_circle_flat)
                 .background(R.color.md_deep_purple_800)
-                //.backgroundDark(R.color.background_dark_1)
+                .backgroundDark(R.color.primary_dark)
                 .scrollable(false)
                 //.permission(Manifest.permission.CAMERA)
                 .build());

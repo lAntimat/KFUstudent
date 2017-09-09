@@ -54,6 +54,7 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
                     ((SimpleViewHolder) holder).mTime.setText(time);
                     ((SimpleViewHolder) holder).mName.setText(name);
                     ((SimpleViewHolder) holder).mPlace.setText(place);
+
                     break;
             }
 
@@ -72,6 +73,9 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         }
         return 0;
     }
+
+
+
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
         private TextView mName;

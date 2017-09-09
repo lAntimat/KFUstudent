@@ -20,6 +20,8 @@ import java.util.ArrayList;
 public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private  ArrayList<Mark> mList;
+    private int anchorPosition = -1;
+
 
     public MarksRecyclerAdapter(ArrayList<Mark> itemList) {
         this.mList = itemList;
@@ -50,6 +52,7 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
                     ((RatingViewHolder) holder).mTitle.setText(itemText);
                     ((RatingViewHolder) holder).mDesc.setText(data);
                     ((RatingViewHolder) holder).mImg.setImageResource(getImageByNumber(mList.get(position).getSemesterInt()));
+                    if(position%2==0) anchorPosition = position;
                     break;
                 default:
                     ((SimpleViewHolder) holder).mTitle.setText(itemText);
@@ -71,6 +74,10 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
             return mList.get(position).getmViewType();
         }
         return 0;
+    }
+
+    public int returnAnchorPosition() {
+        return anchorPosition;
     }
 
     private int getImageByNumber(int i) {

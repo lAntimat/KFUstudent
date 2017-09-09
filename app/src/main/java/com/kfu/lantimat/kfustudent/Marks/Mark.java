@@ -128,7 +128,7 @@ public class Mark {
                     return "Ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
                 }
 
-            case SCORE_TYPE:  return "полученный балл " + score + "\nбалл за работу в семестре " + receivedScore + " " + date + "\nитоговая оценка: " + finalScore + " (" + finalMark + ")";
+            case SCORE_TYPE:  return "полученный балл " + score + "\nбалл за работу в семестре " + receivedScore + " (" + date + ")\nитоговая оценка: " + finalScore + " (" + finalMark + ")";
             case PRACTICE_TYPE:  return score + " " + date;
             case COURSEWORK_TYPE:  return name + "\n" + score + " " + date;
         }

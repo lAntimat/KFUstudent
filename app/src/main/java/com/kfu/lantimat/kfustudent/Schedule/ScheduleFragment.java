@@ -86,6 +86,8 @@ public class ScheduleFragment extends Fragment implements
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), OrientationHelper.VERTICAL, false));
         recyclerView.setAdapter(scheduleRecyclerAdapter);
+
+
     }
 
     @Override

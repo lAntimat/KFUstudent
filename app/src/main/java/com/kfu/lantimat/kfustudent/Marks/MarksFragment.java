@@ -59,6 +59,7 @@ public class MarksFragment extends Fragment {
     @BindView(R.id.progressBar)
     ProgressBar progressBar;
     AsyncTask<byte[], Void, Void> parseMarks;
+    boolean isStopped = false;
 
 
     public MarksFragment() {
