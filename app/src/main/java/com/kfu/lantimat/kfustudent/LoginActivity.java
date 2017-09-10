@@ -75,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                 CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
                     @Override
                     public void onSuccess(String url) {
+                        Toast.makeText(getApplicationContext(), "Авторизация успешна", Toast.LENGTH_SHORT).show();
                         SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
                         Intent intent = new Intent(LoginActivity.this, TimeLineActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

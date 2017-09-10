@@ -1,6 +1,7 @@
 package com.kfu.lantimat.kfustudent.Timeline;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -16,7 +17,9 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.kfu.lantimat.kfustudent.KFURestClient;
+import com.kfu.lantimat.kfustudent.LoginActivity;
 import com.kfu.lantimat.kfustudent.MainActivity;
+import com.kfu.lantimat.kfustudent.MainIntroActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Timeline.model.OrderStatus;
 import com.kfu.lantimat.kfustudent.Timeline.model.Orientation;
@@ -32,6 +35,8 @@ import org.jsoup.select.Elements;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -73,7 +78,9 @@ public class TimeLineActivity extends MainActivity {
         //mWithLinePadding = getIntent().getBooleanExtra(MainActivity.EXTRA_WITH_LINE_PADDING, false);
 
         if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle("Таймлайн");
+            getSupportActionBar().setTitle("Cобытия");
+
+        firstCreateMsg();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(getLinearLayoutManager());
@@ -148,25 +155,14 @@ public class TimeLineActivity extends MainActivity {
 
         if (!hasVisited) {
             // выводим нужную активность
-
+            startActivity(new Intent(TimeLineActivity.this, MainIntroActivity.class));
             SharedPreferences.Editor e = sp.edit();
             e.putBoolean("hasVisited", true);
-            e.commit(); // не забудьте подтвердить изменения
+            e.apply(); // не забудьте подтвердить изменения
 
         }
     }
 
-    private void setDataListItems() {
-        mDataList.add(new TimeLineModel("Item successfully delivered", "", OrderStatus.INACTIVE));
-        mDataList.add(new TimeLineModel("Courier is out to delivery your order", "2017-02-12 08:00", OrderStatus.ACTIVE));
-        mDataList.add(new TimeLineModel("Item has reached courier facility at New Delhi", "2017-02-11 21:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Item has been given to the courier", "2017-02-11 18:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Item is packed and will dispatch soon", "2017-02-11 09:30", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order is being readied for dispatch", "2017-02-11 08:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order processing initiated", "2017-02-10 15:00", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order confirmed by seller", "2017-02-10 14:30", OrderStatus.COMPLETED));
-        mDataList.add(new TimeLineModel("Order placed successfully", "2017-02-10 14:00", OrderStatus.COMPLETED));
-    }
 
     public class ParseStrFromByte extends AsyncTask<byte[], Void, Void> {
         @Override
@@ -194,6 +190,8 @@ public class TimeLineActivity extends MainActivity {
                 if(date.contains(full)) positionForScroll = i;
                 full = "";
             }
+            Collections.reverse(mDataList);
+            positionForScroll = mDataList.size() - positionForScroll;
             return null;
         }
 

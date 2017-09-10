@@ -18,20 +18,11 @@ public class MainIntroActivity extends IntroActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*addSlide(new SlideFragmentBuilder()
-                        .backgroundColor(R.color.md_amber_800)
-                        .buttonsColor(R.color.colorAccent)
-                        .image(R.drawable.intro_1)
-                        .title("Что за приложение?")
-                        .description("Это приложения для удобного доступа к личнмоу кабинета сайта КФУ. Пока что это первая версия (бета), поэтому сильно не ругайся, если будут мелкие ошибки :)")
-                        .build()
-                );*/
-
         addSlide(new SimpleSlide.Builder()
-                .title("Что за приложение?")
+                .title("Привет!")
                 .description("Это приложения для удобного доступа к личному кабинету сайта КФУ. Пока что это первая версия (бета), в которой возможны незначительные неполадки :) ")
-                .image(R.drawable.icon)
-                .background(R.color.md_cyan_800)
+
+                .background(R.color.accent)
                 .backgroundDark(R.color.primary_dark)
                 .scrollable(true)
                 //.permission(Manifest.permission.CAMERA)
@@ -52,7 +43,7 @@ public class MainIntroActivity extends IntroActivity{
                 .title("Успеваемость")
                 .description("А так же не забывай следить за баллами и не набирать долгов. Удачной учебы!")
                 .image(R.drawable.study_circle_flat)
-                .background(R.color.md_deep_purple_800)
+                .background(R.color.md_cyan_800)
                 .backgroundDark(R.color.primary_dark)
                 .scrollable(false)
                 //.permission(Manifest.permission.CAMERA)

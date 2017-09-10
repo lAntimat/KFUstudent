@@ -122,7 +122,7 @@ public class Mark {
             case RATING_TYPE:
                 try {
                     if(Integer.parseInt(placeInGroup) < 4)
-                        return "Поздравляю, ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
+                        return "поздравляю, ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
                     else return "Ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
                 } catch (Exception e) {
                     return "Ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;

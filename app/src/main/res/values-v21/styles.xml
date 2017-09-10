@@ -15,13 +15,4 @@
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="BlueButtonTheme" parent="@style/AppTheme">
-        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Colored</item>
-
-        <item name="colorButtonNormal">@color/primary</item>
-        <item name="colorAccent">@color/accent</item>
-        <item name="android:disabledAlpha">1</item>
-        <!-- button text color-->
-
-    </style>
 </resources>

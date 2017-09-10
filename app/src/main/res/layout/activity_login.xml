@@ -151,11 +151,10 @@
                 android:padding="10dp"
                 android:tint="@color/md_white_1000"
                 android:visibility="visible"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/logo"
-                app:layout_constraintHorizontal_bias="0.0" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ProgressBar
                 android:id="@+id/login_progress"

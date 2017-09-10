@@ -96,7 +96,7 @@ public class CheckAuth {
                             saveSessionCookies(url, new SaveSessionCookieCallback() {
                                 @Override
                                 public void onSuccess(String response) {
-                                    Toast.makeText(context, "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(context, "Авторизация успешна", Toast.LENGTH_SHORT).show();
                                     authCallback.onLoggedIn();
                                     //Log.d("ПРОФИЛЬ", responce);
                                     Log.d("saveSessionCookies", "Success");

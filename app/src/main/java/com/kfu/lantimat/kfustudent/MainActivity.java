@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
 
         int color = ContextCompat.getColor(getApplicationContext(), R.color.accent);
         //if you want to update the items at a later time it is recommended to keep it in a variable
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Таймлайн").withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Cобытия").withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName("Расписание").withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName("Успеваемость").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
         else item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти").withIconColor(color);
 
         PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(4).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
-        PrimaryDrawerItem about = new PrimaryDrawerItem().withIdentifier(5).withName("About").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem about = new PrimaryDrawerItem().withIdentifier(5).withName("О приложении").withIcon(R.drawable.ic_information_grey600_24dp).withIconColor(color);
 
         //create the drawer and remember the `Drawer` result object
         result = new DrawerBuilder()
@@ -223,9 +223,8 @@ public class MainActivity extends AppCompatActivity {
                         item3,
                         item4,
                         new DividerDrawerItem(),
-                        item10,
-                        item5,
-                        about
+                        about,
+                        item10
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -241,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                             case 3:
                                 drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
                                 break;
-                            case 5:
+                            case 6:
                                 if(CheckAuth.isAuth()) {
                                     CheckAuth.exit();
                                     startActivity(new Intent(MainActivity.this, TimeLineActivity.class));
@@ -252,11 +251,7 @@ public class MainActivity extends AppCompatActivity {
                                     dontFinish = true;
                                 }
                                 break;
-                            case 6:
-                                Intent intent = new Intent(MainActivity.this, MainIntroActivity.class);
-                                startActivity(intent);
-                                break;
-                            case 7: //TODO: вызов абаут
+                            case 5: //TODO: вызов абаут
                                 new About().onCreateDialog(MainActivity.this).show();
                         }
                         result.closeDrawer();

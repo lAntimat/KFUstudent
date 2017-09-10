@@ -4,6 +4,8 @@ import com.kfu.lantimat.kfustudent.BuildConfig;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -16,7 +18,7 @@ import com.kfu.lantimat.kfustudent.R;
  */
 
 public class About {
-    public Dialog onCreateDialog(Context context) {
+    public Dialog onCreateDialog(final Context context) {
         String versionName = BuildConfig.VERSION_NAME;
         String text = "Приложение для студентов КФУ \n" +
                 "Версия: " + versionName;
@@ -26,6 +28,8 @@ public class About {
                 .setTitle("О программе")
                 .setNegativeButton("Группа Вк", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://vk.com/club153198454"));
+                        context.startActivity(browserIntent);
                         //TODO: ссылка на группу вк
                     }
                 })

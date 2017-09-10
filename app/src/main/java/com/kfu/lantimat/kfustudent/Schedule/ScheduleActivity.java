@@ -27,6 +27,10 @@ import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.LocalDate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -35,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,7 +95,9 @@ public class ScheduleActivity extends MainActivity {
         //spinner = (Spinner) v.findViewById(R.id.spinner_nav);
 
         nowWeek = isEvenOrOddWeek();
-        dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        //dayOfWeek = Calendar.getInstance(Locale.UK).get(Calendar.DAY_OF_WEEK);
+        LocalDate newDate = new LocalDate();
+        dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek());
 
         if (CheckAuth.isAuth()) initSpinner();
         else showNeedLogin();
@@ -271,7 +278,7 @@ public class ScheduleActivity extends MainActivity {
         adapter.addFragment(new ScheduleFragment().newInstance(5), "Суббота");
         adapter.addFragment(new ScheduleFragment().newInstance(6), "Воскресенье");
 
-        viewPager.setCurrentItem(dayOfWeek-1, true);
+        viewPager.setCurrentItem(dayOfWeek, true);
 
         adapter.notifyDataSetChanged();
     }
