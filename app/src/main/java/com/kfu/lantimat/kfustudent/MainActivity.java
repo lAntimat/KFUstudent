@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
@@ -80,47 +82,35 @@ public class MainActivity extends AppCompatActivity {
 
         color = ContextCompat.getColor(getApplicationContext(), R.color.accent);
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
 
-        RequestParams params = new RequestParams();
-        params.add("p_login", "IlIGabdrahmanov");
-        params.add("p_pass", "AnTi89600747198");
-        //KFURestClient.setCookieStore(myCookieStore);
-       // myCookieStore = new PersistentCookieStore(this);
 
-        //KFURestClient.client.setCookieStore(myCookieStore);
-
-        //final String login = "DAJuzikeev";
-        //final String pass = "sjp4bq74";
-
-        final String login = "IlIGabdrahmanov";
-        final String pass = "AnTi89600747198";
-
-        //Intent intent = new Intent(MainActivity.this, TimeLineActivity.class);
-        //startActivity(intent);
         initAccountHeader();
         setupNavigationDrawer();
+        authCheck();
 
-        /*getLocale(new Success() {
+    }
+
+    public void authCheck() {
+        new CheckAuth(getApplicationContext(), new CheckAuth.AuthCallback() {
             @Override
-            public void onSuccess() {
-                login(login, pass, new LoginCallback() {
-                    @Override
-                    public void onSuccess(String link) {
-                        saveSessionCookies(link, new SaveSessionCookieCallback() {
-                            @Override
-                            public void onSuccess(String responce) {
-                                Log.d("ПРОФИЛЬ", responce);
-                            }
-                        });
-                    }
-                });
+            public void onLoggedIn() {
+                updateDrawer();
+                //setupNavigationDrawer();
             }
-        });*/
 
-        //checkAuth();
+            @Override
+            public void onNotLoggedIn() {
+                updateDrawer();
+                //setupNavigationDrawer();
+            }
 
+            @Override
+            public void onOldSession() {
+                updateDrawer();
+                //setupNavigationDrawer();
+            }
+        });
     }
 
     @Override

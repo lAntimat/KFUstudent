@@ -1,6 +1,7 @@
 package com.kfu.lantimat.kfustudent;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.loopj.android.http.PersistentCookieStore;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -19,5 +20,7 @@ public class Application extends android.app.Application {
             // Obtain the FirebaseAnalytics instance.
             mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
             JodaTimeAndroid.init(this);
+            PersistentCookieStore myCookieStore = new PersistentCookieStore(this); /**Обязательно один раз нужно задать CookieStore*/
+            KFURestClient.setCookieStore(myCookieStore);
         }
 }

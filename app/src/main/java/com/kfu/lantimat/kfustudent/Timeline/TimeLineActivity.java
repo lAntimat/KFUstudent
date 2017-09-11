@@ -89,28 +89,6 @@ public class TimeLineActivity extends MainActivity {
         initView();
         getEventTimeLine();
 
-        PersistentCookieStore myCookieStore = new PersistentCookieStore(this); /**Обязательно один раз нужно задать CookieStore*/
-        KFURestClient.setCookieStore(myCookieStore);
-        new CheckAuth(getApplicationContext(), new CheckAuth.AuthCallback() {
-            @Override
-            public void onLoggedIn() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-
-            @Override
-            public void onNotLoggedIn() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-
-            @Override
-            public void onOldSession() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-        });
-
         result.setSelection(1, false);
 
 
