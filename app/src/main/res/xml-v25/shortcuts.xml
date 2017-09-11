@@ -1,0 +1,30 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="id1"
+        android:enabled="true"
+        android:icon="@drawable/ic_book_open_grey600_18dp"
+        android:shortcutShortLabel="@string/drawer_item_marks"
+        android:shortcutLongLabel="@string/drawer_item_marks"
+        android:shortcutDisabledMessage="@string/drawer_item_marks">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.kfu.lantimat.kfustudent"
+            android:targetClass="com.kfu.lantimat.kfustudent.Marks.MarksActivity" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+    <shortcut
+        android:shortcutId="id2"
+        android:enabled="true"
+        android:icon="@drawable/ic_school_grey600_18dp"
+        android:shortcutShortLabel="@string/drawer_item_schedule"
+        android:shortcutLongLabel="@string/drawer_item_schedule"
+        android:shortcutDisabledMessage="@string/drawer_item_schedule">
+    <intent
+        android:action="android.intent.action.VIEW"
+        android:targetPackage="com.kfu.lantimat.kfustudent"
+        android:targetClass="com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity" />
+    <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+
+</shortcuts>

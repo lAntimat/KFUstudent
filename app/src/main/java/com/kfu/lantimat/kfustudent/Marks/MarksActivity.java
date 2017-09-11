@@ -49,6 +49,7 @@ public class MarksActivity extends MainActivity {
     private ViewPager viewPager;
     ViewPagerAdapter adapter;
     int count = 0;
+    AsyncTask<byte[], Void, Void> parseMarks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,7 @@ public class MarksActivity extends MainActivity {
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                new ParseMarks().execute(responseBody);
+                parseMarks = new ParseMarks().execute(responseBody);
             }
 
             @Override
@@ -164,7 +165,13 @@ public class MarksActivity extends MainActivity {
 
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    @Override
+    protected void onStop() {
+        if(parseMarks!=null) parseMarks.cancel(true);
+        super.onStop();
+    }
+
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 

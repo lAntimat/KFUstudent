@@ -4,6 +4,7 @@ package com.kfu.lantimat.kfustudent.Marks;
  * Created by GabdrakhmanovII on 04.09.2017.
  */
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -60,7 +61,7 @@ public class MarksFragment extends Fragment {
     ProgressBar progressBar;
     AsyncTask<byte[], Void, Void> parseMarks;
     boolean isStopped = false;
-
+    Context context;
 
     public MarksFragment() {
         // Required empty public constructor
@@ -83,6 +84,7 @@ public class MarksFragment extends Fragment {
             course = getArguments().getString(ARG_PARAM1);
         }
 
+        context = getContext();
         arMarks = new ArrayList<>();
         marksRecyclerAdapter = new MarksRecyclerAdapter(arMarks);
     }
@@ -198,6 +200,12 @@ public class MarksFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        if(parseMarks!=null) parseMarks.cancel(true);
+        super.onPause();
+    }
+
+    @Override
     public void onStop() {
         if(parseMarks!=null) parseMarks.cancel(true);
         super.onStop();
@@ -206,6 +214,7 @@ public class MarksFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if(parseMarks!=null) parseMarks.cancel(true);
         unbinder.unbind();
     }
 
@@ -231,7 +240,7 @@ public class MarksFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            SharedPreferenceHelper.setSharedPreferenceString(getContext(), "marks" + course, str);
+            SharedPreferenceHelper.setSharedPreferenceString(context, "marks" + course, str);
             parseMarksFromString(str);
 
             return null;

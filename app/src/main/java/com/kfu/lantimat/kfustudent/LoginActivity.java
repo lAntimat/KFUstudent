@@ -75,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                 CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
                     @Override
                     public void onSuccess(String url) {
-                        Toast.makeText(getApplicationContext(), "Авторизация успешна", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), R.string.auth_succes, Toast.LENGTH_SHORT).show();
                         SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
                         Intent intent = new Intent(LoginActivity.this, TimeLineActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -222,7 +222,7 @@ public class LoginActivity extends AppCompatActivity {
                 String text = "";
                 try {
 
-                    text = new String(responseString.getBytes("windows-1251"), "windows-1251"); // TODO: 04.09.17 Эта хуйня не работает
+                    text = new String(responseString.getBytes("windows-1251"), "windows-1251");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }

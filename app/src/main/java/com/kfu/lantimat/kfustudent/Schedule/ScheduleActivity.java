@@ -97,7 +97,7 @@ public class ScheduleActivity extends MainActivity {
         nowWeek = isEvenOrOddWeek();
         //dayOfWeek = Calendar.getInstance(Locale.UK).get(Calendar.DAY_OF_WEEK);
         LocalDate newDate = new LocalDate();
-        dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek());
+        dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek()) - 1;
 
         if (CheckAuth.isAuth()) initSpinner();
         else showNeedLogin();

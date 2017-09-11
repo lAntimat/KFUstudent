@@ -28,6 +28,7 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
@@ -60,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout frameLayout;
     Intent drawerIntent = null;
     boolean dontFinish = false;
-
+    SecondaryDrawerItem sign_exit;
+    int color;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
         spinner = (Spinner) findViewById(R.id.spinner_nav);
         spinner.setVisibility(View.INVISIBLE);
+
+        color = ContextCompat.getColor(getApplicationContext(), R.color.accent);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
@@ -160,6 +164,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, LoginActivity.class));
     }
 
+    public void updateDrawer() {
+        StringHolder stringHolder;
+        if(CheckAuth.isAuth()) stringHolder = new StringHolder(R.string.drawer_item_exit);
+        else stringHolder = new StringHolder(R.string.drawer_item_sign_in);
+        result.updateName(2, stringHolder);
+    }
+
+
     private void initAccountHeader() {
         String fullName = "";
         String group = "";
@@ -171,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 group = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.GROUP, "");
                 profileDrawerItem = new ProfileDrawerItem()
                         .withName(fullName)
-                        .withEmail("Группа " + group)
+                        .withEmail(getString(R.string.drawer_item_group) + " " + group)
                         .withIcon(R.mipmap.ic_launcher);
             } else {
                 profileDrawerItem = new ProfileDrawerItem()
@@ -199,18 +211,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void setupNavigationDrawer() {
 
-        int color = ContextCompat.getColor(getApplicationContext(), R.color.accent);
         //if you want to update the items at a later time it is recommended to keep it in a variable
-        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName("Cобытия").withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName("Расписание").withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
-        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName("Успеваемость").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
-        SecondaryDrawerItem item10;
-        if(CheckAuth.isAuth()) item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Выйти").withIconColor(color);
-        else item10 = new SecondaryDrawerItem().withIdentifier(2).withName("Войти").withIconColor(color);
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
+        SecondaryDrawerItem sign_exit;
+        if(CheckAuth.isAuth()) sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_exit).withIconColor(color);
+        else sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_sign_in).withIconColor(color);
 
         PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(4).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
-        PrimaryDrawerItem about = new PrimaryDrawerItem().withIdentifier(5).withName("О приложении").withIcon(R.drawable.ic_information_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem about = new PrimaryDrawerItem().withIdentifier(5).withName(R.string.drawer_item_about).withIcon(R.drawable.ic_information_grey600_24dp).withIconColor(color);
 
         //create the drawer and remember the `Drawer` result object
         result = new DrawerBuilder()
@@ -224,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                         item4,
                         new DividerDrawerItem(),
                         about,
-                        item10
+                        sign_exit
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -281,9 +292,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .build();
-
     }
-
 
 }
 

@@ -94,17 +94,20 @@ public class TimeLineActivity extends MainActivity {
         new CheckAuth(getApplicationContext(), new CheckAuth.AuthCallback() {
             @Override
             public void onLoggedIn() {
-                setupNavigationDrawer();
+                updateDrawer();
+                //setupNavigationDrawer();
             }
 
             @Override
             public void onNotLoggedIn() {
-                setupNavigationDrawer();
+                updateDrawer();
+                //setupNavigationDrawer();
             }
 
             @Override
             public void onOldSession() {
-                setupNavigationDrawer();
+                updateDrawer();
+                //setupNavigationDrawer();
             }
         });
 
@@ -181,14 +184,18 @@ public class TimeLineActivity extends MainActivity {
             Calendar calendar = Calendar.getInstance();
             Date dateCalendar = calendar.getTime();
             String full = new SimpleDateFormat("dd.MM.yyyy").format(dateCalendar);
+            int today = calendar.get(Calendar.DAY_OF_MONTH);
             for (int i = 0; i < elements.size(); i++) {
                 String date = elements.get(i).select("div.eventItem-date").text();
                 String title = elements.get(i).select("div.eventItem-title").text();
                 String place = elements.get(i).select("div.eventItem-place").text();
                 String format = elements.get(i).select("div.eventItem-format").text();
-                mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.COMPLETED));
+                String[] splitStr = date.split("\\.");
+
+                if(Integer.parseInt(splitStr[0])>today) mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.INACTIVE));
+                else mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.COMPLETED));
                 if(date.contains(full)) positionForScroll = i;
-                full = "";
+                //full = "";
             }
             Collections.reverse(mDataList);
             positionForScroll = mDataList.size() - positionForScroll;

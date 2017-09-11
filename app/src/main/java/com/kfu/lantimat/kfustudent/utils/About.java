@@ -20,12 +20,12 @@ import com.kfu.lantimat.kfustudent.R;
 public class About {
     public Dialog onCreateDialog(final Context context) {
         String versionName = BuildConfig.VERSION_NAME;
-        String text = "Приложение для студентов КФУ \n" +
+        String text = "Приложение для студентов КФУ, предоставляющее удобный доступ к личному кабинету kpfu.ru \n" +
                 "Версия: " + versionName;
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(text)
-                .setTitle("О программе")
+                .setTitle(R.string.about)
                 .setNegativeButton("Группа Вк", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://vk.com/club153198454"));

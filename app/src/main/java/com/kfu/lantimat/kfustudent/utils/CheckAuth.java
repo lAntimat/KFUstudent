@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.LoginActivity;
+import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -179,7 +180,7 @@ public class CheckAuth {
                 Log.d("CheckAuthLogin", str);
 
                 if(str.toLowerCase().contains("неверно введены имя или пароль")) {
-                    Toast.makeText(context, "Извините, неверно введены имя или пароль", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, R.string.login_error_log_and_pass, Toast.LENGTH_SHORT).show();
                     loginCallback.onLoginAndPassFail();
                 } else {
                     if (matcher.find()) {
@@ -192,7 +193,7 @@ public class CheckAuth {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Log.wtf("login", "loged");
-                Toast.makeText(context, "Ошибка соединения", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.connection_error, Toast.LENGTH_SHORT).show();
                 loginCallback.onConnectFail();
 
             }
