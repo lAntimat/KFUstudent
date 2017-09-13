@@ -176,7 +176,7 @@ public class TimeLineActivity extends MainActivity {
                 //full = "";
             }
             Collections.reverse(mDataList);
-            positionForScroll = mDataList.size() - positionForScroll;
+            positionForScroll = mDataList.size() - positionForScroll - 1;
             return null;
         }
 

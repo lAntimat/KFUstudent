@@ -161,6 +161,12 @@ public class MainActivity extends AppCompatActivity {
         result.updateName(2, stringHolder);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(result!=null && result.isDrawerOpen()) {
+            result.closeDrawer();
+        } else super.onBackPressed();
+    }
 
     private void initAccountHeader() {
         String fullName = "";

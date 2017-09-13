@@ -23,6 +23,6 @@ public class Application extends android.app.Application {
             JodaTimeAndroid.init(this);
             PersistentCookieStore myCookieStore = new PersistentCookieStore(this); /**Обязательно один раз нужно задать CookieStore*/
             KFURestClient.setCookieStore(myCookieStore);
-            FirebaseCrash.report(new Exception("My first Android non-fatal error"));
+            //FirebaseCrash.report(new Exception("My first Android non-fatal error"));
         }
 }
