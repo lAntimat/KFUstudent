@@ -80,7 +80,6 @@ public class CheckAuth {
             @Override
             public void onNotLoggedIn() {
                 isAuth = false;
-                SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, false);
             }
 
             @Override
@@ -107,6 +106,7 @@ public class CheckAuth {
 
                         @Override
                         public void onLoginAndPassFail() {
+                            SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, false);
                             authCallback.onNotLoggedIn();
                         }
 

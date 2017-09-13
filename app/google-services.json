@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "712131982195-cllt9sjb16t6h8issdpqjrrdnug0l6a3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kfu.lantimat.kfustudent",
+            "certificate_hash": "df48947ef09c7342efd22fd3fa65036719b33f70"
+          }
+        },
+        {
           "client_id": "712131982195-h9c0gtpkkkdaejk4ieajm7nl4l70i5gt.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712131982195-h9c0gtpkkkdaejk4ieajm7nl4l70i5gt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
