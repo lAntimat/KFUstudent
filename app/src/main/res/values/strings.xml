@@ -17,4 +17,13 @@
         <item>Верхняя неделя</item>"
         <item>Нижняя неделя</item>
     </string-array>
+
+    <string-array name="spinner_list_map_activity">
+        <item>Учебные здания</item>
+        <item>Библиотеки</item>
+    </string-array>
+
+    <string name="title_activity_maps">Map</string>
+    <string name="drawer_item_map">Карта</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
 </resources>

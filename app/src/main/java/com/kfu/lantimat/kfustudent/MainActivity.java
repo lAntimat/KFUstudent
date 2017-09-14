@@ -18,6 +18,8 @@ import com.kfu.lantimat.kfustudent.Schedule.Schedule;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.kfu.lantimat.kfustudent.Timeline.model.Orientation;
+import com.kfu.lantimat.kfustudent.map.MapActivity;
+import com.kfu.lantimat.kfustudent.map.MapsActivity;
 import com.kfu.lantimat.kfustudent.utils.About;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem sign_exit;
         if(CheckAuth.isAuth()) sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_exit).withIconColor(color);
         else sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_sign_in).withIconColor(color);
@@ -229,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
                         item1,
                         item3,
                         item4,
+                        itemMap,
                         new DividerDrawerItem(),
                         about,
                         sign_exit
@@ -247,7 +251,10 @@ public class MainActivity extends AppCompatActivity {
                             case 3:
                                 drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
                                 break;
-                            case 6:
+                            case 4:
+                                drawerIntent = new Intent(MainActivity.this, MapActivity.class);
+                                break;
+                            case 7:
                                 if(CheckAuth.isAuth()) {
                                     CheckAuth.exit();
                                     startActivity(new Intent(MainActivity.this, TimeLineActivity.class));
@@ -258,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                                     dontFinish = true;
                                 }
                                 break;
-                            case 5: //TODO: вызов абаут
+                            case 6: //TODO: вызов абаут
                                 new About().onCreateDialog(MainActivity.this).show();
                         }
                         result.closeDrawer();
