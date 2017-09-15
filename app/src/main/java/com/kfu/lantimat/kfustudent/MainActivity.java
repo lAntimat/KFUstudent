@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
-        PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_google_maps_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem sign_exit;
         if(CheckAuth.isAuth()) sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_exit).withIconColor(color);
         else sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_sign_in).withIconColor(color);

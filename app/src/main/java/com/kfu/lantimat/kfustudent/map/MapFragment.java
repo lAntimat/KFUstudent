@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,11 +23,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.kfu.lantimat.kfustudent.R;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 
 /**
  * Created by lantimat on 04.07.17.
@@ -42,6 +46,8 @@ public class MapFragment extends SupportMapFragment
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener, MapActivity.UpdateableFragment {
 
+
+
     GoogleMap mGoogleMap;
     LocationRequest mLocationRequest;
     GoogleApiClient mGoogleApiClient;
@@ -49,15 +55,18 @@ public class MapFragment extends SupportMapFragment
     Marker mCurrLocationMarker;
     Marker mEnteredMarker;
 
-    LatLng[][] geopoint_buildings;
+    LatLng[] geopoint_buildings;
     String[] name_buildings;
     String[] address_buildings;
     LatLng[][] markersLatLng = new LatLng[7][];
+
+
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         addLatLng();
+
     }
 
     @Override
@@ -76,8 +85,7 @@ public class MapFragment extends SupportMapFragment
     // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EnterLatLngFragment.LatLongEvent event) {
-        Toast.makeText(getActivity(), "Метка поставлена!", Toast.LENGTH_SHORT).show();
-        setUpMarker(event.land, event.longt);
+        moveCamera(event.land, event.longt);
     }
 
     private void setUpMapIfNeeded() {
@@ -105,6 +113,15 @@ public class MapFragment extends SupportMapFragment
         }
     }
 
+    public void moveCamera(Float lat, Float lng) {
+
+        LatLng latLng = new LatLng(lat, lng);
+        //move map camera
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(17));
+
+    }
+
     public void addLatLng() {
 
         markersLatLng[0] = new LatLng[]{new LatLng(55.790843d, 49.121839d), new LatLng(55.790918d, 49.119216d), new LatLng(55.791714d, 49.119677d), new LatLng(55.791535d, 49.120342d), new LatLng(55.789713d, 49.12022d), new LatLng(55.789576d, 49.121503d), new LatLng(55.790305d, 49.119814d), new LatLng(55.791436d, 49.119374d), new LatLng(55.794076d, 49.114069d), new LatLng(55.793938d, 49.113179d), new LatLng(55.786625d, 49.126034d), new LatLng(55.761985d, 49.149218d), new LatLng(55.791835d, 49.117663d), new LatLng(55.792129d, 49.122164d), new LatLng(55.792456d, 49.122475d), new LatLng(55.792634d, 49.119939d), new LatLng(55.793326d, 49.143072d), new LatLng(55.79337d, 49.143328d), new LatLng(55.787961d, 49.112449d), new LatLng(55.784347d, 49.116633d), new LatLng(55.78995d, 49.108446d), new LatLng(55.787454d, 49.110386d), new LatLng(55.785283d, 49.118412d), new LatLng(55.789598d, 49.158523d), new LatLng(55.822101d, 49.098264d), new LatLng(55.793459d, 49.120393d), new LatLng(55.791571d, 49.122873d), new LatLng(55.789934d, 49.12185d), new LatLng(55.789928d, 49.120686d)};
@@ -117,24 +134,57 @@ public class MapFragment extends SupportMapFragment
 
     }
 
-    private void loadInfo(int position) {
+    private void loadInfo2(int position) {
+        String childType = "";
+        String city = "Набережые Челны";
         switch (position) {
             case 0:
-                name_buildings = getResources().getStringArray(R.array.educational_buildings);
-                address_buildings = getResources().getStringArray(R.array.address_educational_buildings);
+                name_buildings = getResources().getStringArray(R.array.educational_buildings_chelny);
+                address_buildings = getResources().getStringArray(R.array.address_educational_buildings_chelny);
+                geopoint_buildings = markersLatLng[0];
+                childType = "educationalBuilding";
+
                 break;
             case 1:
-                name_buildings = getResources().getStringArray(R.array.library);
-                address_buildings = getResources().getStringArray(R.array.address_library);
+                name_buildings = getResources().getStringArray(R.array.library_chelny);
+                address_buildings = getResources().getStringArray(R.array.address_library_chelny);
+                geopoint_buildings = markersLatLng[1];
+                childType = "library";
+                break;
+            case 2:
+                name_buildings = getResources().getStringArray(R.array.dorm_chelny);
+                address_buildings = getResources().getStringArray(R.array.address_dorm_chelny);
+                geopoint_buildings = markersLatLng[2];
+                childType = "dorm";
                 break;
         }
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference().child("mapBuilds").child(childType);
 
         mGoogleMap.clear();
         for (int i = 0; i < name_buildings.length; i++) {
             showObject(name_buildings[i], address_buildings[i], markersLatLng[position][i]);
+            // Write a message to the database
+
+            String key = myRef.push().getKey();
+            String lat = String.valueOf(geopoint_buildings[i].latitude);
+            String lng = String.valueOf(geopoint_buildings[i].longitude);
+            MapBuilds mapBuilds = new MapBuilds(name_buildings[i], address_buildings[i], city, childType, lat, lng);
+            myRef.child(key).setValue(mapBuilds);
+        }
+
+    }
+
+    private void updateInfo(ArrayList<MapBuilds> arrayList) {
+        mGoogleMap.clear();
+        for (int i = 0; i < arrayList.size(); i++) {
+            MapBuilds m = arrayList.get(i);
+            showObject(m.getName(), m.getAddress(), new LatLng(Double.parseDouble(m.getLat()), Double.parseDouble(m.getLng())));
+            // Write a message to the database
         }
     }
+
 
     public void showObject(String name, String address, LatLng coords) {
         mGoogleMap.addMarker(new MarkerOptions().position(coords).title(name).snippet(address));
@@ -161,7 +211,7 @@ public class MapFragment extends SupportMapFragment
     public void onMapReady(GoogleMap googleMap)
     {
         mGoogleMap=googleMap;
-        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         //Initialize Google Play Services
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -309,7 +359,7 @@ public class MapFragment extends SupportMapFragment
     }
 
     @Override
-    public void update(int position) {
-        loadInfo(position);
+    public void update(ArrayList<MapBuilds> ar) {
+        updateInfo(ar);
     }
 }

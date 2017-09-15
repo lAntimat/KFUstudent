@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Schedule;
+package com.kfu.lantimat.kfustudent.map;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,11 +16,11 @@ import java.util.ArrayList;
  * Created by GabdrakhmanovII on 31.07.2017.
  */
 
-public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class MapRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private  ArrayList<Schedule> mList;
+    private  ArrayList<MapBuilds> mList;
 
-    public ScheduleRecyclerAdapter(ArrayList<Schedule> itemList) {
+    public MapRecyclerAdapter(ArrayList<MapBuilds> itemList) {
         this.mList = itemList;
     }
     @Override
@@ -28,10 +28,10 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         View view;
         switch (viewType) {
             case Mark.RATING_TYPE:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_map_builds, parent, false);
                 return new RatingViewHolder(view);
             default:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_schedule, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_map_builds, parent, false);
                 return new SimpleViewHolder(view);
         }
 
@@ -41,9 +41,8 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        String time = mList.get(position).getTime();
-        String name = mList.get(position).getSubjectName();
-        String place = mList.get(position).getPlace();
+        String name = mList.get(position).getName();
+        String place = mList.get(position).getAddress();
 
             switch (getItemViewType(position)) {
                 case Mark.RATING_TYPE:
@@ -51,7 +50,6 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
                     //((RatingViewHolder) holder).mImg.setImageResource(getImageByNumber(mList.get(position).getSemesterInt()));
                     break;
                 default:
-                    ((SimpleViewHolder) holder).mTime.setText(time);
                     ((SimpleViewHolder) holder).mName.setText(name);
                     ((SimpleViewHolder) holder).mPlace.setText(place);
 
@@ -84,8 +82,7 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         public SimpleViewHolder(View itemView) {
             super(itemView);
             mName = (TextView) itemView.findViewById(R.id.tvName);
-            mTime = (TextView) itemView.findViewById(R.id.tvTime);
-            mPlace = (TextView) itemView.findViewById(R.id.tvDesc);
+            mPlace = (TextView) itemView.findViewById(R.id.tvPlace);
         }
     }
     public static class RatingViewHolder extends RecyclerView.ViewHolder {

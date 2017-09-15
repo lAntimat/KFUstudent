@@ -21,6 +21,14 @@
     <string-array name="spinner_list_map_activity">
         <item>Учебные здания</item>
         <item>Библиотеки</item>
+        <item>Общежития</item>
+    </string-array>
+
+    <string-array name="dialog_list_cities">
+        <item>Казань</item>
+        <item>Набережные Челны</item>
+        <item>Елабуга</item>
+        <item>Чистополь</item>
     </string-array>
 
     <string name="title_activity_maps">Map</string>
