@@ -54,15 +54,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
             android:foregroundGravity="left"
             android:text="Общий пробег"
             android:textSize="16sp"
             card_view:layout_constraintLeft_toRightOf="@+id/imageView3"
+            card_view:layout_constraintRight_toRightOf="parent"
             card_view:layout_constraintTop_toTopOf="parent"
-            card_view:layout_constraintVertical_chainStyle="spread_inside"
-            android:layout_marginRight="8dp"
-            card_view:layout_constraintRight_toRightOf="parent" />
+            card_view:layout_constraintVertical_chainStyle="spread_inside" />
 
         <TextView
             android:id="@+id/tvPlace"

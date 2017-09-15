@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kfu.lantimat.kfustudent.R;
+import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -55,6 +56,7 @@ public class MapFragment extends SupportMapFragment
     Marker mCurrLocationMarker;
     Marker mEnteredMarker;
 
+
     LatLng[] geopoint_buildings;
     String[] name_buildings;
     String[] address_buildings;
@@ -65,6 +67,7 @@ public class MapFragment extends SupportMapFragment
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+
         addLatLng();
 
     }
@@ -178,10 +181,19 @@ public class MapFragment extends SupportMapFragment
 
     private void updateInfo(ArrayList<MapBuilds> arrayList) {
         mGoogleMap.clear();
+        double lat = 0;
+        double lng = 0;
         for (int i = 0; i < arrayList.size(); i++) {
             MapBuilds m = arrayList.get(i);
-            showObject(m.getName(), m.getAddress(), new LatLng(Double.parseDouble(m.getLat()), Double.parseDouble(m.getLng())));
+            lat = Double.parseDouble(m.getLat());
+            lng = Double.parseDouble(m.getLng());
+            showObject(m.getName(), m.getAddress(), new LatLng(lat, lng));
             // Write a message to the database
+        }
+
+        if(lat!=0) {
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lng)));
+            mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
         }
     }
 

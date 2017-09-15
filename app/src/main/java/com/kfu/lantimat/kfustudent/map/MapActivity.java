@@ -13,12 +13,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
@@ -30,6 +32,11 @@ import com.kfu.lantimat.kfustudent.BuildConfig;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
+import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +51,8 @@ public class MapActivity extends MainActivity {
     final String CITY_ELABUGA = "Елабуга";
     final String CITY_CHISTOPOL = "Чистополь";
 
+    final String DEFAULT_TOWN = "defaultTown";
+
     LatLng[][] geopoint_buildings;
     String[] name_buildings;
     String[] address_buildings;
@@ -52,6 +61,7 @@ public class MapActivity extends MainActivity {
     private ViewPager viewPager;
     private ViewPagerAdapter adapter;
     private FloatingActionButton fab;
+    private ProgressBar progressBar;
     EnterLatLngFragment addLatFragment;
     MapFragment mapFragment;
     float lat;
@@ -76,6 +86,9 @@ public class MapActivity extends MainActivity {
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
         fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,13 +101,21 @@ public class MapActivity extends MainActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-
+        int defaultTown = SharedPreferenceHelper.getSharedPreferenceInt(this, DEFAULT_TOWN, -1);
+        if(defaultTown!=-1) setSelectedCity(defaultTown);
 
         initSpinner();
         initViewPager();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         mapBuildsRef = database.getReference().child("mapBuilds");
+    }
+
+    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(EnterLatLngFragment.LatLongEvent event) {
+        if(viewPager!=null) viewPager.setCurrentItem(1, true);
+        Log.d("MapActivity", "viewPager.setCurrentItem(1)");
     }
 
     private void initSpinner() {
@@ -183,13 +204,14 @@ public class MapActivity extends MainActivity {
                     arrayList.add(mapBuilds);
                 }
 
+                progressBar.setVisibility(View.INVISIBLE);
                 adapter.update(arrayList);
 
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -204,21 +226,7 @@ public class MapActivity extends MainActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         // The 'which' argument contains the index position
                         // of the selected item
-                        switch (which) {
-                            case 0:
-                                selectedCity = CITY_KAZAN;
-                                break;
-                            case 1:
-                                selectedCity = CITY_CHELNY;
-                                break;
-                            case 2:
-                                selectedCity = CITY_ELABUGA;
-                                break;
-                            case 3:
-                                selectedCity = CITY_CHISTOPOL;
-                                break;
-                        }
-
+                        setSelectedCity(which);
                         loadInfo(spinner.getSelectedItemPosition());
                     }
                 })
@@ -229,6 +237,24 @@ public class MapActivity extends MainActivity {
                 });
         // Create the AlertDialog object and return it
         return builder.create();
+    }
+
+    private void setSelectedCity(int position) {
+        SharedPreferenceHelper.setSharedPreferenceInt(this, DEFAULT_TOWN, position);
+        switch (position) {
+            case 0:
+                selectedCity = CITY_KAZAN;
+                break;
+            case 1:
+                selectedCity = CITY_CHELNY;
+                break;
+            case 2:
+                selectedCity = CITY_ELABUGA;
+                break;
+            case 3:
+                selectedCity = CITY_CHISTOPOL;
+                break;
+        }
     }
 
     @Override
@@ -250,6 +276,18 @@ public class MapActivity extends MainActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
