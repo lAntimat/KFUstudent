@@ -99,7 +99,7 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         private TextView mDesc;
         public SimpleViewHolder(View itemView) {
             super(itemView);
-            mTitle = (TextView) itemView.findViewById(R.id.tvPlace);
+            mTitle = (TextView) itemView.findViewById(R.id.tvName);
             mDesc = (TextView) itemView.findViewById(R.id.tvDesc);
         }
     }
@@ -109,7 +109,7 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
         private ImageView mImg;
         public RatingViewHolder(View itemView) {
             super(itemView);
-            mTitle = (TextView) itemView.findViewById(R.id.tvPlace);
+            mTitle = (TextView) itemView.findViewById(R.id.tvName);
             mDesc = (TextView) itemView.findViewById(R.id.tvDesc);
             mImg = (ImageView) itemView.findViewById(R.id.imageView);
         }

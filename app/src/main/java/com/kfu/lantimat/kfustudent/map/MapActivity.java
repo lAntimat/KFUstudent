@@ -109,6 +109,9 @@ public class MapActivity extends MainActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         mapBuildsRef = database.getReference().child("mapBuilds");
+
+        result.setSelection(3, false);
+
     }
 
     // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
@@ -147,6 +150,7 @@ public class MapActivity extends MainActivity {
             }
         });
     }
+
     public void initViewPager() {
         viewPager.setOffscreenPageLimit(7);
 
@@ -288,9 +292,10 @@ public class MapActivity extends MainActivity {
     protected void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
+
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
 
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();

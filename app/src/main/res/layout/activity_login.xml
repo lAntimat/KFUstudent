@@ -150,7 +150,7 @@
                 android:paddingEnd="10dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="Обратите внимание: логин и пароль критичны к регистру"
+                android:text="Обратите внимание: логин критичен к регистру"
                 android:textColor="@color/md_white_1000"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintLeft_toLeftOf="parent"
