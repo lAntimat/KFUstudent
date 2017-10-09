@@ -12,6 +12,8 @@
     <string name="about">О программе</string>
     <string name="login_error_log_and_pass">Извините, неверно введены имя или пароль</string>
     <string name="connection_error">Ошибка соединения</string>
+    <string name="update_error">Ошибка соединения</string>
+    <string name="timeline_events_null">Нет предстоящих событий</string>
 
     <string-array name="spinner_list_item_array">
         <item>Верхняя неделя</item>"
@@ -34,4 +36,6 @@
     <string name="title_activity_maps">Map</string>
     <string name="drawer_item_map">Карта</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="map_need_permission">Требуется разрешение!</string>
+    <string name="map_need_permission_message">Для доступа к вашему местоположению, необходимо разрешить доступ к геоданным</string>
 </resources>

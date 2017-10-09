@@ -110,7 +110,7 @@ public class MapActivity extends MainActivity {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         mapBuildsRef = database.getReference().child("mapBuilds");
 
-        result.setSelection(3, false);
+        result.setSelection(5, false);
 
     }
 

@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -144,6 +146,13 @@ public class TimeLineActivity extends MainActivity {
         }
     }
 
+    private void showEmptyView() {
+        TextView textView = (TextView) findViewById(R.id.textView);
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        textView.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.VISIBLE);
+    }
+
 
     public class ParseStrFromByte extends AsyncTask<byte[], Void, Void> {
         @Override
@@ -157,26 +166,40 @@ public class TimeLineActivity extends MainActivity {
             Document doc = Jsoup.parse(str);
             Elements elements = doc.select("div.eventItem.uk-clearfix");
 
-            Log.d("event-list.uk-active", elements.get(2).toString());
+//            Log.d("event-list.uk-active", elements.get(2).toString());
 
-            Calendar calendar = Calendar.getInstance();
-            Date dateCalendar = calendar.getTime();
-            String full = new SimpleDateFormat("dd.MM.yyyy").format(dateCalendar);
-            int today = calendar.get(Calendar.DAY_OF_MONTH);
-            for (int i = 0; i < elements.size(); i++) {
-                String date = elements.get(i).select("div.eventItem-date").text();
-                String title = elements.get(i).select("div.eventItem-title").text();
-                String place = elements.get(i).select("div.eventItem-place").text();
-                String format = elements.get(i).select("div.eventItem-format").text();
-                String[] splitStr = date.split("\\.");
-
-                if(Integer.parseInt(splitStr[0])>today) mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.INACTIVE));
-                else mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.COMPLETED));
-                if(date.contains(full)) positionForScroll = i;
-                //full = "";
+            if(elements.size()==0) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Toast.makeText(getApplicationContext(), R.string.timeline_events_null, Toast.LENGTH_LONG).show();
+                        showEmptyView();
+                    }
+                });
             }
-            Collections.reverse(mDataList);
-            if(positionForScroll>0) positionForScroll = mDataList.size() - positionForScroll - 1;
+            else {
+                Calendar calendar = Calendar.getInstance();
+                Date dateCalendar = calendar.getTime();
+                String full = new SimpleDateFormat("dd.MM.yyyy").format(dateCalendar);
+                int today = calendar.get(Calendar.DAY_OF_MONTH);
+                for (int i = 0; i < elements.size(); i++) {
+                    String date = elements.get(i).select("div.eventItem-date").text();
+                    String title = elements.get(i).select("div.eventItem-title").text();
+                    String place = elements.get(i).select("div.eventItem-place").text();
+                    String format = elements.get(i).select("div.eventItem-format").text();
+                    String[] splitStr = date.split("\\.");
+
+                    if (Integer.parseInt(splitStr[0]) > today)
+                        mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.INACTIVE));
+                    else
+                        mDataList.add(new TimeLineModel(date, title, place, format, OrderStatus.COMPLETED));
+                    if (date.contains(full)) positionForScroll = i;
+                    //full = "";
+                }
+                Collections.reverse(mDataList);
+                if (positionForScroll > 0)
+                    positionForScroll = mDataList.size() - positionForScroll - 1;
+            }
             return null;
         }
 

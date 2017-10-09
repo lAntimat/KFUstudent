@@ -311,8 +311,8 @@ public class MapFragment extends SupportMapFragment
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("Требуется разрешение для доступа к местоположению")
-                        .setMessage("Доступ разрешен")
+                        .setTitle(R.string.map_need_permission)
+                        .setMessage(R.string.map_need_permission_message)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

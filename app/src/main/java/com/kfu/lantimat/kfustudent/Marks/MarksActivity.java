@@ -77,7 +77,7 @@ public class MarksActivity extends MainActivity {
         arBlock = new ArrayList<>();
 
         initViewPager();
-        result.setSelection(4, false);
+        result.setSelection(3, false);
     }
 
 
@@ -127,7 +127,7 @@ public class MarksActivity extends MainActivity {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
                 }
             }
-            if(count>2) SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
+            if(count>1) SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
             return null;
         }
 

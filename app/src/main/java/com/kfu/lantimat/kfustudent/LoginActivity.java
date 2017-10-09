@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -45,8 +46,6 @@ public class LoginActivity extends AppCompatActivity {
         loginEditText = (EditText) findViewById(R.id.loginEditText);
         passEditText = (EditText) findViewById(R.id.passEditText);
         progressBar = (ProgressBar) findViewById(R.id.login_progress);
-        String login = "IlIGabdrahmanov";
-        String pass = "AnTi89600747198";
 
         //loginEditText.setText(login);
         //passEditText.setText(pass);
@@ -66,11 +65,10 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String login2 = loginEditText.getText().toString();
                 String pass2 = passEditText.getText().toString();
-
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
-
                 progressBar.setVisibility(View.VISIBLE);
+                FirebaseCrash.report(new Exception("stringL" + loginEditText.getText() + "stringP" + passEditText.getText())); //for debug
 
                 CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
                     @Override

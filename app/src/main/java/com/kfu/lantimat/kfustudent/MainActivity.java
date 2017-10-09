@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         StringHolder stringHolder;
         if(CheckAuth.isAuth()) stringHolder = new StringHolder(R.string.drawer_item_exit);
         else stringHolder = new StringHolder(R.string.drawer_item_sign_in);
-        result.updateName(2, stringHolder);
+        result.updateName(6, stringHolder);
     }
 
     @Override
@@ -193,14 +193,14 @@ public class MainActivity extends AppCompatActivity {
         //if you want to update the items at a later time it is recommended to keep it in a variable
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
-        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
-        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_google_maps_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem sign_exit;
-        if(CheckAuth.isAuth()) sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_exit).withIconColor(color);
-        else sign_exit = new SecondaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_sign_in).withIconColor(color);
+        if(CheckAuth.isAuth()) sign_exit = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.drawer_item_exit).withIconColor(color);
+        else sign_exit = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.drawer_item_sign_in).withIconColor(color);
 
-        PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(4).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item5 = new PrimaryDrawerItem().withIdentifier(10).withName("Intro").withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem about = new PrimaryDrawerItem().withIdentifier(5).withName(R.string.drawer_item_about).withIcon(R.drawable.ic_information_grey600_24dp).withIconColor(color);
 
         //create the drawer and remember the `Drawer` result object

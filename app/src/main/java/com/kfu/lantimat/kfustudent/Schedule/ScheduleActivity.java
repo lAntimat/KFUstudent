@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
@@ -85,6 +87,7 @@ public class ScheduleActivity extends MainActivity {
         buttonSignEmpty.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
 
+
         //toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
@@ -134,7 +137,7 @@ public class ScheduleActivity extends MainActivity {
 
 
 
-        result.setSelection(3, false);
+        result.setSelection(2, false);
         initViewPager();
         //getScheduleOddWeek();
     }
@@ -209,6 +212,9 @@ public class ScheduleActivity extends MainActivity {
     public void onFailureMethod() {
         progressBar.setVisibility(View.INVISIBLE);
         Toast.makeText(getApplicationContext(), "Ошибка соединения", Toast.LENGTH_SHORT).show();
+        FirebaseCrash.report(new Exception("Ошибка соединения"));
+
+
     }
     private void getScheduleEvenWeek() {
         progressBar.setVisibility(View.VISIBLE);
@@ -216,7 +222,7 @@ public class ScheduleActivity extends MainActivity {
 
         if (!week.isEmpty()) setScheduleToViewPager(week, ODD_WEEK);
 
-        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=13.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
+        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=25.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     //new ParseSchedule().execute(responseBody);
@@ -224,16 +230,20 @@ public class ScheduleActivity extends MainActivity {
                     try {
                         //str = new String(params[0], "UTF-8");
                         str = new String(responseBody, "windows-1251");
+                        FirebaseCrash.report(new Exception("ScheduleActivity - getScheduleEvenWeek" + str));
                         setScheduleToViewPager(str, ODD_WEEK);
                         SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), ODD_WEEK, str);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
+                        FirebaseCrash.report(e);
                     }
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    if (week.isEmpty()) onFailureMethod();
+                    if (week.isEmpty()) onFailureMethod(); //Если сохраненое расписание не пусто
+                    FirebaseCrash.report(error);
+
                 }
             });
     }
@@ -243,7 +253,7 @@ public class ScheduleActivity extends MainActivity {
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), EVEN_WEEK, "");
         if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
 
-        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=20.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
+        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=02.10.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     //new ParseSchedule().execute(responseBody);
@@ -251,17 +261,20 @@ public class ScheduleActivity extends MainActivity {
                     try {
                         //str = new String(params[0], "UTF-8");
                         str = new String(responseBody, "windows-1251");
+                        FirebaseCrash.report(new Exception("ScheduleActivity - getScheduleOddWeek" + str));
                         setScheduleToViewPager(str, EVEN_WEEK);
                         SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), EVEN_WEEK, str);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
+                        FirebaseCrash.report(e);
+
                     }
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    if (week.isEmpty()) onFailureMethod();
-
+                    if (week.isEmpty()) onFailureMethod(); //Если сохраненое расписание не пусто
+                    FirebaseCrash.report(error);
                 }
             });
     }
