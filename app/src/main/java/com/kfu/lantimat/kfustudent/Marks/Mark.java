@@ -71,8 +71,12 @@ public class Mark {
     }
 
     public Integer getSemesterInt() {
-        if(semester!=null) return Integer.parseInt(semester);
-        else return 1000;
+        try {
+            if(semester!=null) return Integer.parseInt(semester);
+        } catch (Exception e) {
+            return 1000;
+        }
+        return 1000;
     }
 
     public String getName() {

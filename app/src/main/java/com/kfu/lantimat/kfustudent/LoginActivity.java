@@ -69,7 +69,6 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
                 progressBar.setVisibility(View.VISIBLE);
-                //FirebaseCrash.report(new Exception("stringL" + loginEditText.getText() + "stringP" + passEditText.getText())); //for debug
 
                 CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
                     @Override

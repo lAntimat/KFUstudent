@@ -309,7 +309,6 @@ public class CheckAuth {
         SharedPreferenceHelper.clearSharedPreference(context, MarksActivity.COURSES_COUNT);
         SharedPreferenceHelper.clearSharedPreference(context, ScheduleActivity.EVEN_WEEK);
         SharedPreferenceHelper.clearSharedPreference(context, ScheduleActivity.ODD_WEEK);
-
     }
 
 }
