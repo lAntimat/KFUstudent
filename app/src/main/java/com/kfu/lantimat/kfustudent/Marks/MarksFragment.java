@@ -185,12 +185,13 @@ public class MarksFragment extends Fragment {
     private void emptyPic() {
         if(imageView!=null & textView!=null) {
             if (arMarks.size() == 0) {
-                imageView.setVisibility(View.VISIBLE);
+                //imageView.setVisibility(View.VISIBLE);
                 textView.setVisibility(View.VISIBLE);
                 Calendar calendar = Calendar.getInstance();
                 Date dateCalendar = calendar.getTime();
                 String full = new SimpleDateFormat("hh:mm").format(dateCalendar);
-                textView.setText("Погоди-ка… минуточку, Док! Сейчас что, " + full + "?");
+                //textView.setText("Погоди-ка… минуточку, Док! Сейчас что, " + full + "?");
+                textView.setText("Нет данных для отображения!");
 
             } else {
                 imageView.setVisibility(View.GONE);

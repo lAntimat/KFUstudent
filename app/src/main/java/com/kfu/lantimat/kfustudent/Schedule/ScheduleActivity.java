@@ -245,7 +245,7 @@ public class ScheduleActivity extends MainActivity {
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     if (week.isEmpty()) onFailureMethod(); //Если сохраненое расписание не пусто
-                    FirebaseCrash.report(error);
+                    FirebaseCrash.report(new Exception("statusCode " + statusCode));
 
                 }
             });
