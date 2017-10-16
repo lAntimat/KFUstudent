@@ -7,7 +7,9 @@ import android.widget.Toast;
 
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.LoginActivity;
+import com.kfu.lantimat.kfustudent.Marks.MarksActivity;
 import com.kfu.lantimat.kfustudent.R;
+import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -304,6 +306,10 @@ public class CheckAuth {
         SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, false);
         SharedPreferenceHelper.clearSharedPreference(context, FULL_NAME);
         SharedPreferenceHelper.clearSharedPreference(context, GROUP);
+        SharedPreferenceHelper.clearSharedPreference(context, MarksActivity.COURSES_COUNT);
+        SharedPreferenceHelper.clearSharedPreference(context, ScheduleActivity.EVEN_WEEK);
+        SharedPreferenceHelper.clearSharedPreference(context, ScheduleActivity.ODD_WEEK);
+
     }
 
 }

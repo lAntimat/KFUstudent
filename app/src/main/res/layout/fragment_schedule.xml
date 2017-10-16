@@ -8,8 +8,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/white"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        android:background="@android:color/white" />
 
     <TextView
         android:id="@+id/textView"
@@ -23,7 +22,7 @@
         android:allowUndo="false"
         android:gravity="center"
         android:padding="20dp"
-        android:text="Не стой, today, выходной."
+        android:text="Видимо, сегодня у тебя выходной :)"
         android:textColor="@color/md_black_1000"
         android:textSize="18sp"
         android:visibility="gone" />
@@ -43,8 +42,7 @@
         android:layout_centerVertical="false"
         android:adjustViewBounds="true"
         android:scaleType="fitEnd"
-        android:visibility="gone"
-        app:srcCompat="@drawable/student_fro_schedule" />
+        android:visibility="visible" />
 
     <ProgressBar
         android:id="@+id/progressBar"

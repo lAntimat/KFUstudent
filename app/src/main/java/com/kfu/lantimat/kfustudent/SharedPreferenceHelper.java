@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 public class SharedPreferenceHelper {
     private final static String PREF_FILE = "PREF";
 
+
     /**
      * Set a string shared preference
      * @param key - Key to set shared preference

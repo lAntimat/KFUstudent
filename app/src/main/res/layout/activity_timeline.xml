@@ -66,7 +66,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/empty_state_sadness_smile" />
+            app:srcCompat="@drawable/empty_state_sadness_smile"
+            android:contentDescription="" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -81,7 +82,6 @@
             android:clipToPadding="false"
             android:fadeScrollbars="false"
             android:padding="10dp"
-            android:scrollIndicators="top|right"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

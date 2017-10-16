@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,10 +34,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
-
-import static com.kfu.lantimat.kfustudent.LoginActivity.AUTH;
+import dmax.dialog.SpotsDialog;
 
 public class MarksActivity extends MainActivity {
+
+    public static final String COURSES_COUNT = "count";
+
 
     ArrayList<Mark> arBlock;
     @BindView(R.id.textView)
@@ -48,7 +51,7 @@ public class MarksActivity extends MainActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     ViewPagerAdapter adapter;
-    int count = 0;
+    int count = -1;
     AsyncTask<byte[], Void, Void> parseMarks;
 
     @Override
@@ -87,6 +90,7 @@ public class MarksActivity extends MainActivity {
     }
 
     private void getMarks() {
+
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -101,6 +105,11 @@ public class MarksActivity extends MainActivity {
     }
 
     public class ParseMarks extends AsyncTask<byte[], Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
 
         @Override
         protected Void doInBackground(byte[]... params) {
@@ -121,13 +130,15 @@ public class MarksActivity extends MainActivity {
             Elements courses = doc.select("div.courses");
             count = courses.toString().split("</span>").length;
 
-            if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1) == -1) {
+            if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1) == -1) {
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
                 for (int i = 1; i < count - 1; i++) {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
                 }
             }
-            if(count>1) SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), "count", count);
+            int savedCoursesCount = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1);
+            if(count!=-1 && savedCoursesCount <= count)
+                SharedPreferenceHelper.setSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, count);
             return null;
         }
 
@@ -136,8 +147,10 @@ public class MarksActivity extends MainActivity {
             //feedsRecyclerAdapter.notifyDataSetChanged();
             //progressBar.setVisibility(View.INVISIBLE);
 
-            viewPager.setOffscreenPageLimit(count);
-            viewPager.setAdapter(adapter);
+            if(count!=-1) {
+                viewPager.setOffscreenPageLimit(count);
+                viewPager.setAdapter(adapter);
+            }
             super.onPostExecute(aVoid);
         }
     }
@@ -147,7 +160,7 @@ public class MarksActivity extends MainActivity {
 
         if (CheckAuth.isAuth()) {
 
-            count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), "count", -1);
+            count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1);
             if(count != -1) {
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
                 for (int i = 1; i < count - 1; i++) {
@@ -157,7 +170,6 @@ public class MarksActivity extends MainActivity {
                 viewPager.setOffscreenPageLimit(count);
                 viewPager.setAdapter(adapter);
             }
-
             getMarks();
         }
         else showNeedLogin();

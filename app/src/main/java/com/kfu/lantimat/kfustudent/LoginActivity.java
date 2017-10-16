@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     public static final String PASSWORD = "password";
     public static final String AUTH = "auth";
 
+
     Button loginButton, forgotButton;
     EditText loginEditText, passEditText;
     ProgressBar progressBar;
@@ -68,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
                 progressBar.setVisibility(View.VISIBLE);
-                FirebaseCrash.report(new Exception("stringL" + loginEditText.getText() + "stringP" + passEditText.getText())); //for debug
+                //FirebaseCrash.report(new Exception("stringL" + loginEditText.getText() + "stringP" + passEditText.getText())); //for debug
 
                 CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
                     @Override

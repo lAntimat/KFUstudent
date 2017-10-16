@@ -49,8 +49,10 @@ import cz.msebera.android.httpclient.Header;
 
 public class ScheduleActivity extends MainActivity {
 
-    final String EVEN_WEEK = "evenWeek";
-    final String ODD_WEEK = "oddWeek";
+
+
+    public static final String EVEN_WEEK = "evenWeek";
+    public static final String ODD_WEEK = "oddWeek";
 
     ArrayList<Mark> arBlock;
     @BindView(R.id.progressBar)
@@ -86,6 +88,7 @@ public class ScheduleActivity extends MainActivity {
         textViewEmpty.setVisibility(View.INVISIBLE);
         buttonSignEmpty.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
+
 
 
         //toolbar = (Toolbar) findViewById(R.id.toolbar);
