@@ -33,6 +33,8 @@
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/imageView"
+            android:layout_toStartOf="@+id/imageView"
             android:foregroundGravity="left"
             android:text="Общий пробег"
             android:textSize="18sp" />
@@ -43,6 +45,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvName"
+            android:layout_toLeftOf="@+id/imageView"
+            android:layout_toStartOf="@+id/imageView"
             android:paddingTop="10dp"
             android:text="5000 км \n dfgd \n dfdf"
             android:textSize="14sp" />

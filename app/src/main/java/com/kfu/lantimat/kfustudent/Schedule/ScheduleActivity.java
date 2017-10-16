@@ -264,7 +264,7 @@ public class ScheduleActivity extends MainActivity {
                     try {
                         //str = new String(params[0], "UTF-8");
                         str = new String(responseBody, "windows-1251");
-                        FirebaseCrash.report(new Exception("ScheduleActivity - getScheduleOddWeek" + str));
+                        //FirebaseCrash.report(new Exception("ScheduleActivity - getScheduleOddWeek" + str));
                         setScheduleToViewPager(str, EVEN_WEEK);
                         SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), EVEN_WEEK, str);
                     } catch (UnsupportedEncodingException e) {
