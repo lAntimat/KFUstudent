@@ -269,7 +269,7 @@ public class ScheduleActivity extends MainActivity {
                         SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), EVEN_WEEK, str);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
-                        FirebaseCrash.report(e);
+                        FirebaseCrash.report(new Exception("statusCode " + statusCode));
 
                     }
                 }

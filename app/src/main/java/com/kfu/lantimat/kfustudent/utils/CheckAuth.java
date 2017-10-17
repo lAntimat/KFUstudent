@@ -181,7 +181,7 @@ public class CheckAuth {
                 String url = "";
                 Log.d("CheckAuthLogin", str);
 
-                if(str.toLowerCase().contains("неверно введены имя или пароль")) {
+                if(str.toLowerCase().contains("неверно введены имя или пароль") | str.toLowerCase().contains("неверно введены логин или пароль")) {
                     Toast.makeText(context, R.string.login_error_log_and_pass, Toast.LENGTH_SHORT).show();
                     loginCallback.onLoginAndPassFail();
                 } else {

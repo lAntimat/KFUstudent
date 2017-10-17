@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
@@ -46,6 +47,7 @@ import cz.msebera.android.httpclient.Header;
 public class MarksFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
+    private static final String TAG = "MarksFragment";
 
     RecyclerView recyclerView;
     MarksRecyclerAdapter marksRecyclerAdapter;
@@ -111,6 +113,8 @@ public class MarksFragment extends Fragment {
     }
 
     private void getMarks() {
+        FirebaseCrash.report(new Exception("getMarks-coursesCount " + course));
+
         if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
         String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
         if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
@@ -133,6 +137,10 @@ public class MarksFragment extends Fragment {
     }
 
     private void parseMarksFromString(String str) {
+
+        FirebaseCrash.report(new Exception("ParseMarksFromString: " + str));
+
+
         ArrayList<Mark> arMarksTemp = new ArrayList<>();
 
         Document doc = Jsoup.parse(str);
@@ -143,6 +151,7 @@ public class MarksFragment extends Fragment {
 
         for (int i = 0; i < marksBlockHeader.size(); i++) {
             Elements marksBlock = marksBlockBody.get(i).select("tr");
+            //Log.d("MarksFragment", "tr - " + marksBlock.toString());
             Pattern pattern = Pattern.compile(">(.*)<\\/");
             Matcher matcher = pattern.matcher(marksBlockHeader.get(i).toString());
             while (matcher.find()) {
@@ -156,20 +165,42 @@ public class MarksFragment extends Fragment {
                 if (!marksBlock.get(j).toString().equalsIgnoreCase("<tr> \n" +
                         "</tr>")) {
 
-                    Mark mark = new Mark(scopeType, marksBlock.get(j).toString());
-                    arMarksTemp.add(mark);
-
-                    Collections.sort(arMarksTemp, Mark.COMPARE_BY_SEMESTER);
-
-                    Log.d("MarksActivity", mark.getTestString());
+                    Log.d(TAG, "checkRowSpanCount " + checkRowSpanCount(marksBlock.get(j).toString()));
+                    if(checkRowSpanCount(marksBlock.get(j).toString()) == 2) {
+                        if(j + 1 < marksBlock.size()) {
+                            Mark mark = new Mark(Mark.TWO_ROW_TYPE, marksBlock.get(j).toString(), marksBlock.get(j+1).toString());
+                            arMarksTemp.add(mark);
+                            j++;
+                        }
+                    } else {
+                        Mark mark = new Mark(scopeType, marksBlock.get(j).toString());
+                        arMarksTemp.add(mark);
+                    }
+                    //Log.d("MarksActivity", mark.getTestString());
                 }
             }
+
+
+            Collections.sort(arMarksTemp, Mark.COMPARE_BY_SEMESTER);
+
         }
 
         arMarks.clear();
         arMarks.addAll(arMarksTemp);
 
 
+    }
+
+    private int checkRowSpanCount(String str) { //Проверяем сгруппированы ли оценки за зачет и экзамен
+        Pattern pattern = Pattern.compile("rowspan=\"(.*)\">");
+        Matcher matcher = pattern.matcher(str);
+        if(matcher.find()) {
+            try {
+                return Integer.parseInt(matcher.group(1));
+            } catch (Exception e) {
+                return 1;
+            }
+        } else return 1;
     }
 
     private void onPreExecuteMethod() {

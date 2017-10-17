@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.LoginActivity;
 import com.kfu.lantimat.kfustudent.MainActivity;
@@ -46,7 +48,8 @@ public class MarksActivity extends MainActivity {
     TextView textView;
     @BindView(R.id.btnSign)
     Button button;
-
+    @BindView(R.id.progressBar)
+    ProgressBar progressBar;
     //private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -90,6 +93,7 @@ public class MarksActivity extends MainActivity {
     }
 
     private void getMarks() {
+        if(count!=-1) progressBar.setVisibility(View.VISIBLE);
 
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
             @Override
@@ -127,8 +131,12 @@ public class MarksActivity extends MainActivity {
 
             Document doc = Jsoup.parse(str);
             Log.d("docToString", doc.toString());
+            FirebaseCrash.report(new Exception("ParseMarks-docToString" + doc.toString()));
+
             Elements courses = doc.select("div.courses");
             count = courses.toString().split("</span>").length;
+            FirebaseCrash.report(new Exception("getMarks-coursesCount" + count));
+
 
             if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1) == -1) {
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -145,8 +153,7 @@ public class MarksActivity extends MainActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             //feedsRecyclerAdapter.notifyDataSetChanged();
-            //progressBar.setVisibility(View.INVISIBLE);
-
+            progressBar.setVisibility(View.INVISIBLE);
             if(count!=-1) {
                 viewPager.setOffscreenPageLimit(count);
                 viewPager.setAdapter(adapter);

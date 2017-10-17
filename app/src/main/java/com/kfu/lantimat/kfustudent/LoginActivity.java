@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         //loginEditText.setText(login);
         //passEditText.setText(pass);
 
-        if(!SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), LOGIN, "not").isEmpty()) {
+        if(SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), LOGIN, "").isEmpty()) {
             loginEditText.setText(SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(),LOGIN, ""));
             passEditText.setText(SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(),PASSWORD, ""));
         }
@@ -64,13 +64,13 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String login2 = loginEditText.getText().toString();
-                String pass2 = passEditText.getText().toString();
+                final String l = loginEditText.getText().toString();
+                final String p = passEditText.getText().toString();
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), LOGIN, loginEditText.getText().toString());
                 SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), PASSWORD, passEditText.getText().toString());
                 progressBar.setVisibility(View.VISIBLE);
 
-                CheckAuth.login(login2, pass2, new CheckAuth.LoginCallback() {
+                CheckAuth.login(l, p, new CheckAuth.LoginCallback() {
                     @Override
                     public void onSuccess(String url) {
                         Toast.makeText(getApplicationContext(), R.string.auth_succes, Toast.LENGTH_SHORT).show();

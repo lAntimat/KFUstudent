@@ -1,6 +1,7 @@
 package com.kfu.lantimat.kfustudent.Marks;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableString;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,7 @@ public class MarksRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         String itemText = mList.get(position).getNameString();
-        String data = mList.get(position).getTestString();
+        CharSequence data = mList.get(position).getTestString();
 
             switch (getItemViewType(position)) {
                 case Mark.RATING_TYPE:
