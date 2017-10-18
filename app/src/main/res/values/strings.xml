@@ -8,9 +8,9 @@
     <string name="drawer_item_exit">Выйти</string>
     <string name="drawer_item_sign_in">Войти</string>
     <string name="drawer_item_about">О приложении</string>
-    <string name="auth_succes">Авторизация успешна</string>
+    <string name="auth_succes">Авторизация прошла успешно!</string>
     <string name="about">О программе</string>
-    <string name="login_error_log_and_pass">Извините, неверно введены имя или пароль</string>
+    <string name="login_error_log_and_pass">Извините, неверно введены имя или пароль!</string>
     <string name="connection_error">Ошибка соединения</string>
     <string name="update_error">Ошибка соединения</string>
     <string name="timeline_events_null">Нет предстоящих событий</string>

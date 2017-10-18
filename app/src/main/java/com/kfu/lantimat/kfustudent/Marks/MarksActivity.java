@@ -90,10 +90,11 @@ public class MarksActivity extends MainActivity {
     public void showNeedLogin() {
         textView.setVisibility(View.VISIBLE);
         button.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void getMarks() {
-        if(count!=-1) progressBar.setVisibility(View.VISIBLE);
+        if(count!=-1) progressBar.setVisibility(View.INVISIBLE);
 
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7", null, new AsyncHttpResponseHandler() {
             @Override
@@ -169,6 +170,7 @@ public class MarksActivity extends MainActivity {
 
             count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1);
             if(count != -1) {
+                progressBar.setVisibility(View.INVISIBLE);
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
                 for (int i = 1; i < count - 1; i++) {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
