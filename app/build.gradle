@@ -1,6 +1,5 @@
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.android.application'
-apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'com.google.firebase.firebase-crash'
 
 android {
@@ -56,7 +55,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'org.jsoup:jsoup:1.10.3'
-    compile 'com.jakewharton:butterknife:8.8.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.vipulasri:timelineview:1.0.5'
     compile 'com.heinrichreimersoftware:material-intro:1.6.2'
@@ -71,7 +69,6 @@ dependencies {
     compile 'com.google.firebase:firebase-database:10.0.1'
     compile 'com.github.d-max:spots-dialog:0.7@aar'
     testCompile 'junit:junit:4.12'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
 
 

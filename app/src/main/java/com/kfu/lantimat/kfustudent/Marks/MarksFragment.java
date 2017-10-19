@@ -38,9 +38,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
+
 import cz.msebera.android.httpclient.Header;
 
 
@@ -54,12 +52,12 @@ public class MarksFragment extends Fragment {
     ArrayList<String> arBlock = new ArrayList<>();
     ArrayList<Mark> arMarks;
     String course = "";
-    @BindView(R.id.textView)
+    //@BindView(R.id.textView)
     TextView textView;
-    @BindView(R.id.imageView)
+    //@BindView(R.id.imageView)
     ImageView imageView;
-    Unbinder unbinder;
-    @BindView(R.id.progressBar)
+    //Unbinder unbinder;
+    //@BindView(R.id.progressBar)
     ProgressBar progressBar;
     AsyncTask<byte[], Void, Void> parseMarks;
     boolean isStopped = false;
@@ -101,7 +99,12 @@ public class MarksFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_marks, null);
-        unbinder = ButterKnife.bind(this, v);
+        //unbinder = ButterKnife.bind(this, v);
+
+        textView = v.findViewById(R.id.textView);
+        imageView = v.findViewById(R.id.imageView);
+        progressBar = v.findViewById(R.id.progressBar);
+
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
@@ -247,7 +250,7 @@ public class MarksFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         if(parseMarks!=null) parseMarks.cancel(true);
-        unbinder.unbind();
+        //unbinder.unbind();
     }
 
     public class ParseMarks extends AsyncTask<byte[], Void, Void> {

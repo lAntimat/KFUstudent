@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import cz.msebera.android.httpclient.Header;
 
 
@@ -44,12 +41,12 @@ public class ScheduleFragment extends Fragment implements
     ArrayList<String> arBlock = new ArrayList<>();
     ArrayList<Schedule> arSchedule;
     int day;
-    @BindView(R.id.textView)
+    //@BindView(R.id.textView)
     TextView textView;
-    @BindView(R.id.imageView)
+    //@BindView(R.id.imageView)
     ImageView imageView;
-    Unbinder unbinder;
-    @BindView(R.id.progressBar)
+    //Unbinder unbinder;
+    //@BindView(R.id.progressBar)
     ProgressBar progressBar;
     AsyncTask<byte[], Void, Void> parseSchedule;
     AsyncTask<String, Void, Void> loadScheduleFromCash;
@@ -95,7 +92,11 @@ public class ScheduleFragment extends Fragment implements
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_schedule, null);
-        unbinder = ButterKnife.bind(this, v);
+        //unbinder = ButterKnife.bind(this, v);
+
+        textView = v.findViewById(R.id.textView);
+        imageView = v.findViewById(R.id.imageView);
+        progressBar = v.findViewById(R.id.progressBar);
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
@@ -176,7 +177,7 @@ public class ScheduleFragment extends Fragment implements
     public void onDestroyView() {
         super.onDestroyView();
         Log.d("ScheduleFragment", "destroyVIew");
-        unbinder.unbind();
+        //unbinder.unbind();
     }
 
     public class ParseSchedule extends AsyncTask<byte[], Void, Void> {

@@ -43,8 +43,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class ScheduleActivity extends MainActivity {
@@ -55,11 +53,11 @@ public class ScheduleActivity extends MainActivity {
     public static final String ODD_WEEK = "oddWeek";
 
     ArrayList<Mark> arBlock;
-    @BindView(R.id.progressBar)
+    //@BindView(R.id.progressBar)
     ProgressBar progressBar;
-    @BindView(R.id.btnSign)
+    //@BindView(R.id.btnSign)
     Button buttonSignEmpty;
-    @BindView(R.id.textView)
+    //@BindView(R.id.textView)
     TextView textViewEmpty;
     //Spinner spinner;
 
@@ -84,7 +82,11 @@ public class ScheduleActivity extends MainActivity {
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_schedule, v);
 
-        ButterKnife.bind(this);
+        textViewEmpty = (TextView) findViewById(R.id.textView);
+        buttonSignEmpty = (Button) findViewById(R.id.btnSign);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        //ButterKnife.bind(this);
         textViewEmpty.setVisibility(View.INVISIBLE);
         buttonSignEmpty.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);

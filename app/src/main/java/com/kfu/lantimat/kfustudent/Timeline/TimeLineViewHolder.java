@@ -7,25 +7,27 @@ import android.widget.TextView;
 import com.github.vipulasri.timelineview.TimelineView;
 import com.kfu.lantimat.kfustudent.R;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by HP-HP on 05-12-2015.
  */
 public class TimeLineViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.text_timeline_date)
+    //@BindView(R.id.text_timeline_date)
     TextView mDate;
-    @BindView(R.id.text_timeline_title)
+    //@BindView(R.id.text_timeline_title)
     TextView mMessage;
-    @BindView(R.id.time_marker)
+    //@BindView(R.id.time_marker)
     TimelineView mTimelineView;
 
     public TimeLineViewHolder(View itemView, int viewType) {
         super(itemView);
 
-        ButterKnife.bind(this, itemView);
+        //ButterKnife.bind(this, itemView);
+
+        mDate = itemView.findViewById(R.id.text_timeline_date);
+        mMessage = itemView.findViewById(R.id.text_timeline_title);
+        mTimelineView = itemView.findViewById(R.id.time_marker);
         mTimelineView.initLine(viewType);
     }
 }

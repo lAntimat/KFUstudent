@@ -28,15 +28,13 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
-import dmax.dialog.SpotsDialog;
 
 public class MarksActivity extends MainActivity {
 
@@ -44,11 +42,11 @@ public class MarksActivity extends MainActivity {
 
 
     ArrayList<Mark> arBlock;
-    @BindView(R.id.textView)
+    //@BindView(R.id.textView)
     TextView textView;
-    @BindView(R.id.btnSign)
+    //@BindView(R.id.btnSign)
     Button button;
-    @BindView(R.id.progressBar)
+    //@BindView(R.id.progressBar)
     ProgressBar progressBar;
     //private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -69,7 +67,11 @@ public class MarksActivity extends MainActivity {
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_marks, v);
 
-        ButterKnife.bind(this);
+        //ButterKnife.bind(this);
+
+        textView = (TextView) findViewById(R.id.textView);
+        button = (Button) findViewById(R.id.btnSign);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         textView.setVisibility(View.INVISIBLE);
         button.setVisibility(View.INVISIBLE);
