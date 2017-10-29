@@ -2,6 +2,8 @@ package com.kfu.lantimat.kfustudent.Marks;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -51,6 +53,9 @@ public class MarksActivity extends MainActivity {
     int count = -1;
     AsyncTask<byte[], Void, Void> parseMarks;
 
+    CoordinatorLayout topLayout;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,9 +70,12 @@ public class MarksActivity extends MainActivity {
 
         //ButterKnife.bind(this);
 
+
+
         textView = (TextView) findViewById(R.id.textView);
         button = (Button) findViewById(R.id.btnSign);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        topLayout = findViewById(R.id.coordinatorLayout);
 
         textView.setVisibility(View.INVISIBLE);
         button.setVisibility(View.INVISIBLE);
@@ -91,6 +99,20 @@ public class MarksActivity extends MainActivity {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+    private void showUpdateSnackBar() {
+
+           Snackbar snackbar = Snackbar
+                    .make(topLayout, "Вы не смогли загрузить актуальные данные :(", Snackbar.LENGTH_LONG)
+                    .setAction("Еще раз", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            getMarks();
+                        }
+                    });
+
+            snackbar.show();
+    }
+
     private void getMarks() {
         if(count!=-1) progressBar.setVisibility(View.INVISIBLE);
 
@@ -102,7 +124,7 @@ public class MarksActivity extends MainActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
+                showUpdateSnackBar();
             }
         });
     }
