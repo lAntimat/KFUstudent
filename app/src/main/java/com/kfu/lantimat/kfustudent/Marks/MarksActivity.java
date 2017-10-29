@@ -1,6 +1,5 @@
 package com.kfu.lantimat.kfustudent.Marks;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -8,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +16,6 @@ import android.widget.TextView;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.KFURestClient;
-import com.kfu.lantimat.kfustudent.LoginActivity;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
@@ -28,7 +25,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -113,8 +109,14 @@ public class MarksActivity extends MainActivity {
 
     public class ParseMarks extends AsyncTask<byte[], Void, Void> {
 
+        boolean isHaveSavedSchedule;
+
         @Override
         protected void onPreExecute() {
+
+            if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1) == -1)
+                isHaveSavedSchedule = false;
+            else isHaveSavedSchedule = true;
             super.onPreExecute();
         }
 
@@ -141,8 +143,9 @@ public class MarksActivity extends MainActivity {
             FirebaseCrash.report(new Exception("getMarks-coursesCount" + count));
 
 
-            if(SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1) == -1) {
-                adapter = new ViewPagerAdapter(getSupportFragmentManager());
+            if(!isHaveSavedSchedule) {
+                if(adapter == null) adapter = new ViewPagerAdapter(getSupportFragmentManager());
+                else adapter.clear();
                 for (int i = 1; i < count - 1; i++) {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
                 }
@@ -159,7 +162,8 @@ public class MarksActivity extends MainActivity {
             progressBar.setVisibility(View.INVISIBLE);
             if(count!=-1) {
                 viewPager.setOffscreenPageLimit(count);
-                viewPager.setAdapter(adapter);
+                if(!isHaveSavedSchedule) viewPager.setAdapter(adapter);
+                viewPager.invalidate();
             }
             super.onPostExecute(aVoid);
         }
@@ -215,6 +219,11 @@ public class MarksActivity extends MainActivity {
         public void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
+        }
+
+        public void clear() {
+            mFragmentList.clear();
+            mFragmentTitleList.clear();
         }
 
         @Override

@@ -180,15 +180,15 @@ public class Mark {
                     return "Ваш рейтинг в группе " + placeInGroup + "\nместо в институте " + placeInInstitute + "\nсеместровый рейтинг " + semesterRating;
                 }
 
-            case SCORE_TYPE:  return type + "\nполученный балл " + score + "\nбалл за работу в семестре " + receivedScore + " (" + date + ")\nитоговая оценка: " + finalScore + " (" + finalMark + ")";
+            case SCORE_TYPE:  return type + "\nбалл за работу в семестре " + receivedScore + "\nполученный балл " + score + " (" + date + ")\nитоговая оценка: " + finalScore + " (" + finalMark + ")";
             case PRACTICE_TYPE:  return score + " " + date;
             case COURSEWORK_TYPE:  return name + "\n" + score + " " + date;
             case TWO_ROW_TYPE:
                 SpannableString span1 = new SpannableString(type);
                 span1.setSpan(new AbsoluteSizeSpan(18), 0, type.length(), SPAN_INCLUSIVE_INCLUSIVE);
 
-                return span1 + "\nполученный балл " + score + "\nбалл за работу в семестре " + receivedScore + " (" + date + ")\nитоговая оценка: " + finalScore + " (" + finalMark + ")"
-                    + "\n" + type2 +"\nполученный балл " + score + "\nбалл за работу в семестре " + receivedScore2 + " (" + date2 + ")\nитоговая оценка: " + finalScore2 + " (" + finalMark2 + ")";
+                return span1 + "\nбалл за работу в семестре " + receivedScore + "\nполученный балл " + score +  " (" + date + ")\nитоговая оценка: " + finalScore + " (" + finalMark + ")"
+                    + "\n" + type2  + "\nбалл за работу в семестре " + receivedScore2 +"\nполученный балл " + score +  " (" + date2 + ")\nитоговая оценка: " + finalScore2 + " (" + finalMark2 + ")";
 
         }
         return "";
