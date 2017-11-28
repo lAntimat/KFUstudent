@@ -45,14 +45,20 @@ public class CheckAuth {
 
     public interface AuthCallback {
         void onLoggedIn();
+
         void onNotLoggedIn();
+
         void onOldSession();
     }
+
     public interface LoginCallback {
         void onSuccess(String url);
+
         void onLoginAndPassFail();
+
         void onConnectFail();
     }
+
     interface SaveSessionCookieCallback {
         void onSuccess(String response);
     }
@@ -89,8 +95,8 @@ public class CheckAuth {
                 //Toast.makeText(context, "Сессия устарела, необходима переавторизация", Toast.LENGTH_SHORT).show();
                 String login = "";
                 String password = "";
-                if(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not")!=null) {
-                    login = SharedPreferenceHelper.getSharedPreferenceString(context,LOGIN, "");
+                if (SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not") != null) {
+                    login = SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "");
                     password = SharedPreferenceHelper.getSharedPreferenceString(context, PASSWORD, "");
                     login(login, password, new LoginCallback() {
                         @Override
@@ -139,11 +145,11 @@ public class CheckAuth {
                 Log.d("responseString", str);
 
                 if (str.contains("Извините, устарела сессия работы с системой")) {
-                    if(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) { //Если не вводили логин и пароль
+                    if (SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) { //Если не вводили логин и пароль
                         authCallback.onNotLoggedIn();
                         Log.d("CheckLogin", "onNotLoggedIn");
                     } else {
-                        if(SharedPreferenceHelper.getSharedPreferenceBoolean(context, AUTH, false)) {
+                        if (SharedPreferenceHelper.getSharedPreferenceBoolean(context, AUTH, false)) {
                             authCallback.onOldSession(); //Иначе если логин и пароль сохранены, но пользователь нажал выйти
                             Log.d("CheckLogin", "onOldSession");
                         }
@@ -181,8 +187,16 @@ public class CheckAuth {
                 String url = "";
                 Log.d("CheckAuthLogin", str);
 
-                if(str.toLowerCase().contains("неверно введены имя или пароль") | str.toLowerCase().contains("неверно введены логин или пароль")) {
+                if (str.toLowerCase().contains("неверно введены имя или пароль") | str.toLowerCase().contains("неверно введены логин или пароль")) {
                     Toast.makeText(context, R.string.login_error_log_and_pass, Toast.LENGTH_SHORT).show();
+                    loginCallback.onLoginAndPassFail();
+                } else if (!str.isEmpty()) {
+                    str = str.replace("<script>alert('", "");
+                    str = str.substring(0, str.indexOf("');"));
+                    str = str.replace("');", "");
+
+                    Toast.makeText(context, str, Toast.LENGTH_LONG).show();
+                    Log.d("CheckAuth", "str to string" + str);
                     loginCallback.onLoginAndPassFail();
                 } else {
                     if (matcher.find()) {
@@ -244,7 +258,7 @@ public class CheckAuth {
                 pattern = Pattern.compile("<a class = \"ico\" href = \"(.*)\" title");
                 matcher = pattern.matcher(responseString);
                 matcher.find();
-                if(matcher.find()){
+                if (matcher.find()) {
                     SharedPreferenceHelper.setSharedPreferenceString(context, "scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
                     Log.d("scheduleUrl", matcher.group(1).replace("student_personal_main.show_notification?", ""));
                 }
@@ -265,29 +279,31 @@ public class CheckAuth {
     }
 
     private static void getFullName() {
-        if(SharedPreferenceHelper.getSharedPreferenceString(context, FULL_NAME, "").equalsIgnoreCase("")) {
+        if (SharedPreferenceHelper.getSharedPreferenceString(context, FULL_NAME, "").equalsIgnoreCase("")) {
 
-                KFURestClient.get("new_stud_personal.stud_anketa", null, new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        try {
-                            String str = new String(responseBody, "windows-1251");
-                            Document doc = Jsoup.parse(str);
-                            Elements elements = doc.select("span.value");
-                            if(!elements.isEmpty()) {
-                                if(elements.get(0).hasText()) SharedPreferenceHelper.setSharedPreferenceString(context, FULL_NAME, elements.get(0).text());
-                                if(elements.get(5).hasText())SharedPreferenceHelper.setSharedPreferenceString(context, GROUP, elements.get(5).text());
-                            }
-                        } catch (UnsupportedEncodingException e) {
-                            e.printStackTrace();
+            KFURestClient.get("new_stud_personal.stud_anketa", null, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    try {
+                        String str = new String(responseBody, "windows-1251");
+                        Document doc = Jsoup.parse(str);
+                        Elements elements = doc.select("span.value");
+                        if (!elements.isEmpty()) {
+                            if (elements.get(0).hasText())
+                                SharedPreferenceHelper.setSharedPreferenceString(context, FULL_NAME, elements.get(0).text());
+                            if (elements.get(5).hasText())
+                                SharedPreferenceHelper.setSharedPreferenceString(context, GROUP, elements.get(5).text());
                         }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
                     }
+                }
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
 
-                    }
-                });
+                }
+            });
         }
 
 
