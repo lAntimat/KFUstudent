@@ -7,6 +7,8 @@ package com.kfu.lantimat.kfustudent.Marks;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.crash.FirebaseCrash;
@@ -63,6 +66,8 @@ public class MarksFragment extends Fragment {
     boolean isStopped = false;
     Context context;
 
+    boolean isDataInCash;
+
     public MarksFragment() {
         // Required empty public constructor
     }
@@ -105,7 +110,6 @@ public class MarksFragment extends Fragment {
         imageView = v.findViewById(R.id.imageView);
         progressBar = v.findViewById(R.id.progressBar);
 
-
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
@@ -120,7 +124,10 @@ public class MarksFragment extends Fragment {
 
         if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
         String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
-        if (!marksCashStr.equalsIgnoreCase("-1")) getMarksFromCash(marksCashStr);
+        if (!marksCashStr.equalsIgnoreCase("-1")) {
+            isDataInCash = true;
+            getMarksFromCash(marksCashStr);
+        }
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7&p_course=" + course, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -129,7 +136,7 @@ public class MarksFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                emptyPic();
+                if(!isDataInCash) emptyPic();
             }
         });
     }
