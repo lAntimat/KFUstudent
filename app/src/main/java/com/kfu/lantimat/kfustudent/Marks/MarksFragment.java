@@ -120,7 +120,7 @@ public class MarksFragment extends Fragment {
     }
 
     private void getMarks() {
-        FirebaseCrash.report(new Exception("getMarks-coursesCount " + course));
+        //FirebaseCrash.report(new Exception("getMarks-coursesCount " + course));
 
         if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
         String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
@@ -148,7 +148,7 @@ public class MarksFragment extends Fragment {
 
     private void parseMarksFromString(String str) {
 
-        FirebaseCrash.report(new Exception("ParseMarksFromString: " + str));
+        //FirebaseCrash.report(new Exception("ParseMarksFromString: " + str));
 
 
         ArrayList<Mark> arMarksTemp = new ArrayList<>();

@@ -39,6 +39,7 @@ import static com.kfu.lantimat.kfustudent.LoginActivity.PASSWORD;
 
 public class CheckAuth {
 
+    public final static String TAG = "CheckAuth";
     public final static String FULL_NAME = "fullName";
     public final static String GROUP = "group";
     static Context context;
@@ -190,19 +191,24 @@ public class CheckAuth {
                 if (str.toLowerCase().contains("неверно введены имя или пароль") | str.toLowerCase().contains("неверно введены логин или пароль")) {
                     Toast.makeText(context, R.string.login_error_log_and_pass, Toast.LENGTH_SHORT).show();
                     loginCallback.onLoginAndPassFail();
-                } else if (!str.isEmpty()) {
+                } else if(str.toLowerCase().contains("будет завершена")) {
+                    if (matcher.find()) {
+                        url = matcher.group(1);
+                        loginCallback.onSuccess(url);
+                    } else loginCallback.onConnectFail();
+                } else if (str.contains("alert")) {
                     str = str.replace("<script>alert('", "");
                     str = str.substring(0, str.indexOf("');"));
                     str = str.replace("');", "");
 
                     Toast.makeText(context, str, Toast.LENGTH_LONG).show();
-                    Log.d("CheckAuth", "str to string" + str);
-                    loginCallback.onLoginAndPassFail();
+                    Log.d(TAG, "!str.isEmpty()");
+                    loginCallback.onConnectFail();
                 } else {
                     if (matcher.find()) {
                         url = matcher.group(1);
-                    }
-                    loginCallback.onSuccess(url);
+                        loginCallback.onSuccess(url);
+                    } else loginCallback.onConnectFail();
                 }
             }
 
