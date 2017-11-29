@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText loginEditText, passEditText;
     ProgressBar progressBar;
     PersistentCookieStore myCookieStore;
+    CheckAuth checkAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         //KFURestClient.setCookieStore(myCookieStore);
 
 
-        //checkAuth();
+       checkAuth = new CheckAuth(getApplicationContext());
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

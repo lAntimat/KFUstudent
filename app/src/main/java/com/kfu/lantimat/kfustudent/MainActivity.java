@@ -30,7 +30,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCallback {
 
     public final static String EXTRA_ORIENTATION = "EXTRA_ORIENTATION";
     public final static String EXTRA_WITH_LINE_PADDING = "EXTRA_WITH_LINE_PADDING";
@@ -75,25 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void authCheck() {
-        new CheckAuth(getApplicationContext(), new CheckAuth.AuthCallback() {
-            @Override
-            public void onLoggedIn() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-
-            @Override
-            public void onNotLoggedIn() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-
-            @Override
-            public void onOldSession() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-        });
+        new CheckAuth(getApplicationContext(), this);
     }
 
     @Override
@@ -278,6 +260,20 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
+    @Override
+    public void onLoggedIn() {
+        updateDrawer();
+    }
+
+    @Override
+    public void onNotLoggedIn() {
+        updateDrawer();
+    }
+
+    @Override
+    public void onOldSession() {
+        updateDrawer();
+    }
 }
 
 

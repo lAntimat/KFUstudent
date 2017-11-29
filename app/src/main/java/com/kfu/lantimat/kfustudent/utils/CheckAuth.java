@@ -73,6 +73,11 @@ public class CheckAuth {
         checkAuth(authCallback);
     }
 
+    public CheckAuth(Context context) {
+        myCookieStore = KFURestClient.getCookieStore();
+        this.context = context;
+    }
+
     public void checkAuth(final AuthCallback authCallback) {
 
         checkLogin(new AuthCallback() {
@@ -93,6 +98,7 @@ public class CheckAuth {
 
             @Override
             public void onOldSession() {
+                authCallback.onOldSession();
                 //Toast.makeText(context, "Сессия устарела, необходима переавторизация", Toast.LENGTH_SHORT).show();
                 String login = "";
                 String password = "";

@@ -37,7 +37,7 @@ import cz.msebera.android.httpclient.Header;
 public class MarksActivity extends MainActivity {
 
     public static final String COURSES_COUNT = "count";
-
+    boolean isOldSession = false;
 
     ArrayList<Mark> arBlock;
     //@BindView(R.id.textView)
@@ -75,6 +75,7 @@ public class MarksActivity extends MainActivity {
         textView = (TextView) findViewById(R.id.textView);
         button = (Button) findViewById(R.id.btnSign);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         topLayout = findViewById(R.id.coordinatorLayout);
 
         textView.setVisibility(View.INVISIBLE);
@@ -92,6 +93,18 @@ public class MarksActivity extends MainActivity {
         result.setSelection(3, false);
     }
 
+    @Override
+    public void onOldSession() {
+        super.onOldSession();
+        //isOldSession = true;
+    }
+
+    @Override
+    public void onLoggedIn() {
+        super.onLoggedIn();
+        //if(isOldSession & viewPager!=null) getMarks();
+        //isOldSession = false;
+    }
 
     public void showNeedLogin() {
         textView.setVisibility(View.VISIBLE);
@@ -186,6 +199,7 @@ public class MarksActivity extends MainActivity {
                 viewPager.setOffscreenPageLimit(count);
                 if(!isHaveSavedSchedule) viewPager.setAdapter(adapter);
                 viewPager.invalidate();
+                progressBar.setVisibility(View.INVISIBLE);
             }
             super.onPostExecute(aVoid);
         }
