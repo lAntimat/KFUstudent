@@ -3,6 +3,7 @@ package com.kfu.lantimat.kfustudent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
     public Toolbar toolbar;
     public Spinner spinner;
+    public AppBarLayout appBarLayout;
     AccountHeader headerResult;
     public Drawer result;
     FrameLayout frameLayout;
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
+        appBarLayout = findViewById(R.id.appbar);
         frameLayout = (FrameLayout)findViewById(R.id.content_frame);
 
         spinner = (Spinner) findViewById(R.id.spinner_nav);

@@ -139,6 +139,7 @@ public class MarksFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 if(!isDataInCash) emptyPic();
+                if(progressBar!=null) progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -196,8 +197,6 @@ public class MarksFragment extends Fragment {
 
             Collections.sort(arMarksTemp, Mark.COMPARE_BY_SEMESTER);
         }
-
-        progressBar.setVisibility(View.INVISIBLE);
 
         if (arMarksTemp.size() > 0) {
             arMarks.clear();
@@ -274,6 +273,7 @@ public class MarksFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             onPreExecuteMethod();
+            if(progressBar!=null & !isDataInCash) progressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
@@ -289,8 +289,8 @@ public class MarksFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            //Парсим данные из строки и если есть данныесохраняем в кэш
-            if(parseMarksFromString(str)); SharedPreferenceHelper.setSharedPreferenceString(context, "marks" + course, str);
+            //Парсим данные из строки и если есть данные сохраняем в кэш
+            if(parseMarksFromString(str)) SharedPreferenceHelper.setSharedPreferenceString(context, "marks" + course, str);
 
             return null;
         }

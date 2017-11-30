@@ -96,14 +96,15 @@ public class MarksActivity extends MainActivity {
     @Override
     public void onOldSession() {
         super.onOldSession();
-        //isOldSession = true;
+        isOldSession = true;
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onLoggedIn() {
         super.onLoggedIn();
-        //if(isOldSession & viewPager!=null) getMarks();
-        //isOldSession = false;
+        if(isOldSession & viewPager!=null) getMarks();
+        isOldSession = false;
     }
 
     public void showNeedLogin() {
@@ -114,7 +115,7 @@ public class MarksActivity extends MainActivity {
 
     private void showUpdateSnackBar() {
 
-           Snackbar snackbar = Snackbar
+           /*Snackbar snackbar = Snackbar
                     .make(topLayout, "Вы не смогли загрузить актуальные данные :(", Snackbar.LENGTH_LONG)
                     .setAction("Еще раз", new View.OnClickListener() {
                         @Override
@@ -123,7 +124,7 @@ public class MarksActivity extends MainActivity {
                         }
                     });
 
-            snackbar.show();
+            snackbar.show();*/
     }
 
     private void getMarks() {
