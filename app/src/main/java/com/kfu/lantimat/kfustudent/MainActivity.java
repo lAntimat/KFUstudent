@@ -3,10 +3,12 @@ package com.kfu.lantimat.kfustudent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
@@ -33,6 +35,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCallback {
 
+    public final static String TAG = "MainActivity";
     public final static String EXTRA_ORIENTATION = "EXTRA_ORIENTATION";
     public final static String EXTRA_WITH_LINE_PADDING = "EXTRA_WITH_LINE_PADDING";
 
@@ -72,10 +75,12 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
 
         initAccountHeader();
-        setupNavigationDrawer();
+        if(result==null){
+            setupNavigationDrawer();
+        }
         authCheck();
-
     }
+
 
     public void authCheck() {
         new CheckAuth(getApplicationContext(), this);
@@ -174,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
     }
 
     public void setupNavigationDrawer() {
-
         //if you want to update the items at a later time it is recommended to keep it in a variable
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");

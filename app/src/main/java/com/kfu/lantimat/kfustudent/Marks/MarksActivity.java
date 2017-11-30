@@ -2,6 +2,8 @@ package com.kfu.lantimat.kfustudent.Marks;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -89,8 +91,20 @@ public class MarksActivity extends MainActivity {
 
         arBlock = new ArrayList<>();
 
-        initViewPager();
         result.setSelection(3, false);
+
+        //initViewPager();
+        new InitViewPager().execute("");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override
@@ -213,7 +227,12 @@ public class MarksActivity extends MainActivity {
 
             count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1);
             if(count != -1) {
-                progressBar.setVisibility(View.INVISIBLE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
                 for (int i = 1; i < count - 1; i++) {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
@@ -269,4 +288,25 @@ public class MarksActivity extends MainActivity {
         }
     }
 
+    private class InitViewPager extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            initViewPager();
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+    }
 }
