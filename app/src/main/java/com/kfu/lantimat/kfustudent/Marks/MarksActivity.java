@@ -1,5 +1,6 @@
 package com.kfu.lantimat.kfustudent.Marks;
 
+import android.animation.ValueAnimator;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -13,6 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -87,19 +89,23 @@ public class MarksActivity extends MainActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        //tabLayout.getLayoutParams().height = 0;
         toolbar.setTitle("Успеваемость");
 
         arBlock = new ArrayList<>();
 
         result.setSelection(3, false);
 
+
+
+
         //initViewPager();
-        new InitViewPager().execute("");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        new InitViewPager().execute("");
     }
 
     @Override
@@ -290,19 +296,42 @@ public class MarksActivity extends MainActivity {
 
     private class InitViewPager extends AsyncTask<String, Void, String> {
 
+        Boolean isAuth = CheckAuth.isAuth();
+
         @Override
         protected String doInBackground(String... params) {
-            initViewPager();
+            if (isAuth) {
+                count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1);
+                if(count != -1) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    adapter = new ViewPagerAdapter(getSupportFragmentManager());
+                    for (int i = 1; i < count - 1; i++) {
+                        adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
+                    }
+                }
+            }
             return "Executed";
         }
 
         @Override
         protected void onPostExecute(String result) {
 
+            if(isAuth) {
+                viewPager.setOffscreenPageLimit(count);
+                viewPager.setAdapter(adapter);
+
+                getMarks();
+            } else showNeedLogin();
         }
 
         @Override
         protected void onPreExecute() {
+
         }
 
         @Override

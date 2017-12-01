@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -62,6 +65,7 @@ public class MapActivity extends MainActivity {
     private ViewPagerAdapter adapter;
     private FloatingActionButton fab;
     private ProgressBar progressBar;
+    private ConstraintLayout constraintLayout;
     EnterLatLngFragment addLatFragment;
     MapFragment mapFragment;
     float lat;
@@ -79,17 +83,25 @@ public class MapActivity extends MainActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
+        //deleteScrollBehavior();
+
+        FrameLayout v = findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_map, v);
 
+        AppBarLayout.LayoutParams params =
+                (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(AppBarLayout.LayoutParams.WRAP_CONTENT);
+
+
         // Get the ViewPager and set it's PagerAdapter so that it can display items
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = findViewById(R.id.viewpager);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        fab = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        progressBar = findViewById(R.id.progressBar);
+
+        fab = findViewById(R.id.floatingActionButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,6 +124,10 @@ public class MapActivity extends MainActivity {
 
         result.setSelection(4, false);
 
+    }
+
+    private void deleteScrollBehavior() {
+        frameLayout.setVisibility(View.GONE);
     }
 
     // This method will be called when a MessageEvent is posted (in the UI thread for Toast)

@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
     public AppBarLayout appBarLayout;
     AccountHeader headerResult;
     public Drawer result;
-    FrameLayout frameLayout;
+    public FrameLayout frameLayout;
     Intent drawerIntent = null;
     boolean dontFinish = false;
     SecondaryDrawerItem sign_exit;
@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
