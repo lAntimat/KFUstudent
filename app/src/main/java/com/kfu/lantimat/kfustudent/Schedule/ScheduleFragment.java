@@ -142,18 +142,8 @@ public class ScheduleFragment extends Fragment implements
         scheduleRecyclerAdapter.notifyDataSetChanged();
         recyclerView.invalidate();
 
-        if(arSchedule.size() == 0) emptyPic();
-
-    }
-
-    private void onPreExecuteMethod() {
-        if(arSchedule.isEmpty()) progressBar.setVisibility(View.VISIBLE);
-    }
-
-    private void onPostExecuteMethod() {
-        progressBar.setVisibility(View.INVISIBLE);
-        scheduleRecyclerAdapter.notifyDataSetChanged();
         emptyPic();
+
     }
 
     private void emptyPic() {
@@ -180,68 +170,6 @@ public class ScheduleFragment extends Fragment implements
         //unbinder.unbind();
     }
 
-    public class ParseSchedule extends AsyncTask<byte[], Void, Void> {
 
-        @Override
-        protected void onPreExecute() {
-            onPreExecuteMethod();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(byte[]... params) {
-
-            String str = null;
-            try {
-
-                //str = new String(params[0], "UTF-8");
-                str = new String(params[0], "windows-1251");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            parseScheduleFromString(str);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-
-            //feedsRecyclerAdapter.notifyDataSetChanged();
-            //progressBar.setVisibility(View.INVISIBLE);
-            onPostExecuteMethod();
-            super.onPostExecute(aVoid);
-        }
-    }
-
-    public class LoadScheduleFromCash extends AsyncTask<String, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            onPreExecuteMethod();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(String... params) {
-
-            //Log.d("MainActivity", "ParseFeed");
-
-            String str = null;
-            str = String.valueOf(params[0]);
-            parseScheduleFromString(str);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            //feedsRecyclerAdapter.notifyDataSetChanged();
-            //progressBar.setVisibility(View.INVISIBLE);
-            onPostExecuteMethod();
-            super.onPostExecute(aVoid);
-        }
-    }
 
 }

@@ -33,13 +33,16 @@ import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -51,6 +54,8 @@ public class ScheduleActivity extends MainActivity {
 
     public static final String EVEN_WEEK = "evenWeek";
     public static final String ODD_WEEK = "oddWeek";
+    public static String ODD_WEEK_START = "";
+    public static String EVEN_WEEK_START = "";
 
     ArrayList<Mark> arBlock;
     //@BindView(R.id.progressBar)
@@ -106,6 +111,24 @@ public class ScheduleActivity extends MainActivity {
         //dayOfWeek = Calendar.getInstance(Locale.UK).get(Calendar.DAY_OF_WEEK);
         LocalDate newDate = new LocalDate();
         dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek()) - 1;
+
+        //Date date = new Date(newDate.getYear(), newDate.getMonthOfYear(), newDate.getDayOfMonth());
+        SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy");
+
+        //Вычисляем дату начало недели для для URL
+        if(nowWeek.equals(EVEN_WEEK)) {
+            EVEN_WEEK_START = sf.format(newDate.toDate());
+            newDate = newDate.plusWeeks(1);
+            ODD_WEEK_START = sf.format(newDate.toDate());
+            Log.d("EVEN WEEK START", EVEN_WEEK_START);
+            Log.d("ODD WEEK START", ODD_WEEK_START);
+        } else if (nowWeek.equals(ODD_WEEK)) {
+            ODD_WEEK_START = sf.format(newDate.toDate());
+            newDate = newDate.plusWeeks(1);
+            EVEN_WEEK_START = sf.format(newDate.toDate());
+            Log.d("EVEN WEEK START", EVEN_WEEK_START);
+            Log.d("ODD WEEK START", ODD_WEEK_START);
+        }
 
         if (CheckAuth.isAuth()) initSpinner();
         else showNeedLogin();
@@ -189,10 +212,10 @@ public class ScheduleActivity extends MainActivity {
                 switch (i) {
                     case 0:
                         //Toast.makeText(getApplicationContext(), "Pressed " + i, Toast.LENGTH_SHORT).show();
-                        getScheduleEvenWeek();
+                        getScheduleOddWeek();
                         break;
                     case 1:
-                        getScheduleOddWeek();
+                        getScheduleEvenWeek();
                         break;
                 }
             }
@@ -203,7 +226,7 @@ public class ScheduleActivity extends MainActivity {
             }
         });
 
-        if(nowWeek.equals(EVEN_WEEK)) spinner.setSelection(0);
+        if(nowWeek.equals(ODD_WEEK)) spinner.setSelection(0);
         else spinner.setSelection(1);
     }
 
@@ -227,7 +250,7 @@ public class ScheduleActivity extends MainActivity {
 
         if (!week.isEmpty()) setScheduleToViewPager(week, ODD_WEEK);
 
-        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=25.09.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
+        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=" + EVEN_WEEK_START + "&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     //new ParseSchedule().execute(responseBody);
@@ -235,7 +258,7 @@ public class ScheduleActivity extends MainActivity {
                     try {
                         //str = new String(params[0], "UTF-8");
                         str = new String(responseBody, "windows-1251");
-                        FirebaseCrash.report(new Exception("ScheduleActivity - getScheduleEvenWeek" + str));
+                        //FirebaseCrash.report(new Exception("ScheduleActivity - getScheduleEvenWeek" + str));
                         setScheduleToViewPager(str, ODD_WEEK);
                         SharedPreferenceHelper.setSharedPreferenceString(getApplicationContext(), ODD_WEEK, str);
                     } catch (UnsupportedEncodingException e) {
@@ -258,7 +281,7 @@ public class ScheduleActivity extends MainActivity {
         final String week = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), EVEN_WEEK, "");
         if (!week.isEmpty()) setScheduleToViewPager(week, EVEN_WEEK);
 
-        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=02.10.2017&p_id=uch", null, new AsyncHttpResponseHandler() {
+        KFURestClient.get("student_personal_main.shedule?" + scheduleUrl + "&p_page=0&p_date=" + ODD_WEEK_START + "&p_id=uch", null, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     //new ParseSchedule().execute(responseBody);

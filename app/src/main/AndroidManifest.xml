@@ -20,8 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MyMaterialTheme">
-        <activity android:name=".Timeline.TimeLineActivity">
-            <intent-filter>
+        <activity android:name=".Timeline.TimeLineActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -31,10 +32,16 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity android:name=".Marks.MarksActivity" />
-        <activity android:name=".Schedule.ScheduleActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".Marks.MarksActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+        <activity android:name=".Schedule.ScheduleActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"/>
+
+        <activity android:name=".LoginActivity"
+        android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".MainActivity"
+        android:configChanges="orientation|screenSize|keyboardHidden"/>
         <activity
             android:name=".MainIntroActivity"
             android:theme="@style/Theme.Intro" />
