@@ -3,9 +3,12 @@ package com.kfu.lantimat.kfustudent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
@@ -30,8 +33,9 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCallback {
 
+    public final static String TAG = "MainActivity";
     public final static String EXTRA_ORIENTATION = "EXTRA_ORIENTATION";
     public final static String EXTRA_WITH_LINE_PADDING = "EXTRA_WITH_LINE_PADDING";
 
@@ -39,9 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
     public Toolbar toolbar;
     public Spinner spinner;
+    public AppBarLayout appBarLayout;
     AccountHeader headerResult;
     public Drawer result;
-    FrameLayout frameLayout;
+    public FrameLayout frameLayout;
     Intent drawerIntent = null;
     boolean dontFinish = false;
     SecondaryDrawerItem sign_exit;
@@ -52,12 +57,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
 
+        appBarLayout = findViewById(R.id.appbar);
         frameLayout = (FrameLayout)findViewById(R.id.content_frame);
 
         spinner = (Spinner) findViewById(R.id.spinner_nav);
@@ -69,31 +73,15 @@ public class MainActivity extends AppCompatActivity {
 
 
         initAccountHeader();
-        setupNavigationDrawer();
+        if(result==null){
+            setupNavigationDrawer();
+        }
         authCheck();
-
     }
 
+
     public void authCheck() {
-        new CheckAuth(getApplicationContext(), new CheckAuth.AuthCallback() {
-            @Override
-            public void onLoggedIn() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-
-            @Override
-            public void onNotLoggedIn() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-
-            @Override
-            public void onOldSession() {
-                updateDrawer();
-                //setupNavigationDrawer();
-            }
-        });
+        new CheckAuth(getApplicationContext(), this);
     }
 
     @Override
@@ -189,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setupNavigationDrawer() {
-
         //if you want to update the items at a later time it is recommended to keep it in a variable
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
@@ -278,6 +265,20 @@ public class MainActivity extends AppCompatActivity {
                 .build();
     }
 
+    @Override
+    public void onLoggedIn() {
+        updateDrawer();
+    }
+
+    @Override
+    public void onNotLoggedIn() {
+        updateDrawer();
+    }
+
+    @Override
+    public void onOldSession() {
+        updateDrawer();
+    }
 }
 
 

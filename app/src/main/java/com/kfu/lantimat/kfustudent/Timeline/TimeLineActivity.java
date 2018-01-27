@@ -82,7 +82,7 @@ public class TimeLineActivity extends MainActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle("Cобытия");
 
-        firstCreateMsg();
+        //firstCreateMsg();
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mRecyclerView.setLayoutManager(getLinearLayoutManager());

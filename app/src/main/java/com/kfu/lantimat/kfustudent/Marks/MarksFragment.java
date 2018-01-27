@@ -109,6 +109,7 @@ public class MarksFragment extends Fragment {
         textView = v.findViewById(R.id.textView);
         imageView = v.findViewById(R.id.imageView);
         progressBar = v.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
@@ -120,7 +121,7 @@ public class MarksFragment extends Fragment {
     }
 
     private void getMarks() {
-        FirebaseCrash.report(new Exception("getMarks-coursesCount " + course));
+        //FirebaseCrash.report(new Exception("getMarks-coursesCount " + course));
 
         if(arMarks.isEmpty()) progressBar.setVisibility(View.VISIBLE);
         String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + course, "-1"); //Достаем из памяти строку с успеваемостью;
@@ -128,6 +129,7 @@ public class MarksFragment extends Fragment {
             isDataInCash = true;
             getMarksFromCash(marksCashStr);
         }
+
         KFURestClient.get("SITE_STUDENT_SH_PR_AC.score_list_book_subject?p_menu=7&p_course=" + course, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -137,6 +139,7 @@ public class MarksFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 if(!isDataInCash) emptyPic();
+                if(progressBar!=null) progressBar.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -146,9 +149,10 @@ public class MarksFragment extends Fragment {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
-    private void parseMarksFromString(String str) {
+    //вернет true, если строка содержит данные
+    private boolean parseMarksFromString(String str) {
 
-        FirebaseCrash.report(new Exception("ParseMarksFromString: " + str));
+        //FirebaseCrash.report(new Exception("ParseMarksFromString: " + str));
 
 
         ArrayList<Mark> arMarksTemp = new ArrayList<>();
@@ -176,9 +180,9 @@ public class MarksFragment extends Fragment {
                         "</tr>")) {
 
                     Log.d(TAG, "checkRowSpanCount " + checkRowSpanCount(marksBlock.get(j).toString()));
-                    if(checkRowSpanCount(marksBlock.get(j).toString()) == 2) {
-                        if(j + 1 < marksBlock.size()) {
-                            Mark mark = new Mark(Mark.TWO_ROW_TYPE, marksBlock.get(j).toString(), marksBlock.get(j+1).toString());
+                    if (checkRowSpanCount(marksBlock.get(j).toString()) == 2) {
+                        if (j + 1 < marksBlock.size()) {
+                            Mark mark = new Mark(Mark.TWO_ROW_TYPE, marksBlock.get(j).toString(), marksBlock.get(j + 1).toString());
                             arMarksTemp.add(mark);
                             j++;
                         }
@@ -192,13 +196,15 @@ public class MarksFragment extends Fragment {
 
 
             Collections.sort(arMarksTemp, Mark.COMPARE_BY_SEMESTER);
-
         }
 
-        arMarks.clear();
-        arMarks.addAll(arMarksTemp);
+        if (arMarksTemp.size() > 0) {
+            arMarks.clear();
+            arMarks.addAll(arMarksTemp);
+            return true;
+        }
 
-
+        return false;
     }
 
     private int checkRowSpanCount(String str) { //Проверяем сгруппированы ли оценки за зачет и экзамен
@@ -267,6 +273,7 @@ public class MarksFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             onPreExecuteMethod();
+            if(progressBar!=null & !isDataInCash) progressBar.setVisibility(View.VISIBLE);
             super.onPreExecute();
         }
 
@@ -282,8 +289,8 @@ public class MarksFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            SharedPreferenceHelper.setSharedPreferenceString(context, "marks" + course, str);
-            parseMarksFromString(str);
+            //Парсим данные из строки и если есть данные сохраняем в кэш
+            if(parseMarksFromString(str)) SharedPreferenceHelper.setSharedPreferenceString(context, "marks" + course, str);
 
             return null;
         }
@@ -297,34 +304,4 @@ public class MarksFragment extends Fragment {
             super.onPostExecute(aVoid);
         }
     }
-
-    public class LoadMarksFromCash extends AsyncTask<String, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            onPreExecuteMethod();
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(String... params) {
-
-            //Log.d("MainActivity", "ParseFeed");
-
-            String str = null;
-            str = String.valueOf(params[0]);
-            parseMarksFromString(str);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            //feedsRecyclerAdapter.notifyDataSetChanged();
-            //progressBar.setVisibility(View.INVISIBLE);
-            onPostExecuteMethod();
-            super.onPostExecute(aVoid);
-        }
-    }
-
 }

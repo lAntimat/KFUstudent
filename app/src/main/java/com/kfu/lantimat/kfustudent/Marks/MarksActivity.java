@@ -1,7 +1,10 @@
 package com.kfu.lantimat.kfustudent.Marks;
 
+import android.animation.ValueAnimator;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -11,6 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -37,7 +41,7 @@ import cz.msebera.android.httpclient.Header;
 public class MarksActivity extends MainActivity {
 
     public static final String COURSES_COUNT = "count";
-
+    boolean isOldSession = false;
 
     ArrayList<Mark> arBlock;
     //@BindView(R.id.textView)
@@ -75,6 +79,7 @@ public class MarksActivity extends MainActivity {
         textView = (TextView) findViewById(R.id.textView);
         button = (Button) findViewById(R.id.btnSign);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
         topLayout = findViewById(R.id.coordinatorLayout);
 
         textView.setVisibility(View.INVISIBLE);
@@ -84,14 +89,43 @@ public class MarksActivity extends MainActivity {
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
+        //tabLayout.getLayoutParams().height = 0;
         toolbar.setTitle("Успеваемость");
 
         arBlock = new ArrayList<>();
 
-        initViewPager();
         result.setSelection(3, false);
+
+
+
+
+        //initViewPager();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        new InitViewPager().execute("");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onOldSession() {
+        super.onOldSession();
+        isOldSession = true;
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLoggedIn() {
+        super.onLoggedIn();
+        if(isOldSession & viewPager!=null) getMarks();
+        isOldSession = false;
+    }
 
     public void showNeedLogin() {
         textView.setVisibility(View.VISIBLE);
@@ -101,7 +135,7 @@ public class MarksActivity extends MainActivity {
 
     private void showUpdateSnackBar() {
 
-           Snackbar snackbar = Snackbar
+           /*Snackbar snackbar = Snackbar
                     .make(topLayout, "Вы не смогли загрузить актуальные данные :(", Snackbar.LENGTH_LONG)
                     .setAction("Еще раз", new View.OnClickListener() {
                         @Override
@@ -110,7 +144,7 @@ public class MarksActivity extends MainActivity {
                         }
                     });
 
-            snackbar.show();
+            snackbar.show();*/
     }
 
     private void getMarks() {
@@ -186,6 +220,7 @@ public class MarksActivity extends MainActivity {
                 viewPager.setOffscreenPageLimit(count);
                 if(!isHaveSavedSchedule) viewPager.setAdapter(adapter);
                 viewPager.invalidate();
+                progressBar.setVisibility(View.INVISIBLE);
             }
             super.onPostExecute(aVoid);
         }
@@ -198,7 +233,12 @@ public class MarksActivity extends MainActivity {
 
             count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1);
             if(count != -1) {
-                progressBar.setVisibility(View.INVISIBLE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                });
                 adapter = new ViewPagerAdapter(getSupportFragmentManager());
                 for (int i = 1; i < count - 1; i++) {
                     adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
@@ -254,4 +294,48 @@ public class MarksActivity extends MainActivity {
         }
     }
 
+    private class InitViewPager extends AsyncTask<String, Void, String> {
+
+        Boolean isAuth = CheckAuth.isAuth();
+
+        @Override
+        protected String doInBackground(String... params) {
+            if (isAuth) {
+                count = SharedPreferenceHelper.getSharedPreferenceInt(getApplicationContext(), COURSES_COUNT, -1);
+                if(count != -1) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
+                    });
+                    adapter = new ViewPagerAdapter(getSupportFragmentManager());
+                    for (int i = 1; i < count - 1; i++) {
+                        adapter.addFragment(new MarksFragment().newInstance(i), i + " курс");
+                    }
+                }
+            }
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            if(isAuth) {
+                viewPager.setOffscreenPageLimit(count);
+                viewPager.setAdapter(adapter);
+
+                getMarks();
+            } else showNeedLogin();
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+    }
 }

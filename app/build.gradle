@@ -3,9 +3,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.firebase-crash'
 
 android {
-    dataBinding {
-        enabled = true
-    }
     compileSdkVersion 26
     buildToolsVersion "26.0.2"
     repositories {
@@ -17,14 +14,19 @@ android {
         flatDir {
             dirs 'libs'
         }
+
+
+        dataBinding {
+            enabled = true
+        }
     }
 
     defaultConfig {
         applicationId "com.kfu.lantimat.kfustudent"
         minSdkVersion 15
         targetSdkVersion 26
-        versionCode 11
-        versionName "0.85"
+        versionCode 13
+        versionName "0.87"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }

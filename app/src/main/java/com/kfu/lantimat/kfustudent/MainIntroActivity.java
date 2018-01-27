@@ -21,7 +21,7 @@ public class MainIntroActivity extends IntroActivity{
         addSlide(new SimpleSlide.Builder()
                 .title("Привет!")
                 .description("Это приложения для удобного доступа к личному кабинету сайта КФУ. Пока что это первая версия (бета), в которой возможны незначительные неполадки :) ")
-
+                .image(R.drawable.logo_white)
                 .background(R.color.accent)
                 .backgroundDark(R.color.primary_dark)
                 .scrollable(true)
