@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:clickable="false"
     card_view:cardCornerRadius="4dp"
-    card_view:cardElevation="10dp"
+    card_view:cardElevation="6dp"
     card_view:cardUseCompatPadding="true">
 
 
