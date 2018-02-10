@@ -129,6 +129,8 @@ public class ScheduleFragment extends Fragment implements
 
         while (sheduleMatcher.find()) {
             schedule = new Schedule();
+
+
             schedule.setTime(sheduleMatcher.group(1));
             if (sheduleMatcher.find()) schedule.setSubjectName(sheduleMatcher.group(2));
             if (sheduleMatcher.find()) schedule.setPlace(sheduleMatcher.group(3));
