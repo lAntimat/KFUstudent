@@ -20,9 +20,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MyMaterialTheme">
-        <activity android:name=".Timeline.TimeLineActivity"
+        <activity
+            android:name=".Timeline.TimeLineActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
-        <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,50 +33,56 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity android:name=".Marks.MarksActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"/>
-
-        <activity android:name=".Schedule.ScheduleActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"/>
-
-        <activity android:name=".LoginActivity"
-        android:configChanges="orientation|screenSize|keyboardHidden"/>
-        <activity android:name=".MainActivity"
-        android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity
+            android:name=".Marks.MarksActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".Schedule.ScheduleActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".LoginActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name=".MainIntroActivity"
             android:theme="@style/Theme.Intro" />
-
         <activity
             android:name=".map.MapActivity"
-            android:label="@string/title_activity_maps"></activity>
-        <service
-            android:name=".utils.MyFirebaseMessagingService">
+            android:label="@string/title_activity_maps" />
+
+        <service android:name=".utils.MyFirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".utils.MyFirebaseInstanceIDService">
+        <service android:name=".utils.MyFirebaseInstanceIDService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
 
-        <!-- Set custom default icon. This is used when no icon is set for incoming notification messages.
-        See README(https://goo.gl/l4GJaQ) for more. -->
+        <!--
+        Set custom default icon. This is used when no icon is set for incoming notification messages.
+        See README(https://goo.gl/l4GJaQ) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/logo" />
-        <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more. -->
+        <!--
+             Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCEAwWD1qxwMB2rBHQeVgUgIGOFCsttStE"/>
+            android:value="AIzaSyCEAwWD1qxwMB2rBHQeVgUgIGOFCsttStE" />
+
+        <activity android:name=".CustomSchedule.CustomScheduleActivity" />
+        <activity android:name=".CustomSchedule.AddScheduleActivity"></activity>
     </application>
 
 </manifest>

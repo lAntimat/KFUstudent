@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 
+import com.kfu.lantimat.kfustudent.CustomSchedule.CustomScheduleActivity;
 import com.kfu.lantimat.kfustudent.Marks.MarksActivity;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                                 break;
                             case 10: //drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
                                 break;
-                            case 2: drawerIntent = new Intent(MainActivity.this, ScheduleActivity.class);
+                            case 2: drawerIntent = new Intent(MainActivity.this, CustomScheduleActivity.class);
                                 break;
                             case 3:
                                 drawerIntent = new Intent(MainActivity.this, MarksActivity.class);

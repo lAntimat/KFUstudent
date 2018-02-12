@@ -7,9 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -18,9 +21,10 @@ import java.util.ArrayList;
 
 public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private  ArrayList<Schedule> mList;
+    private  ArrayList<Subject> mList;
 
-    public ScheduleRecyclerAdapter(ArrayList<Schedule> itemList) {
+
+    public ScheduleRecyclerAdapter(ArrayList<Subject> itemList) {
         this.mList = itemList;
     }
     @Override
@@ -41,9 +45,11 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     }
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        String time = mList.get(position).getTime();
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm");
+        String date = sf.format(mList.get(position).getStartTime()) + " - " + sf.format(mList.get(position).getEndTime());
+        String time = date;
         String name = mList.get(position).getSubjectName();
-        String place = mList.get(position).getPlace();
+        String place = mList.get(position).getCabNumber();
 
             switch (getItemViewType(position)) {
                 case Mark.RATING_TYPE:

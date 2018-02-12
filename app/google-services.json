@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "712131982195",
-    "firebase_url": "https://kfustudent-35e12.firebaseio.com",
-    "project_id": "kfustudent-35e12",
-    "storage_bucket": "kfustudent-35e12.appspot.com"
+    "project_number": "56086044729",
+    "firebase_url": "https://kfu-student-51b89.firebaseio.com",
+    "project_id": "kfu-student-51b89",
+    "storage_bucket": "kfu-student-51b89.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:712131982195:android:7770ebf2be5dbe6e",
+        "mobilesdk_app_id": "1:56086044729:android:7770ebf2be5dbe6e",
         "android_client_info": {
           "package_name": "com.kfu.lantimat.kfustudent"
         }
       },
       "oauth_client": [
         {
-          "client_id": "712131982195-cllt9sjb16t6h8issdpqjrrdnug0l6a3.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.kfu.lantimat.kfustudent",
-            "certificate_hash": "df48947ef09c7342efd22fd3fa65036719b33f70"
-          }
-        },
-        {
-          "client_id": "712131982195-h9c0gtpkkkdaejk4ieajm7nl4l70i5gt.apps.googleusercontent.com",
+          "client_id": "56086044729-mrqv50fgfq57dn8jq74t1d6berpu16kf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAM2twmW9w80lJdl-BC02ZuHDpUJCwnZes"
+          "current_key": "AIzaSyBe2ShHMr7gaZDwrTcKF-NMpha7EY2LbV0"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "712131982195-h9c0gtpkkkdaejk4ieajm7nl4l70i5gt.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

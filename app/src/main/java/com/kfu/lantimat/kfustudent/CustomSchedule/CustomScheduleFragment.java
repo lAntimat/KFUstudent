@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Schedule;
+package com.kfu.lantimat.kfustudent.CustomSchedule;
 
 /**
  * Created by GabdrakhmanovII on 04.09.2017.
@@ -18,28 +18,23 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.kfu.lantimat.kfustudent.KFURestClient;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.R;
-import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
-import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import cz.msebera.android.httpclient.Header;
 
 
-public class ScheduleFragment extends Fragment implements
-        ScheduleActivity.UpdateableFragment {
+public class CustomScheduleFragment extends Fragment implements
+        CustomScheduleActivity.UpdateableFragment {
 
     private final String ARG_PARAM1 = "param1";
 
     RecyclerView recyclerView;
     ScheduleRecyclerAdapter scheduleRecyclerAdapter;
     ArrayList<String> arBlock = new ArrayList<>();
-    ArrayList<Schedule> arSchedule;
+    ArrayList<Subject> arSubjects;
     int day;
     //@BindView(R.id.textView)
     TextView textView;
@@ -54,13 +49,13 @@ public class ScheduleFragment extends Fragment implements
 
 
 
-    public ScheduleFragment() {
+    public CustomScheduleFragment() {
         // Required empty public constructor
     }
 
-    public ScheduleFragment newInstance(int day) {
+    public CustomScheduleFragment newInstance(int day) {
 
-        ScheduleFragment fragment = new ScheduleFragment();
+        CustomScheduleFragment fragment = new CustomScheduleFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, day);
         fragment.setArguments(args);
@@ -76,8 +71,8 @@ public class ScheduleFragment extends Fragment implements
             day = getArguments().getInt(ARG_PARAM1);
         }
 
-        arSchedule = new ArrayList<>();
-        //scheduleRecyclerAdapter = new ScheduleRecyclerAdapter(arSchedule);
+        arSubjects = new ArrayList<>();
+        scheduleRecyclerAdapter = new ScheduleRecyclerAdapter(arSubjects);
     }
 
     private void initRecyclerView() {
@@ -101,7 +96,7 @@ public class ScheduleFragment extends Fragment implements
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
-        //parseScheduleFromString(string);
+        //addDataToAdapter(string);
         /*String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + string, "-1"); //Достаем из памяти строку с успеваемостью;
         if (!marksCashStr.equalsIgnoreCase("-1")) getScheduleFromCash(marksCashStr);
         getSchedule();*/
@@ -111,34 +106,14 @@ public class ScheduleFragment extends Fragment implements
     }
 
     @Override
-    public void update(String xyzData, int day) {
-        if(this.day==day) parseScheduleFromString(xyzData);
+    public void update(Day day, int dayNumber) {
+        if(this.day==dayNumber) addDataToAdapter(day.getSubjects());
     }
 
-    private void parseScheduleFromString(String str) {
-        ArrayList<Schedule> arScheduleTemp = new ArrayList<>();
-        Schedule schedule;
+    private void addDataToAdapter(ArrayList<Subject> arSubjects) {
 
-        /*Pattern datePattern = Pattern.compile(">(.*) <\\/font>");
-        Matcher dateMatcher = datePattern.matcher(str.replaceAll("", ""));
-        if (dateMatcher.find()) schedule.setDate(dateMatcher.group(1));*/
-
-
-        Pattern schedulePattern = Pattern.compile("nowrap> (.*)<\\/td>|<td class=\"table_td\" width=\"180\" style=\"\"> (.*)<\\/td>|<td class=\"table_td\">(.*)<\\/td>");
-        Matcher sheduleMatcher = schedulePattern.matcher(str);
-
-        while (sheduleMatcher.find()) {
-            schedule = new Schedule();
-
-
-            schedule.setTime(sheduleMatcher.group(1));
-            if (sheduleMatcher.find()) schedule.setSubjectName(sheduleMatcher.group(2));
-            if (sheduleMatcher.find()) schedule.setPlace(sheduleMatcher.group(3));
-            arScheduleTemp.add(schedule);
-        }
-
-        arSchedule.clear();
-        arSchedule.addAll(arScheduleTemp);
+        this.arSubjects.clear();
+        this.arSubjects.addAll(arSubjects);
 
         progressBar.setVisibility(View.INVISIBLE);
         scheduleRecyclerAdapter.notifyDataSetChanged();
@@ -149,7 +124,7 @@ public class ScheduleFragment extends Fragment implements
     }
 
     private void emptyPic() {
-        if (arSchedule.size() == 0) {
+        if (arSubjects.size() == 0) {
             imageView.setVisibility(View.VISIBLE);
             textView.setVisibility(View.VISIBLE);
         } else {
