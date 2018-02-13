@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,7 +36,9 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
@@ -63,8 +66,11 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
 
     ProgressBar progressBar;
     Button buttonSignEmpty;
-    TextView textViewEmpty;
+    TextView textViewEmpty, tvDate;
     //Spinner spinner;
+    private ImageView ivBack, ivNext;
+
+    private LocalDate localDate;
 
     //private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -74,12 +80,21 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     String nowWeek;
     int dayOfWeek;
     int selectedDayOfWeek = -1;
+    int weekOfYear;
 
     Presenter presenter;
 
     @Override
-    public void showData(Schedule schedule) {
-        setScheduleToViewPager(schedule.getArWeekends().get(0));
+    public void showData(Weekend weekend) {
+        setScheduleToViewPager(weekend);
+    }
+
+    @Override
+    public void updateDataTextView(LocalDate localDate) {
+        SimpleDateFormat sf1 = new SimpleDateFormat("d MMMM", new Locale("ru","RU"));
+        String date1 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.MONDAY).toDate());
+        String date2 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.SUNDAY).toDate());
+        tvDate.setText(date1 + " - " + date2);
     }
 
     public interface UpdateableFragment {
@@ -94,10 +109,12 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_custom_schedule, v);
 
+        ivBack = findViewById(R.id.ivBack);
+        ivNext = findViewById(R.id.ivNext);
+        tvDate = findViewById(R.id.tvDate);
         textViewEmpty = (TextView) findViewById(R.id.textView);
         buttonSignEmpty = (Button) findViewById(R.id.btnSign);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-
         //ButterKnife.bind(this);
         textViewEmpty.setVisibility(View.INVISIBLE);
         buttonSignEmpty.setVisibility(View.INVISIBLE);
@@ -111,28 +128,13 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         });
 
 
+
+        localDate = new LocalDate(DateTimeZone.getDefault());
+
         nowWeek = isEvenOrOddWeek();
-        //dayOfWeek = Calendar.getInstance(Locale.UK).get(Calendar.DAY_OF_WEEK);
         LocalDate newDate = new LocalDate();
         dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek()) - 1;
 
-        //Date date = new Date(newDate.getYear(), newDate.getMonthOfYear(), newDate.getDayOfMonth());
-        SimpleDateFormat sf = new SimpleDateFormat("dd.MM.yyyy");
-
-        //Вычисляем дату начало недели для для URL
-        if(nowWeek.equals(EVEN_WEEK)) {
-            EVEN_WEEK_START = sf.format(newDate.toDate());
-            newDate = newDate.plusWeeks(1);
-            ODD_WEEK_START = sf.format(newDate.toDate());
-            Log.d("EVEN WEEK START", EVEN_WEEK_START);
-            Log.d("ODD WEEK START", ODD_WEEK_START);
-        } else if (nowWeek.equals(ODD_WEEK)) {
-            ODD_WEEK_START = sf.format(newDate.toDate());
-            newDate = newDate.plusWeeks(1);
-            EVEN_WEEK_START = sf.format(newDate.toDate());
-            Log.d("EVEN WEEK START", EVEN_WEEK_START);
-            Log.d("ODD WEEK START", ODD_WEEK_START);
-        }
 
         if (CheckAuth.isAuth());
         else showNeedLogin();
@@ -150,6 +152,24 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         presenter = new Presenter();
         presenter.attachVIew(this);
         presenter.getData(0);
+
+        initPrevNextBtn();
+    }
+
+    private void initPrevNextBtn() {
+        ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.prevWeek();
+            }
+        });
+
+        ivNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.nextWeek();
+            }
+        });
     }
 
 

@@ -1,6 +1,11 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
+
+import org.joda.time.LocalDate;
+
+import java.util.Date;
 
 /**
  * Created by lAntimat on 11.02.2018.
@@ -9,7 +14,8 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 public interface CustomScheduleMVP {
 
     interface View {
-    void showData(Schedule schedule);
+    void showData(Weekend weekend);
+    void updateDataTextView(LocalDate localDate);
     }
 
     interface presenter {
@@ -17,6 +23,8 @@ public interface CustomScheduleMVP {
         void detachView();
         void getData(int week);
         void addData();
+        void nextWeek();
+        void prevWeek();
     }
 
 }

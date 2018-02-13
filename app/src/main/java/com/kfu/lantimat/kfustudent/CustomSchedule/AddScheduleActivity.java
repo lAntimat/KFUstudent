@@ -1,12 +1,22 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
+import android.app.TimePickerDialog;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -19,7 +29,9 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
 import com.kfu.lantimat.kfustudent.R;
+import com.kfu.lantimat.kfustudent.utils.CreateDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -27,6 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddScheduleActivity extends AppCompatActivity {
+    private TextView tvStartTIme, tvEndTime;
+    private ConstraintLayout clRepeat;
 
     private ArrayList<String> arSubjects = new ArrayList<>();
     private ArrayList<String> arTeachers = new ArrayList<>();
@@ -34,15 +48,40 @@ public class AddScheduleActivity extends AppCompatActivity {
     private ArrayList<String> arCabs = new ArrayList<>();
     AutoCompleteTextView actvSubjectName, actvTeacher, actvCampus, actvCab;
     private Schedule schedule;
-    FirebaseFirestore db  = FirebaseFirestore.getInstance();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    MaterialDialog dialog;
+
+    TimePickerDialog.OnTimeSetListener t;
+    TimePickerDialog.OnTimeSetListener t2;
+
+    Calendar dateAndTime = Calendar.getInstance();
+    Calendar dateAndTime2 = Calendar.getInstance();
+
+    public int repeatDay = -1;
+    public int repeatWeek = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_schedule);
+        tvStartTIme = findViewById(R.id.tvStartTime);
+        tvEndTime = findViewById(R.id.tvEndTime);
+
+        clRepeat = findViewById(R.id.cl3);
+
+        clRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFragment();
+            }
+        });
+
         initAutoCompleteTextView();
         addDateToAutoCompleteTextView();
         loadSchedule();
+        initTimePickers();
+        initTimeTextViewClickListeners();
     }
 
     private void initAutoCompleteTextView() {
@@ -85,9 +124,9 @@ public class AddScheduleActivity extends AppCompatActivity {
         db.collection("Teachers").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()) {
-                    for (DocumentSnapshot doc:task.getResult()
-                         ) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot doc : task.getResult()
+                            ) {
                         arTeachers.add(doc.get("name").toString());
                     }
                 }
@@ -97,8 +136,8 @@ public class AddScheduleActivity extends AppCompatActivity {
         db.collection("Subjects").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if(task.isSuccessful()) {
-                    for (DocumentSnapshot doc:task.getResult()
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot doc : task.getResult()
                             ) {
                         arSubjects.add(doc.get("name").toString());
                     }
@@ -139,7 +178,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.getResult().exists()) {
+                        if (task.getResult().exists()) {
                             schedule = task.getResult().toObject(Schedule.class);
                         } else {
                             addSubjectInFirstTime();
@@ -148,18 +187,28 @@ public class AddScheduleActivity extends AppCompatActivity {
                 });
     }
 
-    private void addSubjectInFirstTime(Subject subject, int repeatDay, int repeatWeek ) {
+    private void addSubject(Subject subject, int repeatDay, int repeatWeek) {
 
-        if(schedule!=null) {
+        if (schedule != null) {
+            int i;
+            //В зависимости от типа недели, выбираем первую неделю
+            if (repeatWeek == CustomScheduleConstants.ALL_WEEK) i = 0;
+            else if (repeatWeek == CustomScheduleConstants.ODD_WEEK) i = 0;
+            else i = 1;
 
-            for (int i = 0; i < 28; i ++) {
+            for (; i < 56; ) {
+                //Если четная или нечетная неделя, то плюсуем 2, иначе 1
                 schedule.getArWeekends().get(i).getArDays().get(repeatDay).getSubjects().add(subject);
+
+                if (repeatDay == CustomScheduleConstants.ALL_WEEK) i++;
+                else i = i + 2;
             }
 
             db.collection("Schedule").document("2141115").set(schedule).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-
+                    dialog.dismiss();
+                    finish();
                 }
             });
         }
@@ -167,7 +216,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     }
 
     private void addNewWords(String subjectName, String teacherName) {
-        if(!arSubjects.contains(subjectName)) {
+        if (!arSubjects.contains(subjectName)) {
 
             Map<String, Object> map = new HashMap<>();
             map.put("name", subjectName);
@@ -179,7 +228,7 @@ public class AddScheduleActivity extends AppCompatActivity {
             });
         }
 
-        if(!arTeachers.contains(teacherName)) {
+        if (!arTeachers.contains(teacherName)) {
             Map<String, Object> map = new HashMap<>();
             map.put("name", teacherName);
             db.collection("Teachers").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -190,17 +239,115 @@ public class AddScheduleActivity extends AppCompatActivity {
             });
         }
 
-        }
+    }
 
     public void addBtnClick(View view) {
-        Date date = new Date(Calendar.getInstance().getTimeInMillis());
-        Subject subject = new Subject(date, date, actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString());
-        addSubjectInFirstTime(subject, 2, 1);
+
+        if (TextUtils.isEmpty(actvSubjectName.getText().toString())) {
+            Toast.makeText(this, "Введите название предмета", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(actvTeacher.getText().toString())) {
+            Toast.makeText(this, "Введите ФИО преподавателя", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(actvCampus.getText().toString())) {
+            Toast.makeText(this, "Введите название учебный корпус", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (TextUtils.isEmpty(actvCab.getText().toString())) {
+            Toast.makeText(this, "Введите номер аудитории", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (repeatWeek == -1) {
+            Toast.makeText(this, "Введите неделю для повтора", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (repeatDay == -1) {
+            Toast.makeText(this, "Выберите день предмета", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        Subject subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString());
+        addSubject(subject, repeatDay, repeatWeek);
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString());
+        dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
+
+    }
+
+    private void initTimePickers() {
+
+        dateAndTime.set(Calendar.HOUR_OF_DAY, 8);
+        dateAndTime.set(Calendar.MINUTE, 0);
+
+        dateAndTime2.set(Calendar.HOUR_OF_DAY, 8);
+        dateAndTime2.set(Calendar.MINUTE, 0);
+
+
+        t = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                dateAndTime.set(Calendar.MINUTE, minute);
+                Date date = new Date(dateAndTime.getTimeInMillis());
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                String formattedTime = simpleDateFormat.format(date);
+                tvStartTIme.setText(formattedTime);
+            }
+        };
+
+        t2 = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                dateAndTime2.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                dateAndTime2.set(Calendar.MINUTE, minute);
+                Date date = new Date(dateAndTime2.getTimeInMillis());
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                String formattedTime = simpleDateFormat.format(date);
+                tvEndTime.setText(formattedTime);
+            }
+        };
+    }
+
+    private void initTimeTextViewClickListeners() {
+
+        tvStartTIme.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(AddScheduleActivity.this, t,
+                        dateAndTime.get(Calendar.HOUR_OF_DAY),
+                        dateAndTime.get(Calendar.MINUTE),
+                        true)
+                        .show();
+            }
+        });
+
+
+        tvEndTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new TimePickerDialog(AddScheduleActivity.this, t2,
+                        dateAndTime2.get(Calendar.HOUR_OF_DAY),
+                        dateAndTime2.get(Calendar.MINUTE),
+                        true)
+                        .show();
+            }
+        });
 
     }
 
     private void showFragment() {
+        AddScheduleFragment addScheduleFragment = new AddScheduleFragment();
+        FragmentTransaction fm = getSupportFragmentManager().beginTransaction();
+        fm.add(R.id.container, addScheduleFragment);
+        fm.addToBackStack("addSchedule");
+        fm.commit();
 
     }
 

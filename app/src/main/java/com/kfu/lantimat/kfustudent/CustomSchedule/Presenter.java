@@ -17,6 +17,9 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 
 /**
@@ -27,6 +30,14 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     private CustomScheduleMVP.View view;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    private LocalDate localDate;
+    private Schedule schedule;
+
+
+    public Presenter() {
+        localDate = new LocalDate(DateTimeZone.getDefault());
+    }
 
     @Override
     public void attachVIew(CustomScheduleMVP.View view) {
@@ -47,8 +58,9 @@ public class Presenter implements CustomScheduleMVP.presenter {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            Schedule schedule = documentSnapshot.toObject(Schedule.class);
-                            view.showData(schedule);
+                            schedule = documentSnapshot.toObject(Schedule.class);
+                            view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
+                            view.updateDataTextView(localDate);
                         }
                     }
                 });
@@ -57,6 +69,20 @@ public class Presenter implements CustomScheduleMVP.presenter {
     @Override
     public void addData() {
 //addTestData();
+    }
+
+    @Override
+    public void nextWeek() {
+        localDate = localDate.plusWeeks(1);
+        view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
+        view.updateDataTextView(localDate);
+    }
+
+    @Override
+    public void prevWeek() {
+        localDate = localDate.minusWeeks(1);
+        view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
+        view.updateDataTextView(localDate);
     }
 
     private void addTestData() {

@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.Schedule;
@@ -61,10 +63,61 @@ public class AddScheduleFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_schedule, null);
-
+        View v = inflater.inflate(R.layout.fragment_add_schedule_options, null);
+        initRadioGroup(v);
+        initRadioGroupWeek(v);
         return v;
 
+    }
+
+    private void initRadioGroup(View view) {
+        final AddScheduleActivity customScheduleActivity = ((AddScheduleActivity) getActivity());
+
+        RadioGroup radioGroup = view.findViewById(R.id.RGroup);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.Pn) {
+                   customScheduleActivity.repeatDay = CustomScheduleConstants.MONDAY;
+                } else if(checkedId == R.id.Bt) {
+                    customScheduleActivity.repeatDay = CustomScheduleConstants.TUESDAY;
+                } else if(checkedId == R.id.Cp){
+                    customScheduleActivity.repeatDay = CustomScheduleConstants.WEDNESDAY;
+                } else if(checkedId == R.id.Cht){
+                    customScheduleActivity.repeatDay = CustomScheduleConstants.THURSDAY;
+                } else if(checkedId == R.id.Pt){
+                    customScheduleActivity.repeatDay = CustomScheduleConstants.FRIDAY;
+                } else if(checkedId == R.id.Sb){
+                    customScheduleActivity.repeatDay = CustomScheduleConstants.SATURDAY;
+                } else if(checkedId == R.id.Bs){
+                    customScheduleActivity.repeatDay = CustomScheduleConstants.SUNDAY;
+                }
+            }
+
+        });
+    }
+
+    private void initRadioGroupWeek(View view) {
+        final AddScheduleActivity customScheduleActivity = ((AddScheduleActivity) getActivity());
+
+        RadioGroup radioGroup = view.findViewById(R.id.RGroupRepeatType);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.all) {
+                    customScheduleActivity.repeatWeek = CustomScheduleConstants.ALL_WEEK;
+                } else if(checkedId == R.id.evenWeek) {
+                    customScheduleActivity.repeatWeek = CustomScheduleConstants.EVEN_WEEK;
+                } else if(checkedId == R.id.oddWeek){
+                    customScheduleActivity.repeatWeek = CustomScheduleConstants.ODD_WEEK;
+                }
+            }
+
+        });
     }
 
     @Override
