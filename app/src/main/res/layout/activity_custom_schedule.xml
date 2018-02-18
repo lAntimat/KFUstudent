@@ -27,11 +27,11 @@
         <TextView
             android:id="@+id/tvDate"
             android:layout_width="wrap_content"
-            android:layout_height="18dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="TextView"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -103,7 +103,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/tvDate"
             app:layout_constraintEnd_toStartOf="@+id/tvDate"
             app:layout_constraintTop_toTopOf="@+id/tvDate"
-            app:srcCompat="@drawable/ic_school_black_24dp" />
+            app:srcCompat="@drawable/chevron_left" />
 
         <ImageView
             android:id="@+id/ivNext"
@@ -113,8 +113,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/tvDate"
             app:layout_constraintStart_toEndOf="@+id/tvDate"
             app:layout_constraintTop_toTopOf="@+id/tvDate"
-            app:layout_constraintVertical_bias="1.0"
-            app:srcCompat="@drawable/ic_school_black_24dp" />
+            app:srcCompat="@drawable/chevron_right" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.design.widget.FloatingActionButton

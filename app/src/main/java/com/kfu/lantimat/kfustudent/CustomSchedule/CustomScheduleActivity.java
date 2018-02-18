@@ -94,7 +94,13 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         SimpleDateFormat sf1 = new SimpleDateFormat("d MMMM", new Locale("ru","RU"));
         String date1 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.MONDAY).toDate());
         String date2 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.SUNDAY).toDate());
-        tvDate.setText(date1 + " - " + date2);
+        String weekType = "";
+        if ((localDate.getWeekOfWeekyear() & 1) == 0) {
+           weekType = "Четная неделя";
+        } else {
+            weekType = "Нечетная неделя";
+        }
+        tvDate.setText(date1 + " - " + date2 + "\n" + weekType);
     }
 
     public interface UpdateableFragment {
@@ -135,6 +141,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         LocalDate newDate = new LocalDate();
         dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek()) - 1;
 
+        updateDataTextView(newDate);
 
         if (CheckAuth.isAuth());
         else showNeedLogin();

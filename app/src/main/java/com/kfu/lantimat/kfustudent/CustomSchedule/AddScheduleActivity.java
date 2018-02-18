@@ -31,6 +31,8 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.utils.CreateDialog;
 
+import org.joda.time.LocalDate;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,6 +62,9 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     public int repeatDay = -1;
     public int repeatWeek = -1;
+
+    public LocalDate startDate;
+    public LocalDate endDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,16 +192,40 @@ public class AddScheduleActivity extends AppCompatActivity {
                 });
     }
 
-    private void addSubject(Subject subject, int repeatDay, int repeatWeek) {
+    private void addSubject(Subject subject, int repeatDay, int repeatWeek, LocalDate startDate, LocalDate endDate) {
 
         if (schedule != null) {
             int i;
-            //В зависимости от типа недели, выбираем первую неделю
-            if (repeatWeek == CustomScheduleConstants.ALL_WEEK) i = 0;
-            else if (repeatWeek == CustomScheduleConstants.ODD_WEEK) i = 0;
-            else i = 1;
+            int end = 56;
 
-            for (; i < 56; ) {
+            i = startDate.getWeekOfWeekyear();
+            end = endDate.getWeekOfWeekyear();
+
+            //В зависимости от типа недели, выбираем неделю для начало отсчета
+            if (repeatWeek == CustomScheduleConstants.ALL_WEEK) {
+
+            }
+            else if (repeatWeek == CustomScheduleConstants.ODD_WEEK) {
+                if ((i & 1) == 0) {
+                    //четная
+
+                } else {
+                    //не четная
+                    //Если неделя не четная, то это хорошо, но мы минусем -1, потому что массив с 0;
+                   i--;
+                }
+            } else {
+                if ((i & 1) == 0) {
+                    //четная
+                    //Если неделя четная, то это хорошо, но мы минусем -1, потому что массив с 0;
+                    i--;
+
+                } else {
+                    //не четная
+                }
+            }
+
+            for (; i < end; ) {
                 //Если четная или нечетная неделя, то плюсуем 2, иначе 1
                 schedule.getArWeekends().get(i).getArDays().get(repeatDay).getSubjects().add(subject);
 
@@ -275,7 +304,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
 
         Subject subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString());
-        addSubject(subject, repeatDay, repeatWeek);
+        addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
 
@@ -343,7 +372,11 @@ public class AddScheduleActivity extends AppCompatActivity {
     }
 
     private void showFragment() {
-        AddScheduleFragment addScheduleFragment = new AddScheduleFragment();
+        long start = -1;
+        long end = -1;
+        if(startDate!=null) start = startDate.toDate().getTime();
+        if(endDate!=null) end = endDate.toDate().getTime();
+        AddScheduleFragment addScheduleFragment = AddScheduleFragment.newInstance(repeatDay, repeatWeek, start, end);
         FragmentTransaction fm = getSupportFragmentManager().beginTransaction();
         fm.add(R.id.container, addScheduleFragment);
         fm.addToBackStack("addSchedule");
