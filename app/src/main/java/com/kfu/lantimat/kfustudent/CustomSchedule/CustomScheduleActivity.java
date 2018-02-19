@@ -95,6 +95,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         String date1 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.MONDAY).toDate());
         String date2 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.SUNDAY).toDate());
         String weekType = "";
+        weekOfYear = localDate.getWeekOfWeekyear();
         if ((localDate.getWeekOfWeekyear() & 1) == 0) {
            weekType = "Четная неделя";
         } else {
@@ -107,7 +108,8 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     public void openSubjectInfo(Schedule schedule, int position, int day) {
         Intent intent = new Intent(this, SubjectInfoActivity.class);
         intent.putExtra("Schedule", schedule);
-        intent.putExtra("position", position);
+        intent.putExtra("subject", position);
+        intent.putExtra("week", weekOfYear-1);
         intent.putExtra("day", day);
         startActivity(intent);
     }

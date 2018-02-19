@@ -7,8 +7,12 @@ import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.R;
-import com.kfu.lantimat.kfustudent.Schedule.Schedule;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class SubjectInfoActivity extends Activity {
 
@@ -25,7 +29,9 @@ public class SubjectInfoActivity extends Activity {
 
     Schedule schedule;
     int subjectPosition;
-
+    int weekendPosition;
+    int dayPosition;
+    Subject subject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +39,21 @@ public class SubjectInfoActivity extends Activity {
         super.setContentView(R.layout.activity_subject_info);
         initView();
 
+        schedule = getIntent().getParcelableExtra("Schedule");
+        subjectPosition = getIntent().getIntExtra("subject", -1);
+        weekendPosition = getIntent().getIntExtra("week", -1);
+        dayPosition = getIntent().getIntExtra("day", -1);
+
+        subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
+
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm", new Locale("ru","RU"));
+
+        String time = sf.format(subject.getStartTime()) + " - " + sf.format(subject.getEndTime());
+
+        tvTime.setText(time);
+        tvSubject.setText(subject.getSubjectName());
+        tvCab.setText(subject.getCabNumber());
+        tvTeacher.setText(subject.getTeacherName());
 
 
     }

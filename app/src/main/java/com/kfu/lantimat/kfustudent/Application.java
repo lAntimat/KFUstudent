@@ -3,6 +3,8 @@ package com.kfu.lantimat.kfustudent;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.loopj.android.http.PersistentCookieStore;
 
@@ -27,5 +29,11 @@ public class Application extends android.app.Application {
             KFURestClient.setCookieStore(myCookieStore);
             //FirebaseCrash.report(new Exception("My first Android non-fatal error"));
             FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
+            FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                    .setPersistenceEnabled(true)
+                    .build();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.setFirestoreSettings(settings);
         }
 }

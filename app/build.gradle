@@ -71,6 +71,7 @@ dependencies {
     compile 'com.github.d-max:spots-dialog:0.7@aar'
     compile 'com.google.firebase:firebase-firestore:11.8.0'
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+    compile 'com.github.clans:fab:1.6.4'
     testCompile 'junit:junit:4.12'
 }
 
