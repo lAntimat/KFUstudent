@@ -50,8 +50,8 @@ public class AddScheduleFragment extends Fragment {
     DatePickerDialog.OnDateSetListener d;
     DatePickerDialog.OnDateSetListener d2;
 
-    Calendar dateAndTime = Calendar.getInstance();
-    Calendar dateAndTime2 = Calendar.getInstance();
+    Calendar dateAndTime = Calendar.getInstance(Locale.UK);
+    Calendar dateAndTime2 = Calendar.getInstance(Locale.UK);
 
 
     TextView tvStartDate;

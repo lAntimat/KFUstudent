@@ -14,6 +14,8 @@ public class Subject implements Parcelable {
 
     Date startTime;
     Date endTime;
+    Date startDate;
+    Date endDate;
     String subjectName;
     ArrayList<String> homeWorks;
     String campusNumber;
@@ -26,9 +28,11 @@ public class Subject implements Parcelable {
     public Subject() {
     }
 
-    public Subject(Date startTime, Date endTime, String subjectName, ArrayList<String> homeWorks, String campusNumber, String cabNumber, String teacherName, int repeatDay, int repeatWeek) {
+    public Subject(Date startTime, Date endTime, Date startDate, Date endDate, String subjectName, ArrayList<String> homeWorks, String campusNumber, String cabNumber, String teacherName, int repeatDay, int repeatWeek) {
         this.startTime = startTime;
         this.endTime = endTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.subjectName = subjectName;
         this.homeWorks = homeWorks;
         this.campusNumber = campusNumber;
@@ -36,6 +40,22 @@ public class Subject implements Parcelable {
         this.teacherName = teacherName;
         this.repeatDay = repeatDay;
         this.repeatWeek = repeatWeek;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public int getRepeatDay() {
@@ -120,6 +140,8 @@ public class Subject implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.startTime != null ? this.startTime.getTime() : -1);
         dest.writeLong(this.endTime != null ? this.endTime.getTime() : -1);
+        dest.writeLong(this.startDate != null ? this.startDate.getTime() : -1);
+        dest.writeLong(this.endDate != null ? this.endDate.getTime() : -1);
         dest.writeString(this.subjectName);
         dest.writeStringList(this.homeWorks);
         dest.writeString(this.campusNumber);
@@ -134,6 +156,10 @@ public class Subject implements Parcelable {
         this.startTime = tmpStartTime == -1 ? null : new Date(tmpStartTime);
         long tmpEndTime = in.readLong();
         this.endTime = tmpEndTime == -1 ? null : new Date(tmpEndTime);
+        long tmpStartDate = in.readLong();
+        this.startDate = tmpStartDate == -1 ? null : new Date(tmpStartDate);
+        long tmpEndDate = in.readLong();
+        this.endDate = tmpEndDate == -1 ? null : new Date(tmpEndDate);
         this.subjectName = in.readString();
         this.homeWorks = in.createStringArrayList();
         this.campusNumber = in.readString();
@@ -143,7 +169,7 @@ public class Subject implements Parcelable {
         this.repeatWeek = in.readInt();
     }
 
-    public static final Parcelable.Creator<Subject> CREATOR = new Parcelable.Creator<Subject>() {
+    public static final Creator<Subject> CREATOR = new Creator<Subject>() {
         @Override
         public Subject createFromParcel(Parcel source) {
             return new Subject(source);

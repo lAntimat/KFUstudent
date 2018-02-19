@@ -17,6 +17,7 @@ public interface CustomScheduleMVP {
     void showData(Weekend weekend);
     void updateDataTextView(LocalDate localDate);
     void openSubjectInfo(Schedule schedule, int position, int day);
+    void openAddSubject(Schedule schedule);
     }
 
     interface presenter {
@@ -27,6 +28,7 @@ public interface CustomScheduleMVP {
         void nextWeek();
         void prevWeek();
         void recyclerItemClick(int position, int day);
+        void fabCLick();
     }
 
 }

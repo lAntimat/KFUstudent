@@ -114,6 +114,13 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         startActivity(intent);
     }
 
+    @Override
+    public void openAddSubject(Schedule schedule) {
+        Intent intent = new Intent(getApplicationContext(), AddScheduleActivity.class);
+        intent.putExtra("Schedule", schedule);
+        startActivityForResult(intent, 10);
+    }
+
     public interface UpdateableFragment {
         public void update(Day day, int dayNumber);
     }
@@ -140,7 +147,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(getApplicationContext(), AddScheduleActivity.class), 10);
+                presenter.fabCLick();
             }
         });
 

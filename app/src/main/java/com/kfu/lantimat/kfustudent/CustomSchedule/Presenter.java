@@ -90,6 +90,11 @@ public class Presenter implements CustomScheduleMVP.presenter {
         view.openSubjectInfo(schedule, position, day);
     }
 
+    @Override
+    public void fabCLick() {
+        view.openAddSubject(schedule);
+    }
+
     private void addTestData() {
         FirebaseFirestore db  = FirebaseFirestore.getInstance();
 

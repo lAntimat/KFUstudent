@@ -66,6 +66,12 @@ public class AddScheduleActivity extends AppCompatActivity {
     public LocalDate startDate;
     public LocalDate endDate;
 
+    int subjectPosition;
+    int weekendPosition;
+    int dayPosition;
+    boolean isEdit;
+    Subject subject;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,9 +90,23 @@ public class AddScheduleActivity extends AppCompatActivity {
 
         initAutoCompleteTextView();
         addDateToAutoCompleteTextView();
-        loadSchedule();
+        //loadSchedule();
         initTimePickers();
         initTimeTextViewClickListeners();
+
+        schedule = getIntent().getParcelableExtra("Schedule");
+        if(schedule==null) addSubjectInFirstTime();
+
+        subjectPosition = getIntent().getIntExtra("subject", -1);
+        weekendPosition = getIntent().getIntExtra("week", -1);
+        dayPosition = getIntent().getIntExtra("day", -1);
+        isEdit = getIntent().getBooleanExtra("isEdit", false);
+
+        if(dayPosition!=-1) {
+            subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
+            updateUI(subject);
+        }
+
     }
 
     private void initAutoCompleteTextView() {
@@ -302,9 +322,19 @@ public class AddScheduleActivity extends AppCompatActivity {
             return;
         }
 
+        SubjectToSchedule toSchedule = new SubjectToSchedule();
+        toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
+            @Override
+            public void onSuccess() {
+                dialog.dismiss();
+                finish();
+            }
+        });
 
-        Subject subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
-        addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
+        Subject subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
+        //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
+        if(isEdit) toSchedule.addingMethod(schedule, subject, subjectPosition, SubjectToSchedule.EDIT);
+        else toSchedule.addingMethod(schedule, subject, -1, SubjectToSchedule.ADD);
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
 
@@ -381,6 +411,23 @@ public class AddScheduleActivity extends AppCompatActivity {
         fm.add(R.id.container, addScheduleFragment);
         fm.addToBackStack("addSchedule");
         fm.commit();
+
+    }
+
+    private void updateUI(Subject subject) {
+        actvSubjectName.setText(subject.getSubjectName());
+        actvTeacher.setText(subject.getTeacherName());
+        actvCampus.setText(subject.getCampusNumber());
+        actvCab.setText(subject.getCabNumber());
+
+        repeatDay = subject.getRepeatDay();
+        repeatWeek = subject.getRepeatWeek();
+
+        dateAndTime.setTime(subject.getStartTime());
+        dateAndTime2.setTime(subject.getEndTime());
+
+        startDate = new LocalDate(subject.getStartDate());
+        endDate = new LocalDate(subject.getEndDate());
 
     }
 
