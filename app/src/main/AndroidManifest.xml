@@ -82,7 +82,10 @@
             android:value="AIzaSyCEAwWD1qxwMB2rBHQeVgUgIGOFCsttStE" />
 
         <activity android:name=".CustomSchedule.CustomScheduleActivity" />
-        <activity android:name=".CustomSchedule.AddScheduleActivity"></activity>
+        <activity android:name=".CustomSchedule.AddScheduleActivity" />
+        <activity
+            android:name=".CustomSchedule.SubjectInfoActivity"
+            android:label="@string/title_activity_subject_info"></activity>
     </application>
 
 </manifest>

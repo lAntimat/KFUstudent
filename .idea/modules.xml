@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/KFUstudent.iml" filepath="$PROJECT_DIR$/.idea/KFUstudent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/KFUstudent.iml" filepath="$PROJECT_DIR$/KFUstudent.iml" />
       <module fileurl="file://C:\Users\lAntimat\StudioProjects\KFUstudent\KFUstudent.iml" filepath="C:\Users\lAntimat\StudioProjects\KFUstudent\KFUstudent.iml" />
+      <module fileurl="file://C:\Users\gabdrakhmanovII\AndroidStudioProjects\KFUstudent\.idea\KFUstudent.iml" filepath="C:\Users\gabdrakhmanovII\AndroidStudioProjects\KFUstudent\.idea\KFUstudent.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

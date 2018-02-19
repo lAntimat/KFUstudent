@@ -38,4 +38,5 @@
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="map_need_permission">Требуется разрешение!</string>
     <string name="map_need_permission_message">Для доступа к вашему местоположению, необходимо разрешить доступ к геоданным</string>
+    <string name="title_activity_subject_info">SubjectInfoActivity</string>
 </resources>

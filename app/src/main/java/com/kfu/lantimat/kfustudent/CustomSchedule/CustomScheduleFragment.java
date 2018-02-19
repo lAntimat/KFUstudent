@@ -4,6 +4,7 @@ package com.kfu.lantimat.kfustudent.CustomSchedule;
  * Created by GabdrakhmanovII on 04.09.2017.
  */
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
+import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
@@ -33,7 +35,6 @@ public class CustomScheduleFragment extends Fragment implements
 
     RecyclerView recyclerView;
     ScheduleRecyclerAdapter scheduleRecyclerAdapter;
-    ArrayList<String> arBlock = new ArrayList<>();
     ArrayList<Subject> arSubjects;
     int day;
     //@BindView(R.id.textView)
@@ -43,10 +44,6 @@ public class CustomScheduleFragment extends Fragment implements
     //Unbinder unbinder;
     //@BindView(R.id.progressBar)
     ProgressBar progressBar;
-    AsyncTask<byte[], Void, Void> parseSchedule;
-    AsyncTask<String, Void, Void> loadScheduleFromCash;
-
-
 
 
     public CustomScheduleFragment() {
@@ -78,6 +75,13 @@ public class CustomScheduleFragment extends Fragment implements
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), OrientationHelper.VERTICAL, false));
         recyclerView.setAdapter(scheduleRecyclerAdapter);
+
+        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                ((CustomScheduleActivity)getActivity()).presenter.recyclerItemClick(position, day);
+            }
+        });
 
 
     }

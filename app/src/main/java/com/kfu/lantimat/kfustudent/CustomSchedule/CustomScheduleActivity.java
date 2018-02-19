@@ -103,6 +103,15 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         tvDate.setText(date1 + " - " + date2 + "\n" + weekType);
     }
 
+    @Override
+    public void openSubjectInfo(Schedule schedule, int position, int day) {
+        Intent intent = new Intent(this, SubjectInfoActivity.class);
+        intent.putExtra("Schedule", schedule);
+        intent.putExtra("position", position);
+        intent.putExtra("day", day);
+        startActivity(intent);
+    }
+
     public interface UpdateableFragment {
         public void update(Day day, int dayNumber);
     }

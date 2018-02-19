@@ -85,6 +85,11 @@ public class Presenter implements CustomScheduleMVP.presenter {
         view.updateDataTextView(localDate);
     }
 
+    @Override
+    public void recyclerItemClick(int position, int day) {
+        view.openSubjectInfo(schedule, position, day);
+    }
+
     private void addTestData() {
         FirebaseFirestore db  = FirebaseFirestore.getInstance();
 

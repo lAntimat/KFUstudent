@@ -303,7 +303,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         }
 
 
-        Subject subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString());
+        Subject subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
         addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
