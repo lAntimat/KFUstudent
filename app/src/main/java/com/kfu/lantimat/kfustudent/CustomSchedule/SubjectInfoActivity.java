@@ -1,13 +1,14 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,10 +17,12 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -34,8 +37,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class SubjectInfoActivity extends Activity {
+public class SubjectInfoActivity extends AppCompatActivity {
 
+    public static final String TAG = "SubjectACtivity";
     protected ImageView appBarImage;
     protected Toolbar toolbar;
     protected TextView tvTime;
@@ -56,12 +60,20 @@ public class SubjectInfoActivity extends Activity {
     private HomeWorks homeWorks;
     private ArrayList<String> ar = new ArrayList<>();
 
+    FloatingActionMenu fam;
     FloatingActionButton fabDelete, fabEdit, fabAdd;
 
     private RecyclerView recyclerView;
     private HomeworksRecyclerAdapter adapter;
     private MaterialDialog dialog;
     private EditText dialogEditText;
+
+    //Toolbar back button click
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +95,12 @@ public class SubjectInfoActivity extends Activity {
     }
 
     private void updateUI(Subject subject) {
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         SimpleDateFormat sf = new SimpleDateFormat("HH:mm", new Locale("ru", "RU"));
 
         String time = sf.format(subject.getStartTime()) + " - " + sf.format(subject.getEndTime());
@@ -106,10 +124,13 @@ public class SubjectInfoActivity extends Activity {
         tvCabTitle = (TextView) findViewById(R.id.tvCabTitle);
         tvTeacherTitle = (TextView) findViewById(R.id.tvTeacherTitle);
 
+        fam = findViewById(R.id.menu);
+
         fabDelete = findViewById(R.id.delete);
         fabDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                fam.close(false);
                 final MaterialDialog dialog = CreateDialog.createPleaseWaitDialog(SubjectInfoActivity.this);
                 SubjectToSchedule toSchedule = new SubjectToSchedule();
                 toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
@@ -119,20 +140,23 @@ public class SubjectInfoActivity extends Activity {
                     }
                 });
 
-                toSchedule.addingMethod(schedule, subject, subjectPosition, SubjectToSchedule.DELETE);
+                toSchedule.delete(schedule, subject, subjectPosition);
             }
         });
         fabEdit = findViewById(R.id.edit);
         fabEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                fam.close(false);
                 Intent intent = new Intent(SubjectInfoActivity.this, AddScheduleActivity.class);
                 intent.putExtra("Schedule", schedule);
                 intent.putExtra("subject", subjectPosition);
                 intent.putExtra("week", weekendPosition);
                 intent.putExtra("day", dayPosition);
+                intent.putExtra("homeworks", homeWorks);
                 intent.putExtra("isEdit", true);
-                startActivity(intent);
+                startActivityForResult(intent, 10);
+
             }
         });
 
@@ -140,6 +164,7 @@ public class SubjectInfoActivity extends Activity {
         fabAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fam.close(false);
                 addHomeWorkDialog();
             }
         });
@@ -156,22 +181,35 @@ public class SubjectInfoActivity extends Activity {
                     public void onClick(MaterialDialog dialog, DialogAction which) {
                         dialogEditText = dialog.getCustomView().findViewById(R.id.editText);
                         ar.add(dialogEditText.getText().toString());
-                        homeWorks.getArHomeworks().add(dialogEditText.getText().toString());
+                        if(homeWorks!=null) {
+                            homeWorks.setArHomeworks(ar);
+                        } else homeWorks = new HomeWorks(subject.getSubjectName(), ar);
                         adapter.notifyDataSetChanged();
-                        addToFirebase();
+                        addHomeworksToFirebase();
                     }
                 })
                 .show();
     }
 
-    private void addToFirebase() {
+    private void addHomeworksToFirebase() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Schedule").document("2141115").collection("homeworks").document(homeWorks.getId()).set(homeWorks).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
+        if(homeWorks.getId()!=null) {
+            db.collection("Schedule").document("2141115").collection("homeworks").document(homeWorks.getId()).set(homeWorks).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d(TAG, "homework setted");
 
-            }
-        });
+                }
+            });
+        } else {
+            db.collection("Schedule").document("2141115").collection("homeworks").add(homeWorks).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Log.d(TAG, "homework added");
+                    homeWorks.setId(documentReference.getId());
+                }
+            });
+        }
     }
 
     private void initRecyclerView() {
@@ -196,6 +234,7 @@ public class SubjectInfoActivity extends Activity {
                         for (DocumentSnapshot doc : documentSnapshots.getDocuments()) {
                             homeWorks = doc.toObject(HomeWorks.class);
                             homeWorks.setId(doc.getId());
+                            ar.clear();
                             ar.addAll(homeWorks.getArHomeworks());
                         }
                        adapter.notifyDataSetChanged();
@@ -211,8 +250,11 @@ public class SubjectInfoActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        data.getParcelableExtra("Subject");
-        if (subject != null) updateUI(subject);
+        subject = data.getParcelableExtra("Subject");
+        if (subject != null) {
+            setResult(RESULT_OK);
+            updateUI(subject);
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 }

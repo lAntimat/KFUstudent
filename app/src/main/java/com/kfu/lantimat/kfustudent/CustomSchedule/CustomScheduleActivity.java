@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,6 +73,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     TextView textViewEmpty, tvDate;
     //Spinner spinner;
     private ImageView ivBack, ivNext;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private LocalDate localDate;
 
@@ -89,6 +91,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
 
     @Override
     public void showData(Weekend weekend) {
+        swipeRefreshLayout.setRefreshing(false);
         setScheduleToViewPager(weekend);
     }
 
@@ -114,7 +117,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         intent.putExtra("subject", position);
         intent.putExtra("week", weekOfYear-1);
         intent.putExtra("day", day);
-        startActivity(intent);
+        startActivityForResult(intent, 10);
     }
 
     @Override
@@ -136,18 +139,21 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame2); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_custom_schedule, v);
 
-        //Delete behavior
-        //CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) frameLayout.getLayoutParams();
-        //params.setBehavior(null);
-
-        //frameLayout.requestLayout();
-
         AppBarLayout.LayoutParams toolbarParams = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         toolbarParams.setScrollFlags(-1);
         toolbar.requestLayout();
 
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Расписание");
 
-
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getIntArray(R.array.swipe_refresh_colors));
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenter.getData();
+            }
+        });
         ivBack = findViewById(R.id.ivBack);
         ivNext = findViewById(R.id.ivNext);
         tvDate = findViewById(R.id.tvDate);
@@ -191,14 +197,15 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
 
         presenter = new Presenter();
         presenter.attachVIew(this);
-        presenter.getData(0);
+        presenter.getData();
 
         initPrevNextBtn();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        presenter.getData(0);
+        swipeRefreshLayout.setRefreshing(true);
+        presenter.getData();
         super.onActivityResult(requestCode, resultCode, data);
     }
 

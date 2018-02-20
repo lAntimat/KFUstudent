@@ -55,11 +55,13 @@ public class HomeWorks implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
         dest.writeString(this.subjectName);
         dest.writeStringList(this.arHomeworks);
     }
 
     protected HomeWorks(Parcel in) {
+        this.id = in.readString();
         this.subjectName = in.readString();
         this.arHomeworks = in.createStringArrayList();
     }

@@ -26,6 +26,8 @@ import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 
 public class CustomScheduleFragment extends Fragment implements
@@ -119,6 +121,11 @@ public class CustomScheduleFragment extends Fragment implements
         this.arSubjects.clear();
         this.arSubjects.addAll(arSubjects);
 
+        Collections.sort(this.arSubjects, new Comparator<Subject>() {
+            public int compare(Subject o1, Subject o2) {
+                return o1.getStartTime().compareTo(o2.getStartTime());
+            }
+        });
         progressBar.setVisibility(View.INVISIBLE);
         scheduleRecyclerAdapter.notifyDataSetChanged();
         recyclerView.invalidate();

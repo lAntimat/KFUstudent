@@ -23,7 +23,7 @@ public interface CustomScheduleMVP {
     interface presenter {
         void attachVIew(View view);
         void detachView();
-        void getData(int week);
+        void getData();
         void addData();
         void nextWeek();
         void prevWeek();

@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -83,7 +84,6 @@ public class AddScheduleFragment extends Fragment {
         super.onCreate(savedInstanceState);
         customScheduleActivity = ((AddScheduleActivity) getActivity());
 
-
     }
 
 
@@ -94,6 +94,13 @@ public class AddScheduleFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_add_schedule_options, null);
         tvStartDate = v.findViewById(R.id.tvStartDate);
         tvEndDate = v.findViewById(R.id.tvEndDate);
+
+        Toolbar toolbar = v.findViewById(R.id.toolbar);
+        customScheduleActivity.setSupportActionBar(toolbar);
+        customScheduleActivity.getSupportActionBar().setTitle("Повторения");
+        customScheduleActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        customScheduleActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         initRadioGroup(v);
         initRadioGroupWeek(v);
         initDatePickers();

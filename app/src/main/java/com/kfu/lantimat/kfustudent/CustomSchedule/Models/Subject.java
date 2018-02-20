@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by lAntimat on 11.02.2018.
  */
 
-public class Subject implements Parcelable {
+public class Subject implements Parcelable, Comparable<Subject> {
 
     Date startTime;
     Date endTime;
@@ -131,6 +131,10 @@ public class Subject implements Parcelable {
         this.teacherName = teacherName;
     }
 
+    @Override
+    public int compareTo(Subject o) {
+        return getStartTime().compareTo(o.getStartTime());
+    }
 
     @Override
     public int describeContents() {

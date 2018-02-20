@@ -51,7 +51,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
     }
 
     @Override
-    public void getData(int week) {
+    public void getData() {
         db.collection("Schedule").document("2141115")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -73,16 +73,20 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void nextWeek() {
-        localDate = localDate.plusWeeks(1);
-        view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
-        view.updateDataTextView(localDate);
+        if(schedule!=null) {
+            localDate = localDate.plusWeeks(1);
+            view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
+            view.updateDataTextView(localDate);
+        }
     }
 
     @Override
     public void prevWeek() {
-        localDate = localDate.minusWeeks(1);
-        view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
-        view.updateDataTextView(localDate);
+        if(schedule!=null) {
+            localDate = localDate.minusWeeks(1);
+            view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
+            view.updateDataTextView(localDate);
+        }
     }
 
     @Override

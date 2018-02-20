@@ -1,16 +1,15 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
-import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -53,7 +52,20 @@ public class SubjectToSchedule {
 
     }
 
-    public void addingMethod(Schedule schedule, Subject subject, int subjectPosition, String methodType) {
+    public void edit(Schedule schedule, Subject subject, int subjectPosition, HomeWorks homeWorks) {
+        addingMethod(schedule, subject, subjectPosition, EDIT, homeWorks);
+    }
+
+    public void add(Schedule schedule, Subject subject) {
+        addingMethod(schedule, subject, -1, ADD, null);
+    }
+
+    public void delete(Schedule schedule, Subject subject, int subjectPosition) {
+        addingMethod(schedule, subject, subjectPosition, DELETE, null);
+    }
+
+
+    public void addingMethod(Schedule schedule, Subject subject, int subjectPosition, String methodType, HomeWorks homeWorks) {
         if (schedule != null) {
 
             LocalDate startDate = new LocalDate(subject.getStartDate().getTime(), DateTimeZone.forTimeZone(TimeZone.getTimeZone("Europe/Paris")));
@@ -117,6 +129,9 @@ public class SubjectToSchedule {
                 }
             }
 
+            if(methodType.equals(EDIT)) {
+                if(homeWorks!=null) changeHomeworksSubjectName(subject, homeWorks);
+            }
             addToFirestore(schedule);
 
         }
@@ -130,6 +145,20 @@ public class SubjectToSchedule {
                 listener.onSuccess();
             }
         });
+    }
+
+    private void changeHomeworksSubjectName(Subject subject, HomeWorks homeWorks) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if(homeWorks.getId()!=null) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("subjectName", subject.getSubjectName());
+            db.collection("Schedule").document("2141115").collection("homeworks").document(homeWorks.getId()).update(map).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    listener.onSuccess();
+                }
+            });
+        }
     }
 
 

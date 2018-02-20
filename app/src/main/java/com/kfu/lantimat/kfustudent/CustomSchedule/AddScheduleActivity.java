@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -26,6 +27,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
@@ -73,6 +75,14 @@ public class AddScheduleActivity extends AppCompatActivity {
     boolean isEdit;
     Subject subject;
     String subjectType;
+    private HomeWorks homeworks;
+
+    //Toolbar back button click
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +91,12 @@ public class AddScheduleActivity extends AppCompatActivity {
         tvStartTIme = findViewById(R.id.tvStartTime);
         tvEndTime = findViewById(R.id.tvEndTime);
         tvSubjectType = findViewById(R.id.tvSubjectType);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Добавить занятие");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         clRepeat = findViewById(R.id.cl3);
 
@@ -128,6 +144,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         subjectPosition = getIntent().getIntExtra("subject", -1);
         weekendPosition = getIntent().getIntExtra("week", -1);
         dayPosition = getIntent().getIntExtra("day", -1);
+        homeworks = getIntent().getParcelableExtra("homeworks");
         isEdit = getIntent().getBooleanExtra("isEdit", false);
 
         if(dayPosition!=-1) {
@@ -369,8 +386,10 @@ public class AddScheduleActivity extends AppCompatActivity {
 
         subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
         //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
-        if(isEdit) toSchedule.addingMethod(schedule, subject, subjectPosition, SubjectToSchedule.EDIT);
-        else toSchedule.addingMethod(schedule, subject, -1, SubjectToSchedule.ADD);
+        if(isEdit) {
+            toSchedule.edit(schedule, subject, subjectPosition, homeworks);
+        }
+        else toSchedule.add(schedule, subject);
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
 
@@ -475,6 +494,11 @@ public class AddScheduleActivity extends AppCompatActivity {
 
         subjectType = subject.getSubjectType();
         tvSubjectType.setText(subjectType);
+
+        if(isEdit) {
+            getSupportActionBar().setTitle("Редактирование");
+        } else getSupportActionBar().setTitle("Добавить занятие");
+
 
     }
 
