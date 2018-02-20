@@ -42,8 +42,6 @@ public class SubjectToSchedule {
 
     public void editSubject(int i, Schedule schedule, Subject subject, int subjectPosition) {
 
-        ArrayList<String> tempHomeWorks = schedule.getArWeekends().get(i).getArDays().get(subject.getRepeatDay()).getSubjects().get(subjectPosition).getHomeWorks();
-        subject.setHomeWorks(tempHomeWorks);
         schedule.getArWeekends().get(i).getArDays().get(subject.getRepeatDay()).getSubjects().remove(subjectPosition);
         schedule.getArWeekends().get(i).getArDays().get(subject.getRepeatDay()).getSubjects().add(subject);
 
@@ -76,16 +74,14 @@ public class SubjectToSchedule {
 
             } else if (subject.getRepeatWeek() == CustomScheduleConstants.ODD_WEEK) {
                 if ((i & 1) == 0) {
-                    //четная
+                    //четная (но пользователь выбрал нечетную, поэтому делаем +1 week)
                     startDate = startDate.plusWeeks(1);
                 } else {
                     //не четная
-                    //Если неделя не четная, то это хорошо, но мы минусем -1, потому что массив с 0;
                 }
             } else {
                 if ((i & 1) == 0) {
                     //четная
-                    //Если неделя четная, то это хорошо, но мы минусем -1, потому что массив с 0;
 
 
                 } else {
@@ -105,8 +101,6 @@ public class SubjectToSchedule {
                         schedule.getArWeekends().get(i).getArDays().get(subject.getRepeatDay()).getSubjects().add(subject);
                         break;
                     case EDIT:
-                        ArrayList<String> tempHomeWorks = schedule.getArWeekends().get(i).getArDays().get(subject.getRepeatDay()).getSubjects().get(subjectPosition).getHomeWorks();
-                        subject.setHomeWorks(tempHomeWorks);
                         schedule.getArWeekends().get(i).getArDays().get(subject.getRepeatDay()).getSubjects().remove(subjectPosition);
                         schedule.getArWeekends().get(i).getArDays().get(subject.getRepeatDay()).getSubjects().add(subject);
                         break;

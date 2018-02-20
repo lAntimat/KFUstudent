@@ -17,7 +17,7 @@ public class Subject implements Parcelable {
     Date startDate;
     Date endDate;
     String subjectName;
-    ArrayList<String> homeWorks;
+    String subjectType;
     String campusNumber;
     String cabNumber;
     String teacherName;
@@ -28,18 +28,26 @@ public class Subject implements Parcelable {
     public Subject() {
     }
 
-    public Subject(Date startTime, Date endTime, Date startDate, Date endDate, String subjectName, ArrayList<String> homeWorks, String campusNumber, String cabNumber, String teacherName, int repeatDay, int repeatWeek) {
+    public Subject(Date startTime, Date endTime, Date startDate, Date endDate, String subjectName, String subjectType, String campusNumber, String cabNumber, String teacherName, int repeatDay, int repeatWeek) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.startDate = startDate;
         this.endDate = endDate;
         this.subjectName = subjectName;
-        this.homeWorks = homeWorks;
+        this.subjectType = subjectType;
         this.campusNumber = campusNumber;
         this.cabNumber = cabNumber;
         this.teacherName = teacherName;
         this.repeatDay = repeatDay;
         this.repeatWeek = repeatWeek;
+    }
+
+    public String getSubjectType() {
+        return subjectType;
+    }
+
+    public void setSubjectType(String subjectType) {
+        this.subjectType = subjectType;
     }
 
     public Date getStartDate() {
@@ -106,13 +114,6 @@ public class Subject implements Parcelable {
         this.subjectName = subjectName;
     }
 
-    public ArrayList<String> getHomeWorks() {
-        return homeWorks;
-    }
-
-    public void setHomeWorks(ArrayList<String> homeWorks) {
-        this.homeWorks = homeWorks;
-    }
 
     public String getCabNumber() {
         return cabNumber;
@@ -143,7 +144,7 @@ public class Subject implements Parcelable {
         dest.writeLong(this.startDate != null ? this.startDate.getTime() : -1);
         dest.writeLong(this.endDate != null ? this.endDate.getTime() : -1);
         dest.writeString(this.subjectName);
-        dest.writeStringList(this.homeWorks);
+        dest.writeString(this.subjectType);
         dest.writeString(this.campusNumber);
         dest.writeString(this.cabNumber);
         dest.writeString(this.teacherName);
@@ -161,7 +162,7 @@ public class Subject implements Parcelable {
         long tmpEndDate = in.readLong();
         this.endDate = tmpEndDate == -1 ? null : new Date(tmpEndDate);
         this.subjectName = in.readString();
-        this.homeWorks = in.createStringArrayList();
+        this.subjectType = in.readString();
         this.campusNumber = in.readString();
         this.cabNumber = in.readString();
         this.teacherName = in.readString();

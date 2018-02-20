@@ -3,6 +3,8 @@ package com.kfu.lantimat.kfustudent.CustomSchedule;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crash.FirebaseCrash;
@@ -130,8 +133,20 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_schedule);
 
-        FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
+        FrameLayout v = (FrameLayout) findViewById(R.id.content_frame2); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_custom_schedule, v);
+
+        //Delete behavior
+        //CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) frameLayout.getLayoutParams();
+        //params.setBehavior(null);
+
+        //frameLayout.requestLayout();
+
+        AppBarLayout.LayoutParams toolbarParams = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        toolbarParams.setScrollFlags(-1);
+        toolbar.requestLayout();
+
+
 
         ivBack = findViewById(R.id.ivBack);
         ivNext = findViewById(R.id.ivNext);
@@ -179,6 +194,12 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         presenter.getData(0);
 
         initPrevNextBtn();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        presenter.getData(0);
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void initPrevNextBtn() {

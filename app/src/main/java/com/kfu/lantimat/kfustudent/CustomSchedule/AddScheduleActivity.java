@@ -1,6 +1,7 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
@@ -41,8 +42,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddScheduleActivity extends AppCompatActivity {
-    private TextView tvStartTIme, tvEndTime;
-    private ConstraintLayout clRepeat;
+    private TextView tvStartTIme, tvEndTime, tvSubjectType;
+    private ConstraintLayout clRepeat, clSubjectType;
 
     private ArrayList<String> arSubjects = new ArrayList<>();
     private ArrayList<String> arTeachers = new ArrayList<>();
@@ -71,6 +72,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     int dayPosition;
     boolean isEdit;
     Subject subject;
+    String subjectType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_schedule);
         tvStartTIme = findViewById(R.id.tvStartTime);
         tvEndTime = findViewById(R.id.tvEndTime);
+        tvSubjectType = findViewById(R.id.tvSubjectType);
 
         clRepeat = findViewById(R.id.cl3);
 
@@ -85,6 +88,31 @@ public class AddScheduleActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showFragment();
+            }
+        });
+
+        clSubjectType = findViewById(R.id.cl4);
+
+        clSubjectType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(AddScheduleActivity.this)
+                        .title("Выберите тип пары")
+                        .items(R.array.dialog_list_subject_type)
+                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                /**
+                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                 * returning false here won't allow the newly selected radio button to actually be selected.
+                                 **/
+                                subjectType = getResources().getStringArray(R.array.dialog_list_subject_type)[which];
+                                tvSubjectType.setText(subjectType);
+                                return true;
+                            }
+                        })
+                        .positiveText("Выбрать")
+                        .show();
             }
         });
 
@@ -322,16 +350,24 @@ public class AddScheduleActivity extends AppCompatActivity {
             return;
         }
 
+        if (TextUtils.isEmpty(subjectType)) {
+            Toast.makeText(this, "Выберите тип пары", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         SubjectToSchedule toSchedule = new SubjectToSchedule();
         toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
             @Override
             public void onSuccess() {
                 dialog.dismiss();
+                Intent intent = new Intent();
+                intent.putExtra("Subject", subject);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
 
-        Subject subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), null, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
+        subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
         //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
         if(isEdit) toSchedule.addingMethod(schedule, subject, subjectPosition, SubjectToSchedule.EDIT);
         else toSchedule.addingMethod(schedule, subject, -1, SubjectToSchedule.ADD);
@@ -345,9 +381,14 @@ public class AddScheduleActivity extends AppCompatActivity {
         dateAndTime.set(Calendar.HOUR_OF_DAY, 8);
         dateAndTime.set(Calendar.MINUTE, 0);
 
-        dateAndTime2.set(Calendar.HOUR_OF_DAY, 8);
-        dateAndTime2.set(Calendar.MINUTE, 0);
+        dateAndTime2.set(Calendar.HOUR_OF_DAY, 9);
+        dateAndTime2.set(Calendar.MINUTE, 30);
 
+        Date date = new Date(dateAndTime.getTimeInMillis());
+        tvStartTIme.setText(getFormattedTime(date));
+
+        Date date2 = new Date(dateAndTime2.getTimeInMillis());
+        tvEndTime.setText(getFormattedTime(date2));
 
         t = new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -355,8 +396,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 dateAndTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 dateAndTime.set(Calendar.MINUTE, minute);
                 Date date = new Date(dateAndTime.getTimeInMillis());
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                String formattedTime = simpleDateFormat.format(date);
+                String formattedTime = getFormattedTime(date);
                 tvStartTIme.setText(formattedTime);
             }
         };
@@ -367,11 +407,15 @@ public class AddScheduleActivity extends AppCompatActivity {
                 dateAndTime2.set(Calendar.HOUR_OF_DAY, hourOfDay);
                 dateAndTime2.set(Calendar.MINUTE, minute);
                 Date date = new Date(dateAndTime2.getTimeInMillis());
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-                String formattedTime = simpleDateFormat.format(date);
+                String formattedTime = getFormattedTime(date);
                 tvEndTime.setText(formattedTime);
             }
         };
+    }
+
+    private String getFormattedTime(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        return simpleDateFormat.format(date);
     }
 
     private void initTimeTextViewClickListeners() {
@@ -428,6 +472,9 @@ public class AddScheduleActivity extends AppCompatActivity {
 
         startDate = new LocalDate(subject.getStartDate());
         endDate = new LocalDate(subject.getEndDate());
+
+        subjectType = subject.getSubjectType();
+        tvSubjectType.setText(subjectType);
 
     }
 

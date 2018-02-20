@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
     AccountHeader headerResult;
     public Drawer result;
     public FrameLayout frameLayout;
+    public FrameLayout frameLayout2;
     Intent drawerIntent = null;
     boolean dontFinish = false;
     SecondaryDrawerItem sign_exit;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
         appBarLayout = findViewById(R.id.appbar);
         frameLayout = (FrameLayout)findViewById(R.id.content_frame);
+        frameLayout2 = (FrameLayout)findViewById(R.id.content_frame2);
 
         spinner = (Spinner) findViewById(R.id.spinner_nav);
         spinner.setVisibility(View.INVISIBLE);

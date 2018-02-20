@@ -13,6 +13,7 @@ public class Schedule implements Parcelable {
     String scheduleId;
     String groupNumber;
     ArrayList<Weekend> arWeekends;
+    ArrayList<HomeWorks> arHomeworks;
 
     public Schedule() {
     }

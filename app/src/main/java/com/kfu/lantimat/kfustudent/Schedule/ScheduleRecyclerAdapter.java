@@ -46,10 +46,11 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         SimpleDateFormat sf = new SimpleDateFormat("HH:mm");
-        String date = sf.format(mList.get(position).getStartTime()) + " - " + sf.format(mList.get(position).getEndTime());
+        Subject subject = mList.get(position);
+        String date = sf.format(subject.getStartTime()) + " - " + sf.format(mList.get(position).getEndTime());
         String time = date;
-        String name = mList.get(position).getSubjectName();
-        String place = mList.get(position).getCabNumber();
+        String name = subject.getSubjectName() + " (" + subject.getSubjectType() + ")" ;
+        String place = subject.getCabNumber() + " (" + subject.getCampusNumber() + ")";
 
             switch (getItemViewType(position)) {
                 case Mark.RATING_TYPE:
