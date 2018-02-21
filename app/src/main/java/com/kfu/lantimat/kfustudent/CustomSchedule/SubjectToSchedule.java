@@ -85,14 +85,14 @@ public class SubjectToSchedule {
             if (subject.getRepeatWeek() == CustomScheduleConstants.ALL_WEEK) {
 
             } else if (subject.getRepeatWeek() == CustomScheduleConstants.ODD_WEEK) {
-                if ((i & 1) == 0) {
+                if ((startDate.getWeekOfWeekyear() & 1) == 0) {
                     //четная (но пользователь выбрал нечетную, поэтому делаем +1 week)
                     startDate = startDate.plusWeeks(1);
                 } else {
                     //не четная
                 }
             } else {
-                if ((i & 1) == 0) {
+                if ((startDate.getWeekOfWeekyear() & 1) == 0) {
                     //четная
 
 
@@ -121,7 +121,7 @@ public class SubjectToSchedule {
                         break;
                 }
 
-                if (subject.getRepeatDay() == CustomScheduleConstants.ALL_WEEK) {
+                if (subject.getRepeatWeek() == CustomScheduleConstants.ALL_WEEK) {
                     startDate = startDate.plusWeeks(1);
                 }
                 else {

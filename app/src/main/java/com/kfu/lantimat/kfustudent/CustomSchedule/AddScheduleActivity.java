@@ -380,6 +380,10 @@ public class AddScheduleActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.putExtra("Subject", subject);
                 setResult(RESULT_OK, intent);
+                String str;
+                if(!isEdit) str = "Расписание успешно добавлено!";
+                else str = "Расписание успешно обновлено!";
+                Toast.makeText(getApplicationContext(),str, Toast.LENGTH_LONG).show();
                 finish();
             }
         });

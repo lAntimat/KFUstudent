@@ -206,12 +206,12 @@ public class AddScheduleFragment extends Fragment {
         long end = getArguments().getLong(ARG_PARAM_END_DATE, -1);
         if (start != -1) dateAndTime.setTimeInMillis(start);
         else {
-            dateAndTime.set(Calendar.MONTH, 8);
+            dateAndTime.set(Calendar.MONTH, 1);
             dateAndTime.set(Calendar.DAY_OF_MONTH, 1);
         }
         if (end != -1) dateAndTime2.setTimeInMillis(end);
         else {
-            dateAndTime2.set(Calendar.MONTH, 11);
+            dateAndTime2.set(Calendar.MONTH, 6);
             dateAndTime2.set(Calendar.DAY_OF_MONTH, 31);
         }
 

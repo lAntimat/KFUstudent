@@ -40,6 +40,11 @@
         <item>Лабораторная работа</item>
     </string-array>
 
+    <string-array name="dialog_list_homeworks">
+        <item>Удалить</item>
+        <item>Изменить</item>
+    </string-array>
+
     <string name="title_activity_maps">Map</string>
     <string name="drawer_item_map">Карта</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>

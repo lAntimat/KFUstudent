@@ -204,9 +204,11 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        swipeRefreshLayout.setRefreshing(true);
-        presenter.getData();
-        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RESULT_OK) {
+            swipeRefreshLayout.setRefreshing(true);
+            presenter.getData();
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void initPrevNextBtn() {

@@ -194,6 +194,8 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        app:menu_colorNormal="@color/primary_dark"
+        app:menu_colorPressed="@color/primary"
         app:layout_anchor="@id/nestedScrollView"
         app:layout_anchorGravity="bottom|right|center|end">
 
@@ -201,7 +203,9 @@
             android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_school_white_18dp"
+            android:src="@drawable/ic_delete_white_24dp"
+            app:menu_colorNormal="@color/primary_dark"
+            app:menu_colorPressed="@color/primary"
             fab:fab_label="Удалить занятие"
             fab:fab_size="mini" />
 
@@ -209,7 +213,9 @@
             android:id="@+id/edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_school_white_18dp"
+            android:src="@drawable/ic_pencil_white_24dp"
+            app:menu_colorNormal="@color/primary_dark"
+            app:menu_colorPressed="@color/primary"
             fab:fab_label="Изменить занятие"
             fab:fab_size="mini" />
 
@@ -217,7 +223,9 @@
             android:id="@+id/add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_school_white_18dp"
+            android:src="@drawable/ic_plus_white_24dp"
+            app:menu_colorNormal="@color/primary_dark"
+            app:menu_colorPressed="@color/primary"
             fab:fab_label="Добавить задание"
             fab:fab_size="mini" />
     </com.github.clans.fab.FloatingActionMenu>

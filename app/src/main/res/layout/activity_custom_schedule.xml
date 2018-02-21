@@ -140,6 +140,6 @@
         android:clickable="true"
         app:layout_anchor="@id/constraintLayout"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/book_open" />
+        app:srcCompat="@drawable/ic_plus_white_24dp" />
 
 </android.support.design.widget.CoordinatorLayout>

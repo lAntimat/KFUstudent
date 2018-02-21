@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -30,6 +31,7 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Adapters.HomeworksRecyclerAdap
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
+import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.utils.CreateDialog;
 
@@ -137,6 +139,8 @@ public class SubjectInfoActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         dialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "Занятие успешно удалено!", Toast.LENGTH_LONG).show();
+                        finish();
                     }
                 });
 
@@ -165,12 +169,12 @@ public class SubjectInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 fam.close(false);
-                addHomeWorkDialog();
+                showHomeWorkDialog("", -1);
             }
         });
     }
 
-    private void addHomeWorkDialog() {
+    private void showHomeWorkDialog(String homeWorkText, final int homeworkPosition) {
         boolean wrapInScrollView = true;
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title("Добавить задание")
@@ -179,8 +183,9 @@ public class SubjectInfoActivity extends AppCompatActivity {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog dialog, DialogAction which) {
-                        dialogEditText = dialog.getCustomView().findViewById(R.id.editText);
-                        ar.add(dialogEditText.getText().toString());
+                        if(homeworkPosition!=-1) {
+                            ar.set(homeworkPosition, dialogEditText.getText().toString());
+                        } else ar.add(dialogEditText.getText().toString());
                         if(homeWorks!=null) {
                             homeWorks.setArHomeworks(ar);
                         } else homeWorks = new HomeWorks(subject.getSubjectName(), ar);
@@ -189,6 +194,8 @@ public class SubjectInfoActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+        dialogEditText = dialog.getCustomView().findViewById(R.id.editText);
+        dialogEditText.setText(homeWorkText);
     }
 
     private void addHomeworksToFirebase() {
@@ -221,6 +228,32 @@ public class SubjectInfoActivity extends AppCompatActivity {
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        ItemClickSupport.addTo(recyclerView).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
+                new MaterialDialog.Builder(SubjectInfoActivity.this)
+                        .items(R.array.dialog_list_homeworks)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                switch (which) {
+                                    case 0:
+                                        ar.remove(position);
+                                        homeWorks.setArHomeworks(ar);
+                                        adapter.notifyDataSetChanged();
+                                        addHomeworksToFirebase();
+                                        break;
+                                    case 1:
+                                        showHomeWorkDialog(ar.get(position), position);
+                                        break;
+                                }
+                            }
+                        })
+                        .show();
+                return false;
+            }
+        });
     }
 
     private void getHomeWorks(String subjectName) {
