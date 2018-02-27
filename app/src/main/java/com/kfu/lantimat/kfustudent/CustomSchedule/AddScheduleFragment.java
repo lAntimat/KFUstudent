@@ -9,6 +9,7 @@ import android.app.TimePickerDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -68,12 +69,10 @@ public class AddScheduleFragment extends Fragment {
 
         AddScheduleFragment fragment = new AddScheduleFragment();
         Bundle args = new Bundle();
-        if (customScheduleActivity != null) {
             args.putInt(ARG_PARAM_REPEAT_DAY, repeatDay);
             args.putInt(ARG_PARAM_REPEAD_WEEK, repeatWeek);
             args.putLong(ARG_PARAM_START_DATE, startDate);
             args.putLong(ARG_PARAM_END_DATE, endDate);
-        }
         fragment.setArguments(args);
 
         return fragment;
@@ -100,6 +99,7 @@ public class AddScheduleFragment extends Fragment {
         customScheduleActivity.getSupportActionBar().setTitle("Повторения");
         customScheduleActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         customScheduleActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
+
 
         initRadioGroup(v);
         initRadioGroupWeek(v);

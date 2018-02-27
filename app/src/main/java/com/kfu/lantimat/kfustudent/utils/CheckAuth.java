@@ -1,17 +1,20 @@
 package com.kfu.lantimat.kfustudent.utils;
 
 import android.content.Context;
-import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.kfu.lantimat.kfustudent.CustomSchedule.CustomScheduleConstants;
 import com.kfu.lantimat.kfustudent.KFURestClient;
-import com.kfu.lantimat.kfustudent.LoginActivity;
 import com.kfu.lantimat.kfustudent.Marks.MarksActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
-import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
@@ -42,6 +45,8 @@ public class CheckAuth {
     public final static String TAG = "CheckAuth";
     public final static String FULL_NAME = "fullName";
     public final static String GROUP = "group";
+    public final static String IMG_URL = "imgUrl";
+
     static Context context;
 
     public interface AuthCallback {
@@ -58,6 +63,10 @@ public class CheckAuth {
         void onLoginAndPassFail();
 
         void onConnectFail();
+    }
+
+    public interface UserInfoCallback{
+        void onSuccess(User user);
     }
 
     interface SaveSessionCookieCallback {
@@ -78,7 +87,7 @@ public class CheckAuth {
         this.context = context;
     }
 
-    public void checkAuth(final AuthCallback authCallback) {
+    public static void checkAuth(final AuthCallback authCallback) {
 
         checkLogin(new AuthCallback() {
             @Override
@@ -87,7 +96,7 @@ public class CheckAuth {
                 SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, true);
                 //Toast.makeText(context, "Сессия еще жива и авторизация норм", Toast.LENGTH_SHORT).show();
                 authCallback.onLoggedIn();
-                getFullName();
+                getUserInfo(null);
 
             }
 
@@ -137,7 +146,7 @@ public class CheckAuth {
         });
     }
 
-    public void checkLogin(final AuthCallback authCallback) {
+    public static void checkLogin(final AuthCallback authCallback) {
         KFURestClient.getUrl("http://shelly.kpfu.ru/e-ksu/main_blocks.startpage", new RequestParams(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -197,7 +206,7 @@ public class CheckAuth {
                 if (str.toLowerCase().contains("неверно введены имя или пароль") | str.toLowerCase().contains("неверно введены логин или пароль")) {
                     Toast.makeText(context, R.string.login_error_log_and_pass, Toast.LENGTH_SHORT).show();
                     loginCallback.onLoginAndPassFail();
-                } else if(str.toLowerCase().contains("будет завершена")) {
+                } else if (str.toLowerCase().contains("будет завершена")) {
                     if (matcher.find()) {
                         url = matcher.group(1);
                         loginCallback.onSuccess(url);
@@ -228,7 +237,7 @@ public class CheckAuth {
         });
     }
 
-    public void saveSessionCookies(String link, final SaveSessionCookieCallback saveSessionCookieCallback) {
+    public static void saveSessionCookies(String link, final SaveSessionCookieCallback saveSessionCookieCallback) {
 
         KFURestClient.get(link, new RequestParams(), new TextHttpResponseHandler() {
             @Override
@@ -290,8 +299,8 @@ public class CheckAuth {
         });
     }
 
-    private static void getFullName() {
-        if (SharedPreferenceHelper.getSharedPreferenceString(context, FULL_NAME, "").equalsIgnoreCase("")) {
+    public static void getUserInfo(final UserInfoCallback callback) {
+        if (TextUtils.isEmpty(SharedPreferenceHelper.getSharedPreferenceString(context, FULL_NAME, ""))) {
 
             KFURestClient.get("new_stud_personal.stud_anketa", null, new AsyncHttpResponseHandler() {
                 @Override
@@ -300,12 +309,43 @@ public class CheckAuth {
                         String str = new String(responseBody, "windows-1251");
                         Document doc = Jsoup.parse(str);
                         Elements elements = doc.select("span.value");
+                        Elements imgUrlElem = doc.select("div.photo");
+                        User user = new User();
+
                         if (!elements.isEmpty()) {
-                            if (elements.get(0).hasText())
+                            if (elements.get(0).hasText()) {
                                 SharedPreferenceHelper.setSharedPreferenceString(context, FULL_NAME, elements.get(0).text());
-                            if (elements.get(5).hasText())
+                                user.setFullName(elements.get(0).text());
+                            }
+                            if (elements.get(1).hasText()) {
+                                user.setBornDate(elements.get(1).text());
+                            }
+                            if (elements.get(4).hasText()) {
+                                user.setInstitude(elements.get(4).text());
+                            }
+                            if (elements.get(5).hasText()) {
                                 SharedPreferenceHelper.setSharedPreferenceString(context, GROUP, elements.get(5).text());
+                                user.setGroup(elements.get(5).text());
+                            }
                         }
+
+                        if(!imgUrlElem.isEmpty()) {
+                            //На всякий случай оберну
+                            try {
+                                String imtUrl = imgUrlElem.get(0).toString();
+                                imtUrl = imtUrl.replace("<div class=\"photo\" style=\"float: left; background-image: url(", "");
+                                imtUrl = imtUrl.replace(")\"> \n</div>", "");
+                                imtUrl = "https://shelly.kpfu.ru/e-ksu/" + imtUrl;
+                                SharedPreferenceHelper.setSharedPreferenceString(context, IMG_URL, imtUrl);
+                                user.setImgUrl(imtUrl);
+                            } catch (Exception e) {
+
+                            }
+                        }
+
+                        user.setId(SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, ""));
+
+                        addUserToFirebase(user, callback);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
@@ -317,8 +357,6 @@ public class CheckAuth {
                 }
             });
         }
-
-
     }
 
     public static Boolean isAuth() {
@@ -337,6 +375,28 @@ public class CheckAuth {
         SharedPreferenceHelper.clearSharedPreference(context, MarksActivity.COURSES_COUNT);
         SharedPreferenceHelper.clearSharedPreference(context, ScheduleActivity.EVEN_WEEK);
         SharedPreferenceHelper.clearSharedPreference(context, ScheduleActivity.ODD_WEEK);
+    }
+
+    public static void addUserToFirebase(final User user, final UserInfoCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection(CustomScheduleConstants.USERS).document(user.getId()).set(user)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, " user added to firestore");
+                        SharedPreferenceHelper.setSharedPreferenceBoolean(context, AUTH, true);
+                        if(callback!=null) callback.onSuccess(user);
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        //Проверка выполняется по сохраненному имени
+                        SharedPreferenceHelper.setSharedPreferenceString(context, FULL_NAME, "");
+                    }
+                });
     }
 
 }

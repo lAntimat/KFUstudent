@@ -52,6 +52,7 @@ import org.jsoup.select.Elements;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -86,28 +87,42 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     int dayOfWeek;
     int selectedDayOfWeek = -1;
     int weekOfYear;
+    private List<String> daysAr = new ArrayList<>(Arrays.asList("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"));
 
     Presenter presenter;
 
     @Override
     public void showData(Weekend weekend) {
-        swipeRefreshLayout.setRefreshing(false);
         setScheduleToViewPager(weekend);
     }
 
     @Override
     public void updateDataTextView(LocalDate localDate) {
+        setViewPagerDayNumber(localDate);
+
         SimpleDateFormat sf1 = new SimpleDateFormat("d MMMM", new Locale("ru","RU"));
         String date1 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.MONDAY).toDate());
         String date2 = sf1.format(localDate.withDayOfWeek(DateTimeConstants.SUNDAY).toDate());
         String weekType = "";
         weekOfYear = localDate.getWeekOfWeekyear();
         if ((localDate.getWeekOfWeekyear() & 1) == 0) {
-           weekType = "Четная неделя";
+            weekType = "Четная неделя";
         } else {
             weekType = "Нечетная неделя";
         }
         tvDate.setText(date1 + " - " + date2 + "\n" + weekType);
+
+    }
+
+    private void setViewPagerDayNumber(LocalDate localDate) {
+        if(adapter!=null) {
+            LocalDate ldStartWeek = localDate.withDayOfWeek(DateTimeConstants.MONDAY);
+            SimpleDateFormat sf2 = new SimpleDateFormat("d", new Locale("ru", "RU"));
+            for (int i = 0; i < 7; i++) {
+                adapter.setPageTitle(sf2.format(ldStartWeek.plusDays(i).toDate()), i);
+            }
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -124,6 +139,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     public void openAddSubject(Schedule schedule) {
         Intent intent = new Intent(getApplicationContext(), AddScheduleActivity.class);
         intent.putExtra("Schedule", schedule);
+        intent.putExtra("day", viewPager.getCurrentItem());
         startActivityForResult(intent, 10);
     }
 
@@ -143,17 +159,9 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         toolbarParams.setScrollFlags(-1);
         toolbar.requestLayout();
 
-        setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Расписание");
 
-        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
-        swipeRefreshLayout.setColorSchemeColors(getResources().getIntArray(R.array.swipe_refresh_colors));
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                presenter.getData();
-            }
-        });
+
         ivBack = findViewById(R.id.ivBack);
         ivNext = findViewById(R.id.ivNext);
         tvDate = findViewById(R.id.tvDate);
@@ -180,7 +188,6 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         LocalDate newDate = new LocalDate();
         dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek()) - 1;
 
-        updateDataTextView(newDate);
 
         if (CheckAuth.isAuth());
         else showNeedLogin();
@@ -194,8 +201,9 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
 
         result.setSelection(2, false);
         initViewPager();
+        //updateDataTextView(newDate);
 
-        presenter = new Presenter();
+        presenter = new Presenter(this);
         presenter.attachVIew(this);
         presenter.getData();
 
@@ -226,7 +234,6 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
             }
         });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -282,8 +289,10 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
 
         viewPager.setCurrentItem(dayOfWeek, true);
 
+        setViewPagerDayNumber(localDate);
         adapter.notifyDataSetChanged();
     }
+
     private void setScheduleToViewPager(Weekend weekend) {
 
 
@@ -352,6 +361,11 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         @Override
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
+        }
+
+        public void setPageTitle(String str, int position) {
+            String oldStr = mFragmentTitleList.get(position);
+            mFragmentTitleList.set(position, str + "\n" + daysAr.get(position));
         }
     }
 

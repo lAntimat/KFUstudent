@@ -124,6 +124,8 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
+            android:linksClickable="false"
+            android:nestedScrollingEnabled="false"
             android:text="09:30"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -165,6 +167,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
+            android:tint="@color/primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -233,10 +236,11 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
+            android:tint="@color/primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/av_timer" />
+            app:srcCompat="@drawable/book_open" />
 
         <TextView
             android:id="@+id/tvSubjectType"

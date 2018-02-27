@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -46,7 +47,7 @@ public class CustomScheduleFragment extends Fragment implements
     //Unbinder unbinder;
     //@BindView(R.id.progressBar)
     ProgressBar progressBar;
-
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public CustomScheduleFragment() {
         // Required empty public constructor
@@ -102,6 +103,16 @@ public class CustomScheduleFragment extends Fragment implements
         recyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
         initRecyclerView();
 
+        swipeRefreshLayout = v.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setColorSchemeColors(getResources().getIntArray(R.array.swipe_refresh_colors));
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ((CustomScheduleActivity)getActivity()).presenter.getData();
+            }
+        });
+
+
         //addDataToAdapter(string);
         /*String marksCashStr = SharedPreferenceHelper.getSharedPreferenceString(getContext(), "marks" + string, "-1"); //Достаем из памяти строку с успеваемостью;
         if (!marksCashStr.equalsIgnoreCase("-1")) getScheduleFromCash(marksCashStr);
@@ -130,6 +141,7 @@ public class CustomScheduleFragment extends Fragment implements
         scheduleRecyclerAdapter.notifyDataSetChanged();
         recyclerView.invalidate();
 
+        swipeRefreshLayout.setRefreshing(false);
         emptyPic();
 
     }

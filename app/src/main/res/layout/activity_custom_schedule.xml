@@ -19,12 +19,6 @@
             app:tabMode="scrollable" />
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/materialize_toolbar">
-
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
@@ -127,8 +121,6 @@
                 app:layout_constraintTop_toTopOf="@+id/tvDate"
                 app:srcCompat="@drawable/chevron_right" />
         </android.support.constraint.ConstraintLayout>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

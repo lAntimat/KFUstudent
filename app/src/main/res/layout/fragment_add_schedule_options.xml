@@ -7,6 +7,32 @@
     android:clickable="true"
     android:background="@color/cardview_light_background">
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/btnReservation"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:onClick="backClick"
+        android:orientation="horizontal"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tvBtn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="Сохранить"
+            android:textColor="@color/md_white_1000"
+            android:textSize="18sp" />
+    </android.support.v7.widget.CardView>
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -202,6 +228,7 @@
         android:id="@+id/RGroupRepeatType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -209,8 +236,12 @@
 
         <RadioButton
             android:id="@+id/all"
+            style="@android:style/Widget.CompoundButton.RadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:buttonTint="?attr/colorPrimary"
+            android:checked="false"
+            android:duplicateParentState="false"
             android:text="Каждую неделю"
             android:textSize="18sp" />
 
@@ -218,6 +249,7 @@
             android:id="@+id/evenWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:buttonTint="?attr/colorPrimary"
             android:text="По четным"
             android:textSize="18sp" />
 
@@ -225,6 +257,7 @@
             android:id="@+id/oddWeek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:buttonTint="?attr/colorPrimary"
             android:text="По нечетным"
             android:textSize="18sp" />
     </RadioGroup>

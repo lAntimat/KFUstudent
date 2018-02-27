@@ -1,7 +1,10 @@
 package com.kfu.lantimat.kfustudent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -11,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.kfu.lantimat.kfustudent.CustomSchedule.CustomScheduleActivity;
@@ -21,6 +25,8 @@ import com.kfu.lantimat.kfustudent.Timeline.model.Orientation;
 import com.kfu.lantimat.kfustudent.map.MapActivity;
 import com.kfu.lantimat.kfustudent.utils.About;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
+import com.kfu.lantimat.kfustudent.utils.KfuUser;
+import com.kfu.lantimat.kfustudent.utils.User;
 import com.loopj.android.http.PersistentCookieStore;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -32,6 +38,8 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.squareup.picasso.Picasso;
 
 
 public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCallback {
@@ -73,6 +81,34 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         color = ContextCompat.getColor(getApplicationContext(), R.color.accent);
 
         getSupportActionBar().setTitle("");
+
+        DrawerImageLoader.init(new DrawerImageLoader.IDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                Picasso.with(imageView.getContext()).load(uri).placeholder(placeholder).into(imageView);
+            }
+
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder, String tag) {
+                Picasso.with(imageView.getContext()).load(uri).placeholder(placeholder).fit().into(imageView);
+
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                Picasso.with(imageView.getContext()).cancelRequest(imageView);
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx) {
+                return null;
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx, String tag) {
+                return null;
+            }
+        });
 
 
         initAccountHeader();
@@ -135,14 +171,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         result.updateName(6, stringHolder);
     }
 
-    @Override
-    public void onBackPressed() {
-        if(result!=null && result.isDrawerOpen()) {
-            result.closeDrawer();
-        } else super.onBackPressed();
-    }
-
-    private void initAccountHeader() {
+    public void updateAccount() {
         String fullName = "";
         String group = "";
         ProfileDrawerItem profileDrawerItem = null;
@@ -161,7 +190,39 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                         .withIcon(R.mipmap.ic_launcher);
             }
 
+            headerResult.updateProfile(profileDrawerItem);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(result!=null && result.isDrawerOpen()) {
+            result.closeDrawer();
+        } else super.onBackPressed();
+    }
+
+    private void initAccountHeader() {
+
+
+        String fullName = "";
+        String group = "";
+        ProfileDrawerItem profileDrawerItem = null;
+
+        if(!SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.FULL_NAME, "").isEmpty()) {
+            fullName = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.FULL_NAME, "");
+            if(!SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.GROUP, "").isEmpty()) {
+                group = SharedPreferenceHelper.getSharedPreferenceString(getApplicationContext(), CheckAuth.GROUP, "");
+                profileDrawerItem = new ProfileDrawerItem()
+                        .withName(fullName)
+                        .withEmail(getString(R.string.drawer_item_group) + " " + group)
+                        .withIcon(KfuUser.getImgUrl(getApplicationContext()));
+            } else {
+                profileDrawerItem = new ProfileDrawerItem()
+                        .withName(fullName)
+                        .withIcon(KfuUser.getImgUrl(getApplicationContext()));
+            }
+        }
+
 
         if(profileDrawerItem!=null) {
             headerResult = new AccountHeaderBuilder()
@@ -177,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                     //.withCompactStyle(true)
                     .build();
         }
+
     }
 
     public void setupNavigationDrawer() {
@@ -270,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
     @Override
     public void onLoggedIn() {
+        updateAccount();
         updateDrawer();
     }
 

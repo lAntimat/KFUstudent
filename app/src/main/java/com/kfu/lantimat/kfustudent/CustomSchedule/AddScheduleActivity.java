@@ -32,8 +32,12 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
 import com.kfu.lantimat.kfustudent.R;
+import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.kfu.lantimat.kfustudent.utils.CreateDialog;
+import com.kfu.lantimat.kfustudent.utils.KfuUser;
+import com.kfu.lantimat.kfustudent.utils.User;
 
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
 
 import java.text.SimpleDateFormat;
@@ -44,6 +48,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddScheduleActivity extends AppCompatActivity {
+
+    private String USER_ID = KfuUser.getLogin(this);
+
     private TextView tvStartTIme, tvEndTime, tvSubjectType;
     private ConstraintLayout clRepeat, clSubjectType;
 
@@ -98,6 +105,43 @@ public class AddScheduleActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        initButtons();
+
+        initAutoCompleteTextView();
+        addDateToAutoCompleteTextView();
+        //loadSchedule();
+        initTimePickers();
+        initTimeTextViewClickListeners();
+
+        schedule = getIntent().getParcelableExtra("Schedule");
+        if(schedule==null) {
+            //Это нужно на случай если данные не спарсились
+            if(KfuUser.getGroup(getApplicationContext())==null){
+                CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
+                    @Override
+                    public void onSuccess(User user) {
+                        addSubjectInFirstTime();
+                    }
+                });
+            } else addSubjectInFirstTime();
+        }
+
+        subjectPosition = getIntent().getIntExtra("subject", -1);
+        weekendPosition = getIntent().getIntExtra("week", -1);
+        dayPosition = getIntent().getIntExtra("day", -1);
+        homeworks = getIntent().getParcelableExtra("homeworks");
+        isEdit = getIntent().getBooleanExtra("isEdit", false);
+
+        if(isEdit) {
+            subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
+            updateUI(subject);
+        } else {
+            repeatDay = dayPosition;
+        }
+
+    }
+
+    private void initButtons() {
         clRepeat = findViewById(R.id.cl3);
 
         clRepeat.setOnClickListener(new View.OnClickListener() {
@@ -131,27 +175,6 @@ public class AddScheduleActivity extends AppCompatActivity {
                         .show();
             }
         });
-
-        initAutoCompleteTextView();
-        addDateToAutoCompleteTextView();
-        //loadSchedule();
-        initTimePickers();
-        initTimeTextViewClickListeners();
-
-        schedule = getIntent().getParcelableExtra("Schedule");
-        if(schedule==null) addSubjectInFirstTime();
-
-        subjectPosition = getIntent().getIntExtra("subject", -1);
-        weekendPosition = getIntent().getIntExtra("week", -1);
-        dayPosition = getIntent().getIntExtra("day", -1);
-        homeworks = getIntent().getParcelableExtra("homeworks");
-        isEdit = getIntent().getBooleanExtra("isEdit", false);
-
-        if(dayPosition!=-1) {
-            subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
-            updateUI(subject);
-        }
-
     }
 
     private void initAutoCompleteTextView() {
@@ -191,7 +214,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     private void addDateToAutoCompleteTextView() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("Teachers").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(CustomScheduleConstants.TEACHERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -203,13 +226,37 @@ public class AddScheduleActivity extends AppCompatActivity {
             }
         });
 
-        db.collection("Subjects").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(CustomScheduleConstants.SUBJECTS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot doc : task.getResult()
                             ) {
                         arSubjects.add(doc.get("name").toString());
+                    }
+                }
+            }
+        });
+
+        db.collection(CustomScheduleConstants.CAMPUSES).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot doc : task.getResult()
+                            ) {
+                        arCampuses.add(doc.get("name").toString());
+                    }
+                }
+            }
+        });
+
+        db.collection(CustomScheduleConstants.CAB_NUMBERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot doc : task.getResult()
+                            ) {
+                        arCabs.add(doc.get("name").toString());
                     }
                 }
             }
@@ -237,84 +284,18 @@ public class AddScheduleActivity extends AppCompatActivity {
             arWeekends.add(weekend);
         }
 
-        schedule = new Schedule("2141115", arWeekends);
+        String userGroup = KfuUser.getGroup(this);
+        schedule = new Schedule(userGroup, arWeekends);
 
-        db.collection("Schedule").document("2141115").set(schedule);
+        db.collection("Schedule").document(userGroup).set(schedule);
     }
 
-    private void loadSchedule() {
-        db.collection("Schedule").document("2141115")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.getResult().exists()) {
-                            schedule = task.getResult().toObject(Schedule.class);
-                        } else {
-                            addSubjectInFirstTime();
-                        }
-                    }
-                });
-    }
-
-    private void addSubject(Subject subject, int repeatDay, int repeatWeek, LocalDate startDate, LocalDate endDate) {
-
-        if (schedule != null) {
-            int i;
-            int end = 56;
-
-            i = startDate.getWeekOfWeekyear();
-            end = endDate.getWeekOfWeekyear();
-
-            //В зависимости от типа недели, выбираем неделю для начало отсчета
-            if (repeatWeek == CustomScheduleConstants.ALL_WEEK) {
-
-            }
-            else if (repeatWeek == CustomScheduleConstants.ODD_WEEK) {
-                if ((i & 1) == 0) {
-                    //четная
-
-                } else {
-                    //не четная
-                    //Если неделя не четная, то это хорошо, но мы минусем -1, потому что массив с 0;
-                   i--;
-                }
-            } else {
-                if ((i & 1) == 0) {
-                    //четная
-                    //Если неделя четная, то это хорошо, но мы минусем -1, потому что массив с 0;
-                    i--;
-
-                } else {
-                    //не четная
-                }
-            }
-
-            for (; i < end; ) {
-                //Если четная или нечетная неделя, то плюсуем 2, иначе 1
-                schedule.getArWeekends().get(i).getArDays().get(repeatDay).getSubjects().add(subject);
-
-                if (repeatDay == CustomScheduleConstants.ALL_WEEK) i++;
-                else i = i + 2;
-            }
-
-            db.collection("Schedule").document("2141115").set(schedule).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-                    dialog.dismiss();
-                    finish();
-                }
-            });
-        }
-
-    }
-
-    private void addNewWords(String subjectName, String teacherName) {
+    private void addNewWords(String subjectName, String teacherName, String campusName, String cabNumber) {
         if (!arSubjects.contains(subjectName)) {
 
             Map<String, Object> map = new HashMap<>();
             map.put("name", subjectName);
-            db.collection("Subjects").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            db.collection(CustomScheduleConstants.SUBJECTS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
 
@@ -325,7 +306,29 @@ public class AddScheduleActivity extends AppCompatActivity {
         if (!arTeachers.contains(teacherName)) {
             Map<String, Object> map = new HashMap<>();
             map.put("name", teacherName);
-            db.collection("Teachers").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            db.collection(CustomScheduleConstants.TEACHERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+
+                }
+            });
+        }
+
+        if (!arCampuses.contains(campusName)) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", campusName);
+            db.collection(CustomScheduleConstants.CAMPUSES).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+
+                }
+            });
+        }
+
+        if (!arTeachers.contains(cabNumber)) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", cabNumber);
+            db.collection(CustomScheduleConstants.CAB_NUMBERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
 
@@ -394,7 +397,7 @@ public class AddScheduleActivity extends AppCompatActivity {
             toSchedule.edit(schedule, subject, subjectPosition, homeworks);
         }
         else toSchedule.add(schedule, subject);
-        addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString());
+        addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString(), actvCampus.getText().toString(), actvCab.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
 
     }
@@ -504,6 +507,10 @@ public class AddScheduleActivity extends AppCompatActivity {
         } else getSupportActionBar().setTitle("Добавить занятие");
 
 
+    }
+
+    public void backClick(View view) {
+        onBackPressed();
     }
 
 }

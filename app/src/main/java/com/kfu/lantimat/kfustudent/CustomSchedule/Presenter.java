@@ -1,5 +1,6 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -16,6 +17,8 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
+import com.kfu.lantimat.kfustudent.utils.KfuUser;
+import com.kfu.lantimat.kfustudent.utils.User;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 
 public class Presenter implements CustomScheduleMVP.presenter {
 
+    private Context context;
     private CustomScheduleMVP.View view;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -35,8 +39,9 @@ public class Presenter implements CustomScheduleMVP.presenter {
     private Schedule schedule;
 
 
-    public Presenter() {
+    public Presenter(Context context) {
         localDate = new LocalDate(DateTimeZone.getDefault());
+        this.context = context;
     }
 
     @Override
@@ -52,7 +57,27 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void getData() {
-        db.collection("Schedule").document("2141115")
+        getUser();
+    }
+
+    private void getUser() {
+        String userId = KfuUser.getLogin(context);
+
+        if(userId!=null) {
+            db.collection(CustomScheduleConstants.USERS).document(userId)
+                    .get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            User user = documentSnapshot.toObject(User.class);
+                            getSchedule(user);
+                        }
+                    });
+        }
+    }
+
+    private void getSchedule(User user) {
+        db.collection("Schedule").document(user.getGroup())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -68,12 +93,11 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void addData() {
-//addTestData();
     }
 
     @Override
     public void nextWeek() {
-        if(schedule!=null) {
+        if (schedule != null) {
             localDate = localDate.plusWeeks(1);
             view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
             view.updateDataTextView(localDate);
@@ -82,7 +106,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void prevWeek() {
-        if(schedule!=null) {
+        if (schedule != null) {
             localDate = localDate.minusWeeks(1);
             view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
             view.updateDataTextView(localDate);
@@ -100,7 +124,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
     }
 
     private void addTestData() {
-        FirebaseFirestore db  = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         ArrayList<String> homeWorks = new ArrayList<>();
         homeWorks.add("Сделать что то");
