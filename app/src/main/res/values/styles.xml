@@ -12,7 +12,7 @@
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
     </style>
 
-    <style name="MyMaterialTheme.Base" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -73,6 +73,13 @@
 
     <style name="expandedToolbarLayoutTitleColor" parent="@android:style/TextAppearance.DeviceDefault">
         <item name="android:textColor">#00000000</item>
+    </style>
+
+    <!-- The launcher theme. It sets the main window background to the launch_screen drawable -->
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
+        <!-- Optional, on Android 5+ you can modify the colorPrimaryDark color to match the windowBackground color for further branding-->
+        <!-- <item name="colorPrimaryDark">@android:color/white</item> -->
     </style>
 
 </resources>

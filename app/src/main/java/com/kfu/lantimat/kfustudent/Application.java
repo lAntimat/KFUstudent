@@ -6,6 +6,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.kfu.lantimat.kfustudent.Feeds.Repository;
 import com.loopj.android.http.PersistentCookieStore;
 
 import net.danlew.android.joda.JodaTimeAndroid;
@@ -35,5 +36,7 @@ public class Application extends android.app.Application {
                     .build();
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.setFirestoreSettings(settings);
+
+            Repository.setContext(getApplicationContext());
         }
 }

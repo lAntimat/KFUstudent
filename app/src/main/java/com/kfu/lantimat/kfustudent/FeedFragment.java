@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.kfu.lantimat.kfustudent.Feeds.FullFeeds.FullFeedsActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.jsoup.Jsoup;
@@ -97,7 +98,7 @@ public class FeedFragment extends Fragment {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Intent intent = new Intent(getContext(), FullFeedActivity.class);
+                Intent intent = new Intent(getContext(), FullFeedsActivity.class);
                 intent.putExtra("url", arFeeds.get(position).getFeedUrl());
                 intent.putExtra("title", arFeeds.get(position).getTitle());
                 startActivity(intent);
