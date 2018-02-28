@@ -199,7 +199,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        result.setSelection(2, false);
+        result.setSelection(11, false);
         initViewPager();
         //updateDataTextView(newDate);
 

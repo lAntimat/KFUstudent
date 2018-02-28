@@ -30,6 +30,7 @@ import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.Schedule;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
+import com.kfu.lantimat.kfustudent.utils.DateTimeUtils;
 
 import org.joda.time.LocalDate;
 
@@ -58,6 +59,7 @@ public class AddScheduleFragment extends Fragment {
 
     TextView tvStartDate;
     TextView tvEndDate;
+    TextView tvStartDateStatus, tvEndDateStatus;
 
     static AddScheduleActivity customScheduleActivity;
 
@@ -93,6 +95,9 @@ public class AddScheduleFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_add_schedule_options, null);
         tvStartDate = v.findViewById(R.id.tvStartDate);
         tvEndDate = v.findViewById(R.id.tvEndDate);
+
+        tvStartDateStatus = v.findViewById(R.id.tvStartDateStatus);
+        tvEndDateStatus = v.findViewById(R.id.tvEndDateStatus);
 
         Toolbar toolbar = v.findViewById(R.id.toolbar);
         customScheduleActivity.setSupportActionBar(toolbar);
@@ -179,6 +184,8 @@ public class AddScheduleFragment extends Fragment {
                 } else if (checkedId == R.id.oddWeek) {
                     customScheduleActivity.repeatWeek = CustomScheduleConstants.ODD_WEEK;
                 }
+                checkStartDate();
+                checkEndDate();
             }
 
         });
@@ -197,6 +204,33 @@ public class AddScheduleFragment extends Fragment {
                     break;
 
             }
+        }
+    }
+
+    private void checkStartDate() {
+        LocalDate localDate = new LocalDate(dateAndTime.getTimeInMillis());
+        if(DateTimeUtils.isEvenWeek(localDate)) { //Если неделя начала занятий четная
+            if (customScheduleActivity.repeatWeek == CustomScheduleConstants.ODD_WEEK) { //если выбранная неделя нечетная
+                tvStartDateStatus.setText("Дата начала занятий не является НЕЧЕТНОЙ (верхней) неделей");
+            } else tvEndDateStatus.setText("Все норм");
+        } else { //Если неделя начала занятий нечетная
+            if (customScheduleActivity.repeatWeek == CustomScheduleConstants.EVEN_WEEK) { //если выбранная неделя четная
+                tvStartDateStatus.setText("Дата начала занятий не является ЧЕТНОЙ (нижней) неделей");
+            } else tvEndDateStatus.setText("Все норм");
+        }
+    }
+
+    private void checkEndDate() {
+        LocalDate localDate = new LocalDate(dateAndTime2.getTimeInMillis());
+        if(DateTimeUtils.isEvenWeek(localDate)) { //Если неделя начала занятий четная
+            if (customScheduleActivity.repeatWeek == CustomScheduleConstants.ODD_WEEK) { //если выбранная неделя нечетная
+                tvEndDateStatus.setText("Дата конца занятий не является НЕЧЕТНОЙ (верхней) неделей");
+
+            } else tvEndDateStatus.setText("Все норм");
+        } else { //Если неделя начала занятий нечетная
+            if (customScheduleActivity.repeatWeek == CustomScheduleConstants.EVEN_WEEK) { //если выбранная неделя четная
+                tvEndDateStatus.setText("Дата конца занятий не является ЧЕТНОЙ (нижней) неделей");
+            } else  tvEndDateStatus.setText("Все норм");
         }
     }
 
@@ -233,6 +267,7 @@ public class AddScheduleFragment extends Fragment {
                 Date date = new Date(dateAndTime.getTimeInMillis());
                 tvStartDate.setText(formatDate(date));
                 customScheduleActivity.startDate = new LocalDate(dateAndTime);
+                checkStartDate();
             }
         };
 
@@ -245,7 +280,7 @@ public class AddScheduleFragment extends Fragment {
                 Date date = new Date(dateAndTime2.getTimeInMillis());
                 tvEndDate.setText(formatDate(date));
                 customScheduleActivity.endDate = new LocalDate(dateAndTime2);
-
+                checkEndDate();
             }
         };
     }

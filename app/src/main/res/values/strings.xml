@@ -4,6 +4,7 @@
     <string name="drawer_item_group">Группа</string>
     <string name="drawer_item_timeline">Cобытия</string>
     <string name="drawer_item_schedule">Расписание</string>
+    <string name="drawer_item_custom_schedule">Моё расписание</string>
     <string name="drawer_item_marks">Успеваемость</string>
     <string name="drawer_item_exit">Выйти</string>
     <string name="drawer_item_sign_in">Войти</string>
@@ -51,4 +52,6 @@
     <string name="map_need_permission">Требуется разрешение!</string>
     <string name="map_need_permission_message">Для доступа к вашему местоположению, необходимо разрешить доступ к геоданным</string>
     <string name="title_activity_subject_info">SubjectInfoActivity</string>
+    <string name="info_odd_week_next">Неделя начала занятий нечетная (верхняя), расписание будет добавлено со следующий недели</string>
+    <string name="info_even_week_next">Неделя начала занятий четная (нижняя), расписание будет добавлено со следующий недели</string>
 </resources>

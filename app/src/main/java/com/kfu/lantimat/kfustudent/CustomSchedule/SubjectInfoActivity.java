@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +70,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
     private HomeworksRecyclerAdapter adapter;
     private MaterialDialog dialog;
     private EditText dialogEditText;
+    private ProgressBar progressBar;
 
     //Toolbar back button click
     @Override
@@ -125,6 +127,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
         tvCab = (TextView) findViewById(R.id.tvCab);
         tvCabTitle = (TextView) findViewById(R.id.tvCabTitle);
         tvTeacherTitle = (TextView) findViewById(R.id.tvTeacherTitle);
+        progressBar = findViewById(R.id.progressBar);
 
         fam = findViewById(R.id.menu);
 
@@ -134,7 +137,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 fam.close(false);
                 final MaterialDialog dialog = CreateDialog.createPleaseWaitDialog(SubjectInfoActivity.this);
-                SubjectToSchedule toSchedule = new SubjectToSchedule();
+                SubjectToSchedule toSchedule = new SubjectToSchedule(SubjectInfoActivity.this);
                 toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
                     @Override
                     public void onSuccess() {
@@ -270,13 +273,14 @@ public class SubjectInfoActivity extends AppCompatActivity {
                             ar.clear();
                             ar.addAll(homeWorks.getArHomeworks());
                         }
+                        progressBar.setVisibility(View.INVISIBLE);
                        adapter.notifyDataSetChanged();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
     }

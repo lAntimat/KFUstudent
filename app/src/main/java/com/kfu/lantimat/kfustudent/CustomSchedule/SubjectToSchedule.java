@@ -1,9 +1,13 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
+import android.content.Context;
+import android.widget.Toast;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
+import com.kfu.lantimat.kfustudent.R;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -22,13 +26,15 @@ public class SubjectToSchedule {
     public final static String EDIT = "2";
     public final static String DELETE = "3";
 
+    private Context context;
     OnSuccessListener listener;
 
     public interface OnSuccessListener {
         void onSuccess();
     }
 
-    public SubjectToSchedule() {
+    public SubjectToSchedule(Context context) {
+        this.context = context;
     }
 
     public void addOnSuccesListener(OnSuccessListener listener) {
@@ -77,28 +83,27 @@ public class SubjectToSchedule {
             i = startDate.getWeekOfWeekyear();
             end = endDate.getWeekOfWeekyear();
 
-            /*if(end == 1 & endDate.getMonthOfYear() == 12) {
-                end = 53;
-            }*/
-
             //В зависимости от типа недели, выбираем неделю для начало отсчета
             if (subject.getRepeatWeek() == CustomScheduleConstants.ALL_WEEK) {
 
             } else if (subject.getRepeatWeek() == CustomScheduleConstants.ODD_WEEK) {
                 if ((startDate.getWeekOfWeekyear() & 1) == 0) {
                     //четная (но пользователь выбрал нечетную, поэтому делаем +1 week)
-                    startDate = startDate.plusWeeks(1);
+
                 } else {
+                    startDate = startDate.plusWeeks(1);
+                    Toast.makeText(context, R.string.info_odd_week_next, Toast.LENGTH_LONG).show();
                     //не четная
                 }
             } else {
                 if ((startDate.getWeekOfWeekyear() & 1) == 0) {
                     //четная
-
+                    startDate = startDate.plusWeeks(1);
+                    Toast.makeText(context, R.string.info_even_week_next, Toast.LENGTH_LONG).show();
 
                 } else {
                     //не четная
-                    startDate = startDate.plusWeeks(1);
+
 
                 }
             }

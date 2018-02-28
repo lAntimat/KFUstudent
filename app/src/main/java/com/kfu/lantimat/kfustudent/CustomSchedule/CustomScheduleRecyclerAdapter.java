@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Schedule;
+package com.kfu.lantimat.kfustudent.CustomSchedule;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
@@ -19,12 +18,12 @@ import java.util.ArrayList;
  * Created by GabdrakhmanovII on 31.07.2017.
  */
 
-public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private  ArrayList<Schedule> mList;
+    private  ArrayList<Subject> mList;
 
 
-    public ScheduleRecyclerAdapter(ArrayList<Schedule> itemList) {
+    public CustomScheduleRecyclerAdapter(ArrayList<Subject> itemList) {
         this.mList = itemList;
     }
     @Override
@@ -46,10 +45,11 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         SimpleDateFormat sf = new SimpleDateFormat("HH:mm");
-        Schedule schedule = mList.get(position);
-        String time = schedule.getTime();
-        String name = schedule.getSubjectName();
-        String place = schedule.getPlace();
+        Subject subject = mList.get(position);
+        String date = sf.format(subject.getStartTime()) + " - " + sf.format(mList.get(position).getEndTime());
+        String time = date;
+        String name = subject.getSubjectName() + " (" + subject.getSubjectType() + ")" ;
+        String place = subject.getCabNumber() + " (" + subject.getCampusNumber() + ")";
 
             switch (getItemViewType(position)) {
                 case Mark.RATING_TYPE:

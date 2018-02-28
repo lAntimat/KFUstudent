@@ -37,7 +37,7 @@ public class CustomScheduleFragment extends Fragment implements
     private final String ARG_PARAM1 = "param1";
 
     RecyclerView recyclerView;
-    ScheduleRecyclerAdapter scheduleRecyclerAdapter;
+    CustomScheduleRecyclerAdapter scheduleRecyclerAdapter;
     ArrayList<Subject> arSubjects;
     int day;
     //@BindView(R.id.textView)
@@ -72,7 +72,7 @@ public class CustomScheduleFragment extends Fragment implements
         }
 
         arSubjects = new ArrayList<>();
-        scheduleRecyclerAdapter = new ScheduleRecyclerAdapter(arSubjects);
+        scheduleRecyclerAdapter = new CustomScheduleRecyclerAdapter(arSubjects);
     }
 
     private void initRecyclerView() {

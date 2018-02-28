@@ -49,7 +49,7 @@ import java.util.Map;
 
 public class AddScheduleActivity extends AppCompatActivity {
 
-    private String USER_ID = KfuUser.getLogin(this);
+    private String USER_ID;
 
     private TextView tvStartTIme, tvEndTime, tvSubjectType;
     private ConstraintLayout clRepeat, clSubjectType;
@@ -95,6 +95,9 @@ public class AddScheduleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_schedule);
+
+         USER_ID = KfuUser.getLogin(this);
+
         tvStartTIme = findViewById(R.id.tvStartTime);
         tvEndTime = findViewById(R.id.tvEndTime);
         tvSubjectType = findViewById(R.id.tvSubjectType);
@@ -375,7 +378,7 @@ public class AddScheduleActivity extends AppCompatActivity {
             return;
         }
 
-        SubjectToSchedule toSchedule = new SubjectToSchedule();
+        SubjectToSchedule toSchedule = new SubjectToSchedule(this);
         toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
             @Override
             public void onSuccess() {
