@@ -10,6 +10,9 @@
 
     <color name="colorBackground">#eeeeee</color>
 
+    <color name="transparent">#00FFFFFF</color>
+
+
     <array name="swipe_refresh_colors">
         <item>@color/red_500</item>
         <item>@color/blue_500</item>

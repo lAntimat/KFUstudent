@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.kfu.lantimat.kfustudent.CustomSchedule.CustomScheduleActivity;
+import com.kfu.lantimat.kfustudent.Feeds.FeedActivity;
 import com.kfu.lantimat.kfustudent.Marks.MarksActivity;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
@@ -64,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MyMaterialTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -277,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         switch (position) {
                             case 1:
-                                drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
+                                drawerIntent = new Intent(MainActivity.this, FeedActivity.class);
                                 break;
                             case 10: //drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
                                 break;

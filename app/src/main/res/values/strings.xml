@@ -16,6 +16,9 @@
     <string name="update_error">Ошибка соединения</string>
     <string name="timeline_events_null">Нет предстоящих событий</string>
 
+    <string name="transition_name">simple_activity_transition</string>
+    <string name="error_connect">Ошибка загрузки данных</string>
+
     <string-array name="spinner_list_item_array">
         <item>Верхняя неделя</item>"
         <item>Нижняя неделя</item>
