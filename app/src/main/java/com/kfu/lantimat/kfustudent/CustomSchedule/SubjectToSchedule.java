@@ -89,21 +89,21 @@ public class SubjectToSchedule {
             } else if (subject.getRepeatWeek() == CustomScheduleConstants.ODD_WEEK) {
                 if ((startDate.getWeekOfWeekyear() & 1) == 0) {
                     //четная (но пользователь выбрал нечетную, поэтому делаем +1 week)
-
-                } else {
                     startDate = startDate.plusWeeks(1);
                     Toast.makeText(context, R.string.info_odd_week_next, Toast.LENGTH_LONG).show();
+                } else {
+
                     //не четная
                 }
             } else {
                 if ((startDate.getWeekOfWeekyear() & 1) == 0) {
                     //четная
-                    startDate = startDate.plusWeeks(1);
-                    Toast.makeText(context, R.string.info_even_week_next, Toast.LENGTH_LONG).show();
+
 
                 } else {
                     //не четная
-
+                    startDate = startDate.plusWeeks(1);
+                    Toast.makeText(context, R.string.info_even_week_next, Toast.LENGTH_LONG).show();
 
                 }
             }

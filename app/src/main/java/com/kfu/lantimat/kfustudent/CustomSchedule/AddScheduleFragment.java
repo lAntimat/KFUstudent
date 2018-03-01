@@ -184,8 +184,8 @@ public class AddScheduleFragment extends Fragment {
                 } else if (checkedId == R.id.oddWeek) {
                     customScheduleActivity.repeatWeek = CustomScheduleConstants.ODD_WEEK;
                 }
-                checkStartDate();
-                checkEndDate();
+                //checkStartDate();
+                //checkEndDate();
             }
 
         });
@@ -267,7 +267,7 @@ public class AddScheduleFragment extends Fragment {
                 Date date = new Date(dateAndTime.getTimeInMillis());
                 tvStartDate.setText(formatDate(date));
                 customScheduleActivity.startDate = new LocalDate(dateAndTime);
-                checkStartDate();
+                //checkStartDate();
             }
         };
 
@@ -280,7 +280,7 @@ public class AddScheduleFragment extends Fragment {
                 Date date = new Date(dateAndTime2.getTimeInMillis());
                 tvEndDate.setText(formatDate(date));
                 customScheduleActivity.endDate = new LocalDate(dateAndTime2);
-                checkEndDate();
+                //checkEndDate();
             }
         };
     }
