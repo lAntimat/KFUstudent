@@ -10,7 +10,7 @@
 
     <color name="colorBackground">#eeeeee</color>
 
-    <color name="transparent">#00FFFFFF</color>
+    <color name="transparent">#00ffffff</color>
 
 
     <array name="swipe_refresh_colors">

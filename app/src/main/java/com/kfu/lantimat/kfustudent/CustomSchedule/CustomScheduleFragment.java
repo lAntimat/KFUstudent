@@ -128,6 +128,16 @@ public class CustomScheduleFragment extends Fragment implements
         if(this.day==dayNumber) addDataToAdapter(day.getSubjects());
     }
 
+    @Override
+    public void showLoading() {
+        swipeRefreshLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void hideLoading() {
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
     private void addDataToAdapter(ArrayList<Subject> arSubjects) {
 
         this.arSubjects.clear();

@@ -49,7 +49,7 @@ import java.util.Map;
 
 public class AddScheduleActivity extends AppCompatActivity {
 
-    private String USER_ID = KfuUser.getLogin(this);
+    private String USER_ID;
 
     private TextView tvStartTIme, tvEndTime, tvSubjectType;
     private ConstraintLayout clRepeat, clSubjectType;
@@ -83,21 +83,26 @@ public class AddScheduleActivity extends AppCompatActivity {
     Subject subject;
     String subjectType;
     private HomeWorks homeworks;
+    public ArrayList<Date> arCustomDays;
+    public boolean isCustomDay = false;
 
     //Toolbar back button click
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        backClick(null);
         return super.onSupportNavigateUp();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MyMaterialTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_schedule);
         tvStartTIme = findViewById(R.id.tvStartTime);
         tvEndTime = findViewById(R.id.tvEndTime);
         tvSubjectType = findViewById(R.id.tvSubjectType);
+
+        USER_ID = KfuUser.getLogin(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -360,19 +365,48 @@ public class AddScheduleActivity extends AppCompatActivity {
             return;
         }
 
-        if (repeatWeek == -1) {
-            Toast.makeText(this, "Введите неделю для повтора", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (repeatDay == -1) {
-            Toast.makeText(this, "Выберите день предмета", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         if (TextUtils.isEmpty(subjectType)) {
             Toast.makeText(this, "Выберите тип пары", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        if(!isCustomDay) {
+            if (repeatWeek == -1) {
+                Toast.makeText(this, "Введите неделю для повтора", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (repeatDay == -1) {
+                Toast.makeText(this, "Выберите день предмета", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(startDate==null) {
+                Toast.makeText(this, "Выберите дату начало занятий", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(endDate==null) {
+                Toast.makeText(this, "Выберите дату окончания занятий", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if((dateAndTime.getTimeInMillis() + 1209600000) > dateAndTime2.getTimeInMillis()) {
+                Toast.makeText(this, "Минимальный период две недели. Воспользуйтесь произвольной датой.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+        } else {
+            if(arCustomDays==null) {
+                Toast.makeText(this, "Добавьте произвольные дни", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                if (arCustomDays.size() == 1) {
+                    Toast.makeText(this, "Добавьте произвольные дни", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
         }
 
         SubjectToSchedule toSchedule = new SubjectToSchedule();
@@ -391,12 +425,20 @@ public class AddScheduleActivity extends AppCompatActivity {
             }
         });
 
-        subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
-        //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
-        if(isEdit) {
-            toSchedule.edit(schedule, subject, subjectPosition, homeworks);
+        //Если добавляем период
+        if(!isCustomDay) {
+            subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
+            //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
+            if (isEdit) {
+                toSchedule.edit(schedule, subject, subjectPosition, homeworks);
+            } else toSchedule.add(schedule, subject);
+        } else { //иначе, если выбраны произвольные даты
+            subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), arCustomDays);
+            //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
+            if (isEdit) {
+                toSchedule.edit(schedule, subject, subjectPosition, homeworks);
+            } else toSchedule.add(schedule, subject);
         }
-        else toSchedule.add(schedule, subject);
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString(), actvCampus.getText().toString(), actvCab.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
 
@@ -490,14 +532,23 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvCampus.setText(subject.getCampusNumber());
         actvCab.setText(subject.getCabNumber());
 
-        repeatDay = subject.getRepeatDay();
-        repeatWeek = subject.getRepeatWeek();
 
         dateAndTime.setTime(subject.getStartTime());
         dateAndTime2.setTime(subject.getEndTime());
 
-        startDate = new LocalDate(subject.getStartDate());
-        endDate = new LocalDate(subject.getEndDate());
+        if(subject.getArCustomDates()==null) {
+            repeatDay = subject.getRepeatDay();
+            repeatWeek = subject.getRepeatWeek();
+
+            startDate = new LocalDate(subject.getStartDate());
+            endDate = new LocalDate(subject.getEndDate());
+
+            isCustomDay = false;
+
+        } else {
+            arCustomDays = subject.getArCustomDates();
+            isCustomDay = true;
+        }
 
         subjectType = subject.getSubjectType();
         tvSubjectType.setText(subjectType);
@@ -510,6 +561,9 @@ public class AddScheduleActivity extends AppCompatActivity {
     }
 
     public void backClick(View view) {
+        Intent intent = new Intent();
+        intent.putExtra("Subject", subject);
+        setResult(RESULT_OK, intent);
         onBackPressed();
     }
 

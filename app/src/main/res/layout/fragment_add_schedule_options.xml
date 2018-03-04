@@ -39,227 +39,266 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
+        android:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:id="@+id/clPeriod"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
-        <TextView
-            android:id="@+id/tvStartDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:text="08:00"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView3"
+        <RadioGroup
+            android:id="@+id/RGroupRepeatType"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/RGroup">
+
+            <RadioButton
+                android:id="@+id/all"
+                style="@android:style/Widget.CompoundButton.RadioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="?attr/colorPrimary"
+                android:checked="false"
+                android:duplicateParentState="false"
+                android:text="Каждую неделю"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/evenWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="?attr/colorPrimary"
+                android:text="По четным"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/oddWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:buttonTint="?attr/colorPrimary"
+                android:text="По нечетным"
+                android:textSize="18sp" />
+        </RadioGroup>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Дата начало занятия"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+
+            <TextView
+                android:id="@+id/tvStartDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:text="08:00"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Дата начало занятия"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/cl2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl1">
+
+            <TextView
+                android:id="@+id/tvEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:text="09:30"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Дата окончания занятия"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <RadioGroup
+            android:id="@+id/RGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl2">
+
+            <RadioButton
+                android:id="@+id/Pn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rbtn_days_selector"
+                android:button="@null"
+                android:checked="false"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Пн"
+                android:textColor="@drawable/rbtn_days_textcolor_selector"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/Bt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rbtn_days_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Вт"
+                android:textColor="@drawable/rbtn_days_textcolor_selector"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/Cp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rbtn_days_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Ср"
+                android:textColor="@drawable/rbtn_days_textcolor_selector"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/Cht"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rbtn_days_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Чт"
+                android:textColor="@drawable/rbtn_days_textcolor_selector"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/Pt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rbtn_days_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Пт"
+                android:textColor="@drawable/rbtn_days_textcolor_selector"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/Sb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rbtn_days_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Сб"
+                android:textColor="@drawable/rbtn_days_textcolor_selector"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/Bs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rbtn_days_selector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="Вс"
+                android:textColor="@drawable/rbtn_days_textcolor_selector"
+                android:textSize="18sp" />
+
+        </RadioGroup>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/cl2"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:id="@+id/clCustomDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/clPeriod">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
+        android:buttonTint="@color/md_black_1000"
+        android:text="Выбрать произвольную дату"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cl1">
-
-        <TextView
-            android:id="@+id/tvEndDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            android:text="09:30"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Дата окончания занятия"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </android.support.constraint.ConstraintLayout>
-
-    <RadioGroup
-        android:id="@+id/RGroup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cl2">
-
-        <RadioButton
-            android:id="@+id/Pn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/rbtn_days_selector"
-            android:button="@null"
-            android:checked="false"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Пн"
-            android:textColor="@drawable/rbtn_days_textcolor_selector"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/Bt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/rbtn_days_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Вт"
-            android:textColor="@drawable/rbtn_days_textcolor_selector"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/Cp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/rbtn_days_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Ср"
-            android:textColor="@drawable/rbtn_days_textcolor_selector"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/Cht"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/rbtn_days_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Чт"
-            android:textColor="@drawable/rbtn_days_textcolor_selector"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/Pt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/rbtn_days_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Пт"
-            android:textColor="@drawable/rbtn_days_textcolor_selector"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/Sb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/rbtn_days_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Сб"
-            android:textColor="@drawable/rbtn_days_textcolor_selector"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/Bs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/rbtn_days_selector"
-            android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="Вс"
-            android:textColor="@drawable/rbtn_days_textcolor_selector"
-            android:textSize="18sp" />
-
-    </RadioGroup>
-
-    <RadioGroup
-        android:id="@+id/RGroupRepeatType"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RGroup">
-
-        <RadioButton
-            android:id="@+id/all"
-            style="@android:style/Widget.CompoundButton.RadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="?attr/colorPrimary"
-            android:checked="false"
-            android:duplicateParentState="false"
-            android:text="Каждую неделю"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/evenWeek"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="?attr/colorPrimary"
-            android:text="По четным"
-            android:textSize="18sp" />
-
-        <RadioButton
-            android:id="@+id/oddWeek"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:buttonTint="?attr/colorPrimary"
-            android:text="По нечетным"
-            android:textSize="18sp" />
-    </RadioGroup>
+        app:layout_constraintTop_toBottomOf="@+id/clPeriod" />
 
 </android.support.constraint.ConstraintLayout>

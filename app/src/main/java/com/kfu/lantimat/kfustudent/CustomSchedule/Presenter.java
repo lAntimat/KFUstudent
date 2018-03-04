@@ -57,6 +57,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void getData() {
+        view.showLoading();
         getUser();
     }
 
@@ -82,6 +83,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        view.hideLoading();
                         if (documentSnapshot.exists()) {
                             schedule = documentSnapshot.toObject(Schedule.class);
                             view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));

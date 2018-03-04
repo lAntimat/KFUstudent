@@ -8,8 +8,10 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -26,6 +30,10 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Adapters.CustomDateSubjectRecyclerAdapter;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Adapters.HomeworksRecyclerAdapter;
+import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.Schedule;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
@@ -49,15 +57,19 @@ public class AddScheduleFragment extends Fragment {
     private static final String ARG_PARAM_START_DATE = "startDate";
     private static final String ARG_PARAM_END_DATE = "endDate";
 
-    DatePickerDialog.OnDateSetListener d;
-    DatePickerDialog.OnDateSetListener d2;
-
-    Calendar dateAndTime = Calendar.getInstance(Locale.UK);
-    Calendar dateAndTime2 = Calendar.getInstance(Locale.UK);
-
-
-    TextView tvStartDate;
-    TextView tvEndDate;
+    private DatePickerDialog.OnDateSetListener d;
+    private DatePickerDialog.OnDateSetListener d2;
+    private DatePickerDialog.OnDateSetListener customDatePicker;
+    private Calendar dateAndTime = Calendar.getInstance(Locale.UK);
+    private Calendar dateAndTime2 = Calendar.getInstance(Locale.UK);
+    private Calendar dateAndTimeCustomDates = Calendar.getInstance(Locale.UK);
+    private TextView tvStartDate;
+    private TextView tvEndDate;
+    private CheckBox checkBox;
+    private ConstraintLayout clPeriod, clCustomDate;
+    private RecyclerView recyclerView;
+    private ArrayList<Date> arDates = new ArrayList<>();
+    private CustomDateSubjectRecyclerAdapter adapter;
 
     static AddScheduleActivity customScheduleActivity;
 
@@ -93,6 +105,10 @@ public class AddScheduleFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_add_schedule_options, null);
         tvStartDate = v.findViewById(R.id.tvStartDate);
         tvEndDate = v.findViewById(R.id.tvEndDate);
+        checkBox = v.findViewById(R.id.checkBox);
+        clCustomDate = v.findViewById(R.id.clCustomDate);
+        clPeriod = v.findViewById(R.id.clPeriod);
+        recyclerView = v.findViewById(R.id.recyclerView);
 
         Toolbar toolbar = v.findViewById(R.id.toolbar);
         customScheduleActivity.setSupportActionBar(toolbar);
@@ -105,7 +121,29 @@ public class AddScheduleFragment extends Fragment {
         initRadioGroupWeek(v);
         initDatePickers();
         initDateTextViewClickListeners();
+        checkBoxListener();
+        initRecyclerView();
         return v;
+    }
+
+    private void checkBoxListener() {
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    clPeriod.setVisibility(View.INVISIBLE);
+                    clCustomDate.setVisibility(View.VISIBLE);
+                    //проивольные дни
+                    customScheduleActivity.isCustomDay = true;
+                } else {
+                    clPeriod.setVisibility(View.VISIBLE);
+                    clCustomDate.setVisibility(View.INVISIBLE);
+                    customScheduleActivity.isCustomDay = false;
+                }
+            }
+        });
+
+        checkBox.setChecked(customScheduleActivity.isCustomDay);
 
     }
 
@@ -233,6 +271,7 @@ public class AddScheduleFragment extends Fragment {
                 Date date = new Date(dateAndTime.getTimeInMillis());
                 tvStartDate.setText(formatDate(date));
                 customScheduleActivity.startDate = new LocalDate(dateAndTime);
+                checkPeriodError();
             }
         };
 
@@ -245,7 +284,21 @@ public class AddScheduleFragment extends Fragment {
                 Date date = new Date(dateAndTime2.getTimeInMillis());
                 tvEndDate.setText(formatDate(date));
                 customScheduleActivity.endDate = new LocalDate(dateAndTime2);
+                checkPeriodError();
 
+            }
+        };
+
+        customDatePicker = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
+                dateAndTimeCustomDates.set(Calendar.YEAR, i);
+                dateAndTimeCustomDates.set(Calendar.MONTH, i1);
+                dateAndTimeCustomDates.set(Calendar.DAY_OF_MONTH, i2);
+                Date date = new Date(dateAndTimeCustomDates.getTimeInMillis());
+                arDates.add(0, date);
+                adapter.notifyDataSetChanged();
+                customScheduleActivity.arCustomDays = arDates;
             }
         };
     }
@@ -275,6 +328,41 @@ public class AddScheduleFragment extends Fragment {
             }
         });
 
+    }
+
+    private void initRecyclerView() {
+        arDates.add(null);
+
+        if(customScheduleActivity.arCustomDays!=null) arDates = customScheduleActivity.arCustomDays;
+        adapter = new CustomDateSubjectRecyclerAdapter(arDates);
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+        recyclerView.setAdapter(adapter);
+
+        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                if (position == arDates.size() - 1) {
+                    new DatePickerDialog(getContext(), customDatePicker,
+                            dateAndTime.get(Calendar.YEAR),
+                            dateAndTime.get(Calendar.MONTH),
+                            dateAndTime.get(Calendar.DAY_OF_MONTH))
+                            .show();
+                } else {
+                    arDates.remove(position);
+                    adapter.notifyDataSetChanged();
+                    customScheduleActivity.arCustomDays = arDates;
+                }
+            }
+        });
+    }
+
+    private void checkPeriodError() {
+        if((dateAndTime.getTimeInMillis() + 1209600000) > dateAndTime2.getTimeInMillis()) {
+            Toast.makeText(getContext(), "Минимальный период две недели. Воспользуйтесь произвольной датой.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private String formatDate(Date date) {

@@ -143,8 +143,20 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         startActivityForResult(intent, 10);
     }
 
+    @Override
+    public void showLoading() {
+        //adapter.showLoading();
+    }
+
+    @Override
+    public void hideLoading() {
+        //adapter.hideLoading();
+    }
+
     public interface UpdateableFragment {
-        public void update(Day day, int dayNumber);
+        void update(Day day, int dayNumber);
+        void showLoading();
+        void hideLoading();
     }
 
     @Override
@@ -213,7 +225,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RESULT_OK) {
-            swipeRefreshLayout.setRefreshing(true);
+            //swipeRefreshLayout.setRefreshing(true);
             presenter.getData();
             super.onActivityResult(requestCode, resultCode, data);
         }
@@ -315,6 +327,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         private final List<String> mFragmentTitleList = new ArrayList<>();
         Day updateData;
         int day;
+        boolean isLoading;
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -347,10 +360,22 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
             notifyDataSetChanged();
         }
 
+        public void showLoading() {
+            isLoading = true;
+            notifyDataSetChanged();
+        }
+
+        public void hideLoading() {
+            isLoading = false;
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getItemPosition(Object object) {
             if (object instanceof UpdateableFragment) {
                 ((UpdateableFragment) object).update(updateData, day);
+                if(isLoading) ((UpdateableFragment) object).showLoading();
+                else ((UpdateableFragment) object).hideLoading();
             }
             //don't return POSITION_NONE, avoid fragment recreation.
             return super.getItemPosition(object);

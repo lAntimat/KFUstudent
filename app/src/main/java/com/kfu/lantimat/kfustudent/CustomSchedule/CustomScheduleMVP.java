@@ -18,6 +18,8 @@ public interface CustomScheduleMVP {
     void updateDataTextView(LocalDate localDate);
     void openSubjectInfo(Schedule schedule, int position, int day);
     void openAddSubject(Schedule schedule);
+    void showLoading();
+    void hideLoading();
     }
 
     interface presenter {

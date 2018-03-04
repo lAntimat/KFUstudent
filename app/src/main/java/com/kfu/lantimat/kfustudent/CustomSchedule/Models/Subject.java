@@ -21,6 +21,7 @@ public class Subject implements Parcelable, Comparable<Subject> {
     String campusNumber;
     String cabNumber;
     String teacherName;
+    ArrayList<Date> arCustomDates;
 
     int repeatDay = -1;
     int repeatWeek = -1;
@@ -40,6 +41,17 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.teacherName = teacherName;
         this.repeatDay = repeatDay;
         this.repeatWeek = repeatWeek;
+    }
+
+    public Subject(Date startTime, Date endTime, String subjectName, String subjectType, String campusNumber, String cabNumber, String teacherName, ArrayList<Date> arCustomDates) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.subjectName = subjectName;
+        this.subjectType = subjectType;
+        this.campusNumber = campusNumber;
+        this.cabNumber = cabNumber;
+        this.teacherName = teacherName;
+        this.arCustomDates = arCustomDates;
     }
 
     public String getSubjectType() {
@@ -131,6 +143,16 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.teacherName = teacherName;
     }
 
+    public ArrayList<Date> getArCustomDates() {
+        return arCustomDates;
+    }
+
+    public void setArCustomDates(ArrayList<Date> arCustomDates) {
+        this.arCustomDates = arCustomDates;
+    }
+
+
+
     @Override
     public int compareTo(Subject o) {
         return getStartTime().compareTo(o.getStartTime());
@@ -152,6 +174,7 @@ public class Subject implements Parcelable, Comparable<Subject> {
         dest.writeString(this.campusNumber);
         dest.writeString(this.cabNumber);
         dest.writeString(this.teacherName);
+        dest.writeList(this.arCustomDates);
         dest.writeInt(this.repeatDay);
         dest.writeInt(this.repeatWeek);
     }
@@ -170,6 +193,8 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.campusNumber = in.readString();
         this.cabNumber = in.readString();
         this.teacherName = in.readString();
+        this.arCustomDates = new ArrayList<Date>();
+        in.readList(this.arCustomDates, Date.class.getClassLoader());
         this.repeatDay = in.readInt();
         this.repeatWeek = in.readInt();
     }

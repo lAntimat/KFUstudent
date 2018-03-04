@@ -79,6 +79,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MyMaterialTheme);
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_subject_info);
         initView();
@@ -144,7 +145,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
                     }
                 });
 
-                toSchedule.delete(schedule, subject, subjectPosition);
+                toSchedule.delete(schedule, subject, subjectPosition, homeWorks);
             }
         });
         fabEdit = findViewById(R.id.edit);
@@ -283,10 +284,10 @@ public class SubjectInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        subject = data.getParcelableExtra("Subject");
-        if (subject != null) {
-            setResult(RESULT_OK);
-            updateUI(subject);
+        if (data.hasExtra("Schedule")) {
+                subject = data.getParcelableExtra("Subject");
+                setResult(RESULT_OK);
+                updateUI(subject);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
