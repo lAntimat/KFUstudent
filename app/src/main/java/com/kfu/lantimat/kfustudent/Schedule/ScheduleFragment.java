@@ -77,7 +77,7 @@ public class ScheduleFragment extends Fragment implements
         }
 
         arSchedule = new ArrayList<>();
-        //scheduleRecyclerAdapter = new ScheduleRecyclerAdapter(arSchedule);
+        scheduleRecyclerAdapter = new ScheduleRecyclerAdapter(arSchedule);
     }
 
     private void initRecyclerView() {

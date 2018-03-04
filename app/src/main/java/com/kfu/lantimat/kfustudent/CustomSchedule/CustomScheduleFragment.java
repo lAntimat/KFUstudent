@@ -24,6 +24,7 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
+import com.kfu.lantimat.kfustudent.Schedule.CustomScheduleRecyclerAdapter;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class CustomScheduleFragment extends Fragment implements
     private final String ARG_PARAM1 = "param1";
 
     RecyclerView recyclerView;
-    ScheduleRecyclerAdapter scheduleRecyclerAdapter;
+    CustomScheduleRecyclerAdapter scheduleRecyclerAdapter;
     ArrayList<Subject> arSubjects;
     int day;
     //@BindView(R.id.textView)
@@ -72,7 +73,7 @@ public class CustomScheduleFragment extends Fragment implements
         }
 
         arSubjects = new ArrayList<>();
-        scheduleRecyclerAdapter = new ScheduleRecyclerAdapter(arSubjects);
+        scheduleRecyclerAdapter = new CustomScheduleRecyclerAdapter(arSubjects);
     }
 
     private void initRecyclerView() {

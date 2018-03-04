@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item11 = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_custom_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_google_maps_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem sign_exit;
@@ -266,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                 .addDrawerItems(
                         item1,
                         item3,
+                        item11,
                         item4,
                         itemMap,
                         new DividerDrawerItem(),
@@ -281,15 +283,18 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                                 break;
                             case 10: //drawerIntent = new Intent(MainActivity.this, TimeLineActivity.class);
                                 break;
-                            case 2: drawerIntent = new Intent(MainActivity.this, CustomScheduleActivity.class);
+                            case 2: drawerIntent = new Intent(MainActivity.this, ScheduleActivity.class);
                                 break;
                             case 3:
-                                drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
+                                drawerIntent = new Intent(MainActivity.this, CustomScheduleActivity.class);
                                 break;
                             case 4:
+                                drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
+                                break;
+                            case 6:
                                 drawerIntent = new Intent(MainActivity.this, MapActivity.class);
                                 break;
-                            case 7:
+                            case 8:
                                 if(CheckAuth.isAuth()) {
                                     CheckAuth.exit();
                                     startActivity(new Intent(MainActivity.this, TimeLineActivity.class));
@@ -300,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                                     dontFinish = true;
                                 }
                                 break;
-                            case 6: //TODO: вызов абаут
+                            case 7: //TODO: вызов абаут
                                 new About().onCreateDialog(MainActivity.this).show();
                         }
                         result.closeDrawer();

@@ -4,6 +4,7 @@
     <string name="drawer_item_group">Группа</string>
     <string name="drawer_item_timeline">Cобытия</string>
     <string name="drawer_item_schedule">Расписание</string>
+    <string name="drawer_item_custom_schedule">Расписание</string>
     <string name="drawer_item_marks">Успеваемость</string>
     <string name="drawer_item_exit">Выйти</string>
     <string name="drawer_item_sign_in">Войти</string>
