@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
     public Drawer result;
     public FrameLayout frameLayout;
     public FrameLayout frameLayout2;
+    public CoordinatorLayout topLayout;
     Intent drawerIntent = null;
     boolean dontFinish = false;
     SecondaryDrawerItem sign_exit;
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        topLayout = findViewById(R.id.coordinator);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
@@ -103,12 +106,12 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
             @Override
             public Drawable placeholder(Context ctx) {
-                return null;
+                return ContextCompat.getDrawable(ctx, R.mipmap.ic_launcher);
             }
 
             @Override
             public Drawable placeholder(Context ctx, String tag) {
-                return null;
+                return ContextCompat.getDrawable(ctx, R.mipmap.ic_launcher);
             }
         });
 
@@ -164,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
     public void btnLoginClick(View view) {
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     public void updateDrawer() {
@@ -232,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                     .withHeaderBackground(R.drawable.bg)
                     //.withCompactStyle(true)
                     .addProfiles(profileDrawerItem)
+                    .withSelectionListEnabledForSingleProfile(false)
                     .build();
         } else {
             headerResult = new AccountHeaderBuilder()
@@ -248,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         PrimaryDrawerItem item1 = new PrimaryDrawerItem().withIdentifier(1).withName(R.string.drawer_item_timeline).withIcon(R.drawable.ic_chart_timeline_grey600_24dp).withIconColor(color);
         //PrimaryDrawerItem item2 = new PrimaryDrawerItem().withIdentifier(2).withName("Новости");
         PrimaryDrawerItem item3 = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
-        PrimaryDrawerItem item11 = new PrimaryDrawerItem().withIdentifier(2).withName(R.string.drawer_item_custom_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem item11 = new PrimaryDrawerItem().withIdentifier(11).withName(R.string.drawer_item_custom_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_google_maps_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem sign_exit;
@@ -297,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                             case 8:
                                 if(CheckAuth.isAuth()) {
                                     CheckAuth.exit();
-                                    startActivity(new Intent(MainActivity.this, TimeLineActivity.class));
+                                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
                                     finish();
                                 }
                                 else {

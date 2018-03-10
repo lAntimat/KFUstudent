@@ -102,48 +102,53 @@ public class AddScheduleActivity extends AppCompatActivity {
         tvEndTime = findViewById(R.id.tvEndTime);
         tvSubjectType = findViewById(R.id.tvSubjectType);
 
-        USER_ID = KfuUser.getLogin(this);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Добавить занятие");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        initButtons();
-
-        initAutoCompleteTextView();
-        addDateToAutoCompleteTextView();
-        //loadSchedule();
-        initTimePickers();
-        initTimeTextViewClickListeners();
-
-        schedule = getIntent().getParcelableExtra("Schedule");
-        if(schedule==null) {
-            //Это нужно на случай если данные не спарсились
-            if(KfuUser.getGroup(getApplicationContext())==null){
-                CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
-                    @Override
-                    public void onSuccess(User user) {
-                        addSubjectInFirstTime();
-                    }
-                });
-            } else addSubjectInFirstTime();
-        }
-
-        subjectPosition = getIntent().getIntExtra("subject", -1);
-        weekendPosition = getIntent().getIntExtra("week", -1);
-        dayPosition = getIntent().getIntExtra("day", -1);
-        homeworks = getIntent().getParcelableExtra("homeworks");
-        isEdit = getIntent().getBooleanExtra("isEdit", false);
-
-        if(isEdit) {
-            subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
-            updateUI(subject);
+        if (!CheckAuth.isAuth()) {
+            Toast.makeText(getApplicationContext(), "Вы не авторизованы!", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
-            repeatDay = dayPosition;
-        }
 
+            USER_ID = KfuUser.getLogin(this);
+
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle("Добавить занятие");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+            initButtons();
+
+            initAutoCompleteTextView();
+            addDateToAutoCompleteTextView();
+            //loadSchedule();
+            initTimePickers();
+            initTimeTextViewClickListeners();
+
+            schedule = getIntent().getParcelableExtra("Schedule");
+            if (schedule == null) {
+                //Это нужно на случай если данные не спарсились
+                if (KfuUser.getGroup(getApplicationContext()) == null) {
+                    CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
+                        @Override
+                        public void onSuccess(User user) {
+                            addSubjectInFirstTime();
+                        }
+                    });
+                } else addSubjectInFirstTime();
+            }
+
+            subjectPosition = getIntent().getIntExtra("subject", -1);
+            weekendPosition = getIntent().getIntExtra("week", -1);
+            dayPosition = getIntent().getIntExtra("day", -1);
+            homeworks = getIntent().getParcelableExtra("homeworks");
+            isEdit = getIntent().getBooleanExtra("isEdit", false);
+
+            if (isEdit) {
+                subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
+                updateUI(subject);
+            } else {
+                repeatDay = dayPosition;
+            }
+        }
     }
 
     private void initButtons() {

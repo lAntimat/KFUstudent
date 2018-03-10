@@ -54,6 +54,7 @@
                 <EditText
                     android:id="@+id/passEditText"
                     style="@style/MyEditTextTheme"
+                    android:importantForAutofill="noExcludeDescendants"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -181,6 +182,7 @@
                     android:autofillHints="@color/md_white_1000"
                     android:backgroundTint="@color/md_white_1000"
                     android:hint="Логин"
+                    android:importantForAutofill="noExcludeDescendants"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"

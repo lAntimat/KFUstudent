@@ -1,11 +1,13 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.common.api.Batch;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -37,6 +39,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     private LocalDate localDate;
     private Schedule schedule;
+    private boolean isOfflineMode = false;
 
 
     public Presenter(Context context) {
@@ -47,6 +50,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
     @Override
     public void attachVIew(CustomScheduleMVP.View view) {
         this.view = view;
+        view.updateDataTextView(localDate);
     }
 
     @Override
@@ -73,7 +77,14 @@ public class Presenter implements CustomScheduleMVP.presenter {
                             User user = documentSnapshot.toObject(User.class);
                             getSchedule(user);
                         }
-                    });
+                    })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    view.hideLoading();
+                    view.showError(e.getLocalizedMessage());
+                }
+            });
         }
     }
 
@@ -84,13 +95,29 @@ public class Presenter implements CustomScheduleMVP.presenter {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         view.hideLoading();
+
                         if (documentSnapshot.exists()) {
                             schedule = documentSnapshot.toObject(Schedule.class);
                             view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
                             view.updateDataTextView(localDate);
+
+                            if(documentSnapshot.getMetadata().isFromCache()) {
+                                view.onOfflineMode(true);
+                                isOfflineMode = true;
+                            } else {
+                                view.onOfflineMode(false);
+                                isOfflineMode = false;
+                            }
                         }
                     }
-                });
+                })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                view.hideLoading();
+                view.showError(e.getLocalizedMessage());
+            }
+        });
     }
 
     @Override
@@ -117,7 +144,13 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void recyclerItemClick(int position, int day) {
-        view.openSubjectInfo(schedule, position, day);
+        Intent intent = new Intent(context, SubjectInfoActivity.class);
+        intent.putExtra("Schedule", schedule);
+        intent.putExtra("subject", position);
+        intent.putExtra("week", localDate.getWeekOfWeekyear() - 1);
+        intent.putExtra("day", day);
+        intent.putExtra("isOffline", isOfflineMode);
+        view.openSubjectInfo(intent);
     }
 
     @Override

@@ -69,7 +69,7 @@ public class CheckAuth {
         void onSuccess(User user);
     }
 
-    interface SaveSessionCookieCallback {
+    public interface SaveSessionCookieCallback {
         void onSuccess(String response);
     }
 

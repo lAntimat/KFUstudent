@@ -69,6 +69,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
     private HomeworksRecyclerAdapter adapter;
     private MaterialDialog dialog;
     private EditText dialogEditText;
+    private boolean isOfflineMode = false;
 
     //Toolbar back button click
     @Override
@@ -89,6 +90,11 @@ public class SubjectInfoActivity extends AppCompatActivity {
         subjectPosition = getIntent().getIntExtra("subject", -1);
         weekendPosition = getIntent().getIntExtra("week", -1);
         dayPosition = getIntent().getIntExtra("day", -1);
+        isOfflineMode = getIntent().getBooleanExtra("isOffline", false);
+
+        if(isOfflineMode) {
+            fam.hideMenu(false);
+        } else fam.showMenu(true);
 
         subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
         getHomeWorks(subject.getSubjectName());

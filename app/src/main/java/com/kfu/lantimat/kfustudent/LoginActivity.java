@@ -12,8 +12,10 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.kfu.lantimat.kfustudent.Feeds.FeedActivity;
 import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
+import com.kfu.lantimat.kfustudent.utils.User;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
@@ -76,11 +78,23 @@ public class LoginActivity extends AppCompatActivity {
                     public void onSuccess(String url) {
                         Toast.makeText(getApplicationContext(), R.string.auth_succes, Toast.LENGTH_SHORT).show();
                         SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
-                        Intent intent = new Intent(LoginActivity.this, TimeLineActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
+
+                        CheckAuth.saveSessionCookies(url, new CheckAuth.SaveSessionCookieCallback() {
+                            @Override
+                            public void onSuccess(String response) {
+                                //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+                                CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
+                                    @Override
+                                    public void onSuccess(User user) {
+                                        Intent intent = new Intent(LoginActivity.this, FeedActivity.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+                            }
+                        });
                     }
 
                     @Override

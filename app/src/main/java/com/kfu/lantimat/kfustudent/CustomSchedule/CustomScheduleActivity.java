@@ -1,10 +1,15 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -75,6 +81,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     //Spinner spinner;
     private ImageView ivBack, ivNext;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private FloatingActionButton fab;
 
     private LocalDate localDate;
 
@@ -126,12 +133,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     }
 
     @Override
-    public void openSubjectInfo(Schedule schedule, int position, int day) {
-        Intent intent = new Intent(this, SubjectInfoActivity.class);
-        intent.putExtra("Schedule", schedule);
-        intent.putExtra("subject", position);
-        intent.putExtra("week", weekOfYear-1);
-        intent.putExtra("day", day);
+    public void openSubjectInfo(Intent intent) {
         startActivityForResult(intent, 10);
     }
 
@@ -153,8 +155,43 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         //adapter.hideLoading();
     }
 
+    @Override
+    public void showError(String str) {
+        Toast.makeText(getApplicationContext(), str, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onOfflineMode(boolean isOfflineData) {
+        if(isOfflineData) {
+            fab.hide();
+            showSnackBar("Вы в оффлайн режиме. Редактирование и добавление предметов не возможно.");
+        } else {
+            fab.show();
+        }
+    }
+
+    public void showSnackBar(String str) {
+        Snackbar.make(findViewById(R.id.coordinator), str, Snackbar.LENGTH_LONG).show();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void fabAnimation() {
+        int x = topLayout.getRight();
+        int y = topLayout.getBottom();
+
+        int startRadius = 0;
+        int endRadius = (int) Math.hypot(topLayout.getWidth(), topLayout.getHeight());
+
+        Animator anim = ViewAnimationUtils.createCircularReveal(fab, x, y, startRadius, endRadius);
+        anim.start();
+    }
+
+
+
     public interface UpdateableFragment {
         void update(Day day, int dayNumber);
+
+
         void showLoading();
         void hideLoading();
     }
@@ -185,24 +222,19 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         buttonSignEmpty.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
 
-        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 presenter.fabCLick();
             }
         });
 
-
-
         localDate = new LocalDate(DateTimeZone.getDefault());
 
         nowWeek = isEvenOrOddWeek();
         LocalDate newDate = new LocalDate();
         dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek()) - 1;
-
-
-        if (CheckAuth.isAuth());
-        else showNeedLogin();
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -211,15 +243,16 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        result.setSelection(2, false);
+        result.setSelection(11, false);
         initViewPager();
-        //updateDataTextView(newDate);
+        initPrevNextBtn();
 
         presenter = new Presenter(this);
         presenter.attachVIew(this);
-        presenter.getData();
 
-        initPrevNextBtn();
+        if (CheckAuth.isAuth()) {
+            presenter.getData();
+        } else showNeedLogin();
     }
 
     @Override
@@ -280,6 +313,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         textViewEmpty.setVisibility(View.VISIBLE);
         buttonSignEmpty.setVisibility(View.VISIBLE);
         toolbar.setTitle("Расписание");
+        fab.hide();
     }
 
     public void onFailureMethod() {
