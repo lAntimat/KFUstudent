@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                             case 4:
                                 drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
                                 break;
-                            case 6:
+                            case 5:
                                 drawerIntent = new Intent(MainActivity.this, MapActivity.class);
                                 break;
                             case 8:

@@ -24,6 +24,7 @@ public interface CustomScheduleMVP {
     void hideLoading();
     void showError(String str);
     void onOfflineMode(boolean isOfflineData);
+    void firstOpenSchedule();
     }
 
     interface presenter {

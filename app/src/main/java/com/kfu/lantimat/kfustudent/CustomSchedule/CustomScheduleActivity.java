@@ -2,12 +2,10 @@ package com.kfu.lantimat.kfustudent.CustomSchedule;
 
 import android.animation.Animator;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -16,55 +14,39 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
-import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
-import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
-import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
+import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
-import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormatter;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import cz.msebera.android.httpclient.Header;
 
 public class CustomScheduleActivity extends MainActivity implements CustomScheduleMVP.View  {
 
@@ -113,9 +95,9 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         String weekType = "";
         weekOfYear = localDate.getWeekOfWeekyear();
         if ((localDate.getWeekOfWeekyear() & 1) == 0) {
-            weekType = "Четная неделя";
+            weekType = "Четная неделя (Нижняя)";
         } else {
-            weekType = "Нечетная неделя";
+            weekType = "Нечетная неделя (Верхняя)";
         }
         tvDate.setText(date1 + " - " + date2 + "\n" + weekType);
 
@@ -147,12 +129,13 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
 
     @Override
     public void showLoading() {
-        //adapter.showLoading();
+        adapter.showLoading();
     }
 
     @Override
     public void hideLoading() {
-        //adapter.hideLoading();
+        adapter.hideLoading();
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -168,6 +151,30 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         } else {
             fab.show();
         }
+    }
+
+    @Override
+    public void firstOpenSchedule() {
+
+
+
+        new MaterialDialog.Builder(this)
+                .title("Поздравляю! Вы первый из вашей группы.")
+                .content("Давай заполним расписание.")
+                .positiveText("Заполнить в ручную")
+                .negativeText("Импортировать из лк")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                        fab.performClick();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog dialog, DialogAction which) {
+                        startActivity(new Intent(CustomScheduleActivity.this, ScheduleActivity.class));
+                    }})
+                .show();
     }
 
     public void showSnackBar(String str) {
@@ -236,7 +243,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         LocalDate newDate = new LocalDate();
         dayOfWeek = newDate.get(DateTimeFieldType.dayOfWeek()) - 1;
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
@@ -407,7 +414,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         @Override
         public int getItemPosition(Object object) {
             if (object instanceof UpdateableFragment) {
-                ((UpdateableFragment) object).update(updateData, day);
+                if(updateData!=null) ((UpdateableFragment) object).update(updateData, day);
                 if(isLoading) ((UpdateableFragment) object).showLoading();
                 else ((UpdateableFragment) object).hideLoading();
             }

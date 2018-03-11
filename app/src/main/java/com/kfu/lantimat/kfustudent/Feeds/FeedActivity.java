@@ -14,7 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 
-import com.kfu.lantimat.kfustudent.Feeds.KfuFeed.KfuFeedFragment;
+import com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List.KfuFeedFragment;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 
@@ -42,7 +42,7 @@ public class FeedActivity extends MainActivity {
         getSupportActionBar().setTitle("События");
         //getSupportActionBar().setSubtitle("Новостной молодежный медипортал");
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
 
@@ -102,8 +102,8 @@ public class FeedActivity extends MainActivity {
         viewPager.setOffscreenPageLimit(7);
 
         //viewPager.setCurrentItem(dayOfWeek, true);
-        adapter.addFragment(new FeedFragment(), "События (студпроф)");
-        adapter.addFragment(new NewsFragment(), "Новости (студпроф)");
+        //adapter.addFragment(new FeedFragment(), "События (студпроф)");
+        //adapter.addFragment(new NewsFragment(), "Новости (студпроф)");
         adapter.addFragment(new KfuFeedFragment(), "Все новости");
         adapter.notifyDataSetChanged();
     }

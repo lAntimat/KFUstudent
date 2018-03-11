@@ -136,6 +136,7 @@ public class CustomScheduleFragment extends Fragment implements
     @Override
     public void hideLoading() {
         swipeRefreshLayout.setRefreshing(false);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void addDataToAdapter(ArrayList<Subject> arSubjects) {

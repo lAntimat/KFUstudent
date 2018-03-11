@@ -16,7 +16,7 @@
         android:clickable="true"
         app:elevation="10dp"
         app:fabSize="normal"
-        app:layout_anchor="@id/viewpager"
+        app:layout_anchor="@id/viewPager"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/ic_google_maps_white_24dp" />
 
@@ -55,7 +55,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v4.view.ViewPager
-            android:id="@+id/viewpager"
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"

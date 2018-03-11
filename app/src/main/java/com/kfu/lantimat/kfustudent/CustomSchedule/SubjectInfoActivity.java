@@ -34,6 +34,7 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.utils.CreateDialog;
+import com.kfu.lantimat.kfustudent.utils.KfuUser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -141,7 +142,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 fam.close(false);
                 final MaterialDialog dialog = CreateDialog.createPleaseWaitDialog(SubjectInfoActivity.this);
-                SubjectToSchedule toSchedule = new SubjectToSchedule();
+                SubjectToSchedule toSchedule = new SubjectToSchedule(SubjectInfoActivity.this);
                 toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
                     @Override
                     public void onSuccess() {
@@ -206,9 +207,15 @@ public class SubjectInfoActivity extends AppCompatActivity {
     }
 
     private void addHomeworksToFirebase() {
+        String group = KfuUser.getGroup(this);
+        if(group==null) {
+            Toast.makeText(this, "Проблемы с номером группы. Переавторизуйтесь", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if(homeWorks.getId()!=null) {
-            db.collection("Schedule").document("2141115").collection("homeworks").document(homeWorks.getId()).set(homeWorks).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection("Schedule").document(group).collection("homeworks").document(homeWorks.getId()).set(homeWorks).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     Log.d(TAG, "homework setted");
@@ -216,7 +223,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
                 }
             });
         } else {
-            db.collection("Schedule").document("2141115").collection("homeworks").add(homeWorks).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            db.collection("Schedule").document(group).collection("homeworks").add(homeWorks).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
                     Log.d(TAG, "homework added");
@@ -264,8 +271,14 @@ public class SubjectInfoActivity extends AppCompatActivity {
     }
 
     private void getHomeWorks(String subjectName) {
+        String group = KfuUser.getGroup(this);
+        if(group==null) {
+            Toast.makeText(this, "Проблемы с номером группы. Переавторизуйтесь", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Schedule").document("2141115").collection("homeworks")
+        db.collection("Schedule").document(group).collection("homeworks")
                 .whereEqualTo("subjectName", subjectName)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {

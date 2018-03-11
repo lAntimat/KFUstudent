@@ -158,7 +158,7 @@ public class CheckAuth {
                     e.printStackTrace();
                 }
 
-                Log.d("responseString", str);
+                //Log.d("responseString", str);
 
                 if (str.contains("Извините, устарела сессия работы с системой")) {
                     if (SharedPreferenceHelper.getSharedPreferenceString(context, LOGIN, "not").isEmpty()) { //Если не вводили логин и пароль

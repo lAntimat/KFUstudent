@@ -79,7 +79,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="?attr/colorPrimary"
-                android:text="По четным"
+                android:text="По четным (нижняя)"
                 android:textSize="18sp" />
 
             <RadioButton
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:buttonTint="?attr/colorPrimary"
-                android:text="По нечетным"
+                android:text="По нечетным (верхняя)"
                 android:textSize="18sp" />
         </RadioGroup>
 
@@ -101,7 +101,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            tools:ignore="NotSibling">
 
             <TextView
                 android:id="@+id/tvStartDate"
@@ -114,7 +115,8 @@
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginRight="8dp" />
 
             <TextView
                 android:id="@+id/textView3"

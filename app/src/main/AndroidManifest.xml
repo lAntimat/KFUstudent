@@ -53,6 +53,7 @@
             android:label="@string/title_activity_maps" />
 
         <activity android:name=".Feeds.FullNews.FullNewsActivity"></activity>
+        <activity android:name=".Feeds.KfuFeed.full.FullKfuNewsActivity"></activity>
         <activity android:name=".Feeds.FullFeeds.FullFeedsActivity"></activity>
         <activity android:name=".Feeds.PhotoGallery.PhotoGalleryActivity"></activity>
 

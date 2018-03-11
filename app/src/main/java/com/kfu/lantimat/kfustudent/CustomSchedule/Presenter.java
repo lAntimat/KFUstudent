@@ -33,6 +33,7 @@ import java.util.ArrayList;
 
 public class Presenter implements CustomScheduleMVP.presenter {
 
+    private static String TAG = "CustomSchedulePresenter";
     private Context context;
     private CustomScheduleMVP.View view;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -41,10 +42,12 @@ public class Presenter implements CustomScheduleMVP.presenter {
     private Schedule schedule;
     private boolean isOfflineMode = false;
 
+    private String group;
 
     public Presenter(Context context) {
         localDate = new LocalDate(DateTimeZone.getDefault());
         this.context = context;
+        group = KfuUser.getGroup(context);
     }
 
     @Override
@@ -62,12 +65,13 @@ public class Presenter implements CustomScheduleMVP.presenter {
     @Override
     public void getData() {
         view.showLoading();
-        getUser();
+        //getUser();
+        getSchedule();
     }
 
     private void getUser() {
         String userId = KfuUser.getLogin(context);
-
+        Log.d(TAG, "getUser. userId = " + userId);
         if(userId!=null) {
             db.collection(CustomScheduleConstants.USERS).document(userId)
                     .get()
@@ -75,7 +79,7 @@ public class Presenter implements CustomScheduleMVP.presenter {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             User user = documentSnapshot.toObject(User.class);
-                            getSchedule(user);
+                            //getSchedule(user);
                         }
                     })
             .addOnFailureListener(new OnFailureListener() {
@@ -88,14 +92,13 @@ public class Presenter implements CustomScheduleMVP.presenter {
         }
     }
 
-    private void getSchedule(User user) {
-        db.collection("Schedule").document(user.getGroup())
+    private void getSchedule() {
+        db.collection("Schedule").document(group)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         view.hideLoading();
-
                         if (documentSnapshot.exists()) {
                             schedule = documentSnapshot.toObject(Schedule.class);
                             view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
@@ -108,6 +111,8 @@ public class Presenter implements CustomScheduleMVP.presenter {
                                 view.onOfflineMode(false);
                                 isOfflineMode = false;
                             }
+                        } else { //Документ с расписанием не создан
+                            view.firstOpenSchedule();
                         }
                     }
                 })

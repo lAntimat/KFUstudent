@@ -1,9 +1,12 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
+import android.content.Context;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
+import com.kfu.lantimat.kfustudent.utils.KfuUser;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -22,13 +25,18 @@ public class SubjectToSchedule {
     public final static String EDIT = "2";
     public final static String DELETE = "3";
 
+    private Context context;
+    private String group;
+
     OnSuccessListener listener;
 
     public interface OnSuccessListener {
         void onSuccess();
     }
 
-    public SubjectToSchedule() {
+    public SubjectToSchedule(Context context) {
+        this.context = context;
+        group = KfuUser.getGroup(context);
     }
 
     public void addOnSuccesListener(OnSuccessListener listener) {
@@ -187,7 +195,7 @@ public class SubjectToSchedule {
 
     private void addToFirestore(Schedule schedule) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Schedule").document("2141115").set(schedule).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+        db.collection("Schedule").document(group).set(schedule).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 listener.onSuccess();
@@ -200,7 +208,7 @@ public class SubjectToSchedule {
         if (homeWorks.getId() != null) {
             Map<String, Object> map = new HashMap<>();
             map.put("subjectName", subject.getSubjectName());
-            db.collection("Schedule").document("2141115").collection("homeworks").document(homeWorks.getId()).update(map).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+            db.collection("Schedule").document(group).collection("homeworks").document(homeWorks.getId()).update(map).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     callback.onSuccess();
@@ -212,7 +220,7 @@ public class SubjectToSchedule {
     private void deleteHomeworks(Subject subject, HomeWorks homeWorks, final OnSuccessListener callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (homeWorks.getId() != null) {
-            db.collection("Schedule").document("2141115").collection("homeworks").document(homeWorks.getId()).delete().addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+            db.collection("Schedule").document(group).collection("homeworks").document(homeWorks.getId()).delete().addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     callback.onSuccess();

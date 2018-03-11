@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,15 +33,20 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
+import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.kfu.lantimat.kfustudent.utils.CreateDialog;
 import com.kfu.lantimat.kfustudent.utils.KfuUser;
 import com.kfu.lantimat.kfustudent.utils.User;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,8 +54,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.Header;
+
 public class AddScheduleActivity extends AppCompatActivity {
 
+    private static final String TAG = "AddScheduleActivity";
     private String USER_ID;
 
     private TextView tvStartTIme, tvEndTime, tvSubjectType;
@@ -80,6 +90,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     int weekendPosition;
     int dayPosition;
     boolean isEdit;
+    boolean isImport;
     Subject subject;
     String subjectType;
     private HomeWorks homeworks;
@@ -101,6 +112,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         tvStartTIme = findViewById(R.id.tvStartTime);
         tvEndTime = findViewById(R.id.tvEndTime);
         tvSubjectType = findViewById(R.id.tvSubjectType);
+        //getScheduleFromSite();
 
         if (!CheckAuth.isAuth()) {
             Toast.makeText(getApplicationContext(), "Вы не авторизованы!", Toast.LENGTH_SHORT).show();
@@ -123,8 +135,16 @@ public class AddScheduleActivity extends AppCompatActivity {
             initTimePickers();
             initTimeTextViewClickListeners();
 
+            subjectPosition = getIntent().getIntExtra("subject", -1);
+            weekendPosition = getIntent().getIntExtra("week", -1);
+            dayPosition = getIntent().getIntExtra("day", -1);
+            homeworks = getIntent().getParcelableExtra("homeworks");
+            isEdit = getIntent().getBooleanExtra("isEdit", false);
+            isImport = getIntent().getBooleanExtra(CustomScheduleConstants.IS_IMPORT, false);
+
             schedule = getIntent().getParcelableExtra("Schedule");
-            if (schedule == null) {
+
+            if (schedule == null & !isImport) {
                 //Это нужно на случай если данные не спарсились
                 if (KfuUser.getGroup(getApplicationContext()) == null) {
                     CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
@@ -136,15 +156,14 @@ public class AddScheduleActivity extends AppCompatActivity {
                 } else addSubjectInFirstTime();
             }
 
-            subjectPosition = getIntent().getIntExtra("subject", -1);
-            weekendPosition = getIntent().getIntExtra("week", -1);
-            dayPosition = getIntent().getIntExtra("day", -1);
-            homeworks = getIntent().getParcelableExtra("homeworks");
-            isEdit = getIntent().getBooleanExtra("isEdit", false);
-
             if (isEdit) {
                 subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
                 updateUI(subject);
+                Log.d(TAG, "if isEdit");
+            } else if(isImport) {
+                subject = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
+                getSchedule();
+                Log.d(TAG, "if isImport");
             } else {
                 repeatDay = dayPosition;
             }
@@ -276,6 +295,8 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     private void addSubjectInFirstTime() {
 
+        Log.d(TAG, "addSubjectInFirstTime");
+
         ArrayList<Subject> arSubjects = new ArrayList<>();
 
         ArrayList<Day> arDays = new ArrayList<>();
@@ -298,6 +319,62 @@ public class AddScheduleActivity extends AppCompatActivity {
         schedule = new Schedule(userGroup, arWeekends);
 
         db.collection("Schedule").document(userGroup).set(schedule);
+
+        if(isImport) updateUI(subject);
+    }
+
+    public void getScheduleFromSite() {
+        KFURestClient.get("SITE_STUDENT_SH_PR_AC.shedule?p_menu=1", null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                parseScheduleFromSite(responseBody);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        });
+    }
+
+    private void parseScheduleFromSite(byte[] responseBody) {
+        String str = null;
+        try {
+            str = new String(responseBody, "windows-1251");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Document doc = new Document(str);
+        Elements sibject  = doc.select("");
+    }
+
+    private void getSchedule() {
+        String group = KfuUser.getGroup(this);
+        if(group==null){
+            Toast.makeText(this, "Ошибка номера группы. Пожалуйста, переавторизуйтесь!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        db.collection("Schedule").document(group)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Log.d(TAG, "getSchedule onSuccess");
+                            schedule = documentSnapshot.toObject(Schedule.class);
+                            updateUI(subject);
+                        } else { //Документ с расписанием не создан
+                            addSubjectInFirstTime();
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
     }
 
     private void addNewWords(String subjectName, String teacherName, String campusName, String cabNumber) {
@@ -397,7 +474,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 return;
             }
 
-            if((dateAndTime.getTimeInMillis() + 1209600000) > dateAndTime2.getTimeInMillis()) {
+            if((startDate.plusWeeks(2).toDate().getTime() > endDate.toDate().getTime())) {
                 Toast.makeText(this, "Минимальный период две недели. Воспользуйтесь произвольной датой.", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -414,7 +491,7 @@ public class AddScheduleActivity extends AppCompatActivity {
             }
         }
 
-        SubjectToSchedule toSchedule = new SubjectToSchedule();
+        SubjectToSchedule toSchedule = new SubjectToSchedule(this);
         toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
             @Override
             public void onSuccess() {
@@ -537,16 +614,23 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvCampus.setText(subject.getCampusNumber());
         actvCab.setText(subject.getCabNumber());
 
-
+        //set date to Calendar
         dateAndTime.setTime(subject.getStartTime());
         dateAndTime2.setTime(subject.getEndTime());
 
-        if(subject.getArCustomDates()==null) {
+        //set Date to TextViews
+        tvStartTIme.setText(getFormattedTime(subject.getStartTime()));
+        tvEndTime.setText(getFormattedTime(subject.getEndTime()));
+
+
+        if(subject.getArCustomDates() == null || subject.getArCustomDates().isEmpty()) {
             repeatDay = subject.getRepeatDay();
             repeatWeek = subject.getRepeatWeek();
 
-            startDate = new LocalDate(subject.getStartDate());
-            endDate = new LocalDate(subject.getEndDate());
+            if(subject.getStartDate()!=null) {
+                startDate = new LocalDate(subject.getStartDate());
+                endDate = new LocalDate(subject.getEndDate());
+            }
 
             isCustomDay = false;
 
@@ -561,7 +645,6 @@ public class AddScheduleActivity extends AppCompatActivity {
         if(isEdit) {
             getSupportActionBar().setTitle("Редактирование");
         } else getSupportActionBar().setTitle("Добавить занятие");
-
 
     }
 
