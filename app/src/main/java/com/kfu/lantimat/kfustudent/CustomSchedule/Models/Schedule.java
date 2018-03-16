@@ -49,17 +49,18 @@ public class Schedule implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.scheduleId);
         dest.writeString(this.groupNumber);
-        dest.writeList(this.arWeekends);
+        dest.writeTypedList(this.arWeekends);
+        dest.writeTypedList(this.arHomeworks);
     }
 
     protected Schedule(Parcel in) {
         this.scheduleId = in.readString();
         this.groupNumber = in.readString();
-        this.arWeekends = new ArrayList<Weekend>();
-        in.readList(this.arWeekends, Weekend.class.getClassLoader());
+        this.arWeekends = in.createTypedArrayList(Weekend.CREATOR);
+        this.arHomeworks = in.createTypedArrayList(HomeWorks.CREATOR);
     }
 
-    public static final Parcelable.Creator<Schedule> CREATOR = new Parcelable.Creator<Schedule>() {
+    public static final Creator<Schedule> CREATOR = new Creator<Schedule>() {
         @Override
         public Schedule createFromParcel(Parcel source) {
             return new Schedule(source);

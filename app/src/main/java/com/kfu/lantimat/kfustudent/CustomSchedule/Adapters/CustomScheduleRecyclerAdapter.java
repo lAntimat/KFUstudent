@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Schedule;
+package com.kfu.lantimat.kfustudent.CustomSchedule.Adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -34,7 +34,7 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_mark, parent, false);
                 return new RatingViewHolder(view);
             default:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_schedule, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_custom_schedule, parent, false);
                 return new SimpleViewHolder(view);
         }
 
@@ -50,6 +50,7 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
         String time = date;
         String name = subject.getSubjectName() + " (" + subject.getSubjectType() + ")" ;
         String place = subject.getCabNumber() + " (" + subject.getCampusNumber() + ")";
+        String teacher = subject.getTeacherName();
 
             switch (getItemViewType(position)) {
                 case Mark.RATING_TYPE:
@@ -60,7 +61,7 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
                     ((SimpleViewHolder) holder).mTime.setText(time);
                     ((SimpleViewHolder) holder).mName.setText(name);
                     ((SimpleViewHolder) holder).mPlace.setText(place);
-
+                    ((SimpleViewHolder) holder).mTeacher.setText(teacher);
                     break;
             }
 
@@ -87,11 +88,13 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
         private TextView mName;
         private TextView mTime;
         private TextView mPlace;
+        private TextView mTeacher;
         public SimpleViewHolder(View itemView) {
             super(itemView);
             mName = (TextView) itemView.findViewById(R.id.tvName);
             mTime = (TextView) itemView.findViewById(R.id.tvTime);
             mPlace = (TextView) itemView.findViewById(R.id.tvDesc);
+            mTeacher = (TextView) itemView.findViewById(R.id.tvTeacher);
         }
     }
     public static class RatingViewHolder extends RecyclerView.ViewHolder {

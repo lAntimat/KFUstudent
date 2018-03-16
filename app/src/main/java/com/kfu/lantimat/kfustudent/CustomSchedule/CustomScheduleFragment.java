@@ -4,8 +4,6 @@ package com.kfu.lantimat.kfustudent.CustomSchedule;
  * Created by GabdrakhmanovII on 04.09.2017.
  */
 
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,12 +18,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.kfu.lantimat.kfustudent.CustomSchedule.Adapters.CustomScheduleRecyclerAdapter;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
-import com.kfu.lantimat.kfustudent.Schedule.CustomScheduleRecyclerAdapter;
-import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +80,7 @@ public class CustomScheduleFragment extends Fragment implements
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                ((CustomScheduleActivity)getActivity()).presenter.recyclerItemClick(position, day);
+                ((CustomScheduleActivity)getActivity()).presenter.recyclerItemClick(arSubjects.get(position));
             }
         });
 

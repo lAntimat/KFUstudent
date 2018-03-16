@@ -12,6 +12,7 @@ import java.util.Date;
 
 public class Subject implements Parcelable, Comparable<Subject> {
 
+    String id;
     Date startTime;
     Date endTime;
     Date startDate;
@@ -22,6 +23,7 @@ public class Subject implements Parcelable, Comparable<Subject> {
     String cabNumber;
     String teacherName;
     ArrayList<Date> arCustomDates;
+    ArrayList<String> arHomeWorks;
 
     int repeatDay = -1;
     int repeatWeek = -1;
@@ -52,6 +54,22 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.cabNumber = cabNumber;
         this.teacherName = teacherName;
         this.arCustomDates = arCustomDates;
+    }
+
+    public ArrayList<String> getArHomeWorks() {
+        return arHomeWorks;
+    }
+
+    public void setArHomeWorks(ArrayList<String> arHomeWorks) {
+        this.arHomeWorks = arHomeWorks;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSubjectType() {
@@ -158,6 +176,7 @@ public class Subject implements Parcelable, Comparable<Subject> {
         return getStartTime().compareTo(o.getStartTime());
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -165,6 +184,7 @@ public class Subject implements Parcelable, Comparable<Subject> {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
         dest.writeLong(this.startTime != null ? this.startTime.getTime() : -1);
         dest.writeLong(this.endTime != null ? this.endTime.getTime() : -1);
         dest.writeLong(this.startDate != null ? this.startDate.getTime() : -1);
@@ -175,11 +195,13 @@ public class Subject implements Parcelable, Comparable<Subject> {
         dest.writeString(this.cabNumber);
         dest.writeString(this.teacherName);
         dest.writeList(this.arCustomDates);
+        dest.writeStringList(this.arHomeWorks);
         dest.writeInt(this.repeatDay);
         dest.writeInt(this.repeatWeek);
     }
 
     protected Subject(Parcel in) {
+        this.id = in.readString();
         long tmpStartTime = in.readLong();
         this.startTime = tmpStartTime == -1 ? null : new Date(tmpStartTime);
         long tmpEndTime = in.readLong();
@@ -195,6 +217,7 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.teacherName = in.readString();
         this.arCustomDates = new ArrayList<Date>();
         in.readList(this.arCustomDates, Date.class.getClassLoader());
+        this.arHomeWorks = in.createStringArrayList();
         this.repeatDay = in.readInt();
         this.repeatWeek = in.readInt();
     }

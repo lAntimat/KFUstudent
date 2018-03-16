@@ -122,7 +122,6 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     @Override
     public void openAddSubject(Schedule schedule) {
         Intent intent = new Intent(getApplicationContext(), AddScheduleActivity.class);
-        intent.putExtra("Schedule", schedule);
         intent.putExtra("day", viewPager.getCurrentItem());
         startActivityForResult(intent, 10);
     }
@@ -215,7 +214,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         toolbarParams.setScrollFlags(-1);
         toolbar.requestLayout();
 
-        getSupportActionBar().setTitle("Расписание");
+        getSupportActionBar().setTitle("Моё расписание");
 
 
         ivBack = findViewById(R.id.ivBack);

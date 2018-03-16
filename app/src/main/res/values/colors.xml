@@ -299,7 +299,7 @@
 
     <!--Light Background Dark Text-->
     <color name="light_bg_dark_primary_text">#de000000</color>
-    <color name="light_bg_dark_secondary_text">#8A000000</color>
+    <color name="light_bg_dark_secondary_text">#8a000000</color>
     <color name="light_bg_dark_disabled_text">#61000000</color>
     <color name="light_bg_dark_hint_text">#61000000</color>
 

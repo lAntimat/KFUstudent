@@ -1,5 +1,6 @@
 package com.kfu.lantimat.kfustudent.Schedule;
 
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -16,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +60,7 @@ public class ScheduleActivity extends MainActivity {
     Button buttonSignEmpty;
     //@BindView(R.id.textView)
     TextView textViewEmpty;
-    //Spinner spinner;
+    Spinner spinner;
 
     //private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -81,6 +83,9 @@ public class ScheduleActivity extends MainActivity {
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_schedule, v);
 
+        getSupportActionBar().setTitle("Расписание ЛК");
+
+        spinner = findViewById(R.id.spinner_nav2);
         textViewEmpty = (TextView) findViewById(R.id.textView);
         buttonSignEmpty = (Button) findViewById(R.id.btnSign);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -194,6 +199,8 @@ public class ScheduleActivity extends MainActivity {
     }
 
     private void initSpinner() {
+        spinner.getBackground().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.spinner_list_item_array, R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);

@@ -195,7 +195,7 @@ public class SubjectToSchedule {
 
     private void addToFirestore(Schedule schedule) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Schedule").document(group).set(schedule).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+        db.collection(CustomScheduleConstants.SCHEDULE).document(group).set(schedule).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 listener.onSuccess();
@@ -208,7 +208,7 @@ public class SubjectToSchedule {
         if (homeWorks.getId() != null) {
             Map<String, Object> map = new HashMap<>();
             map.put("subjectName", subject.getSubjectName());
-            db.collection("Schedule").document(group).collection("homeworks").document(homeWorks.getId()).update(map).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection("homeworks").document(homeWorks.getId()).update(map).addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     callback.onSuccess();
@@ -220,7 +220,7 @@ public class SubjectToSchedule {
     private void deleteHomeworks(Subject subject, HomeWorks homeWorks, final OnSuccessListener callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         if (homeWorks.getId() != null) {
-            db.collection("Schedule").document(group).collection("homeworks").document(homeWorks.getId()).delete().addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection("homeworks").document(homeWorks.getId()).delete().addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     callback.onSuccess();

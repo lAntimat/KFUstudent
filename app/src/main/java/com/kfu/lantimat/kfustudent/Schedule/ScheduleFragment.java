@@ -19,6 +19,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.kfu.lantimat.kfustudent.CustomSchedule.AddScheduleActivity;
 import com.kfu.lantimat.kfustudent.CustomSchedule.CustomScheduleConstants;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
@@ -94,32 +96,10 @@ public class ScheduleFragment extends Fragment implements
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), OrientationHelper.VERTICAL, false));
         recyclerView.setAdapter(scheduleRecyclerAdapter);
 
-        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+        scheduleRecyclerAdapter.setOnDotsClickListener(new ScheduleRecyclerAdapter.OnDotsClickListener() {
             @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Schedule schedule = arSchedule.get(position);
-                String startStr = schedule.getTime().substring(0, 5);
-                String endStr = schedule.getTime().replace(startStr + "-", "");
-
-                SimpleDateFormat sf = new SimpleDateFormat("HH:mm", Locale.UK);
-
-                Date startTime = new Date();
-                Date endTime = new Date();
-
-                try {
-                    startTime = sf.parse(startStr);
-                    endTime = sf.parse(endStr);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-
-                Subject subject = new Subject(startTime, endTime, null, null, schedule.getSubjectName(), "", schedule.getPlace(), "", "", 0, 0);
-
-                Intent intent = new Intent(getContext(), AddScheduleActivity.class);
-                intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
-                intent.putExtra(CustomScheduleConstants.IS_IMPORT, true);
-                startActivity(intent);
+            public void onClick(int position) {
+                showImportOptionsDialog(position);
             }
         });
 
@@ -196,6 +176,44 @@ public class ScheduleFragment extends Fragment implements
             textView.setVisibility(View.GONE);
         }
     }
+
+    private void showImportOptionsDialog(final int position) {
+        new MaterialDialog.Builder(getActivity())
+                .items(R.array.dialog_list_import)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        subjectImportIntent(position);
+                    }
+                })
+                .show();
+    }
+
+    private void subjectImportIntent(int position) {
+        Schedule schedule = arSchedule.get(position);
+        String startStr = schedule.getTime().substring(0, 5);
+        String endStr = schedule.getTime().replace(startStr + "-", "");
+
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm", Locale.UK);
+
+        Date startTime = new Date();
+        Date endTime = new Date();
+
+        try {
+            startTime = sf.parse(startStr);
+            endTime = sf.parse(endStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Subject subject = new Subject(startTime, endTime, null, null, schedule.getSubjectName(), "", schedule.getPlace(), "", "", day, 0);
+
+        Intent intent = new Intent(getContext(), AddScheduleActivity.class);
+        intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
+        intent.putExtra(CustomScheduleConstants.IS_IMPORT, true);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onStop() {

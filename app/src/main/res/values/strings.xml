@@ -3,7 +3,7 @@
     <string name="action_sign_in_short">Пароль</string>
     <string name="drawer_item_group">Группа</string>
     <string name="drawer_item_timeline">Cобытия</string>
-    <string name="drawer_item_schedule">Расписание</string>
+    <string name="drawer_item_schedule">Расписание ЛК</string>
     <string name="drawer_item_custom_schedule">Моё расписание</string>
     <string name="drawer_item_marks">Успеваемость</string>
     <string name="drawer_item_exit">Выйти</string>
@@ -47,6 +47,10 @@
     <string-array name="dialog_list_homeworks">
         <item>Удалить</item>
         <item>Изменить</item>
+    </string-array>
+
+    <string-array name="dialog_list_import">
+        <item>Импортировать в моё расписание</item>
     </string-array>
 
     <string name="title_activity_maps">Map</string>

@@ -91,6 +91,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     int dayPosition;
     boolean isEdit;
     boolean isImport;
+    Subject subjectFromIntent;
     Subject subject;
     String subjectType;
     private HomeWorks homeworks;
@@ -135,34 +136,30 @@ public class AddScheduleActivity extends AppCompatActivity {
             initTimePickers();
             initTimeTextViewClickListeners();
 
-            subjectPosition = getIntent().getIntExtra("subject", -1);
-            weekendPosition = getIntent().getIntExtra("week", -1);
-            dayPosition = getIntent().getIntExtra("day", -1);
-            homeworks = getIntent().getParcelableExtra("homeworks");
+            subjectFromIntent = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
             isEdit = getIntent().getBooleanExtra("isEdit", false);
             isImport = getIntent().getBooleanExtra(CustomScheduleConstants.IS_IMPORT, false);
 
-            schedule = getIntent().getParcelableExtra("Schedule");
+            //schedule = getIntent().getParcelableExtra("Schedule");
 
-            if (schedule == null & !isImport) {
+            if (subjectFromIntent == null & !isImport) {
                 //Это нужно на случай если данные не спарсились
                 if (KfuUser.getGroup(getApplicationContext()) == null) {
                     CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
                         @Override
                         public void onSuccess(User user) {
-                            addSubjectInFirstTime();
                         }
                     });
-                } else addSubjectInFirstTime();
+                }
             }
 
             if (isEdit) {
-                subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
-                updateUI(subject);
+                //subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
+                updateUI(subjectFromIntent);
                 Log.d(TAG, "if isEdit");
             } else if(isImport) {
-                subject = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
-                getSchedule();
+                //subject = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
+                updateUI(subjectFromIntent);
                 Log.d(TAG, "if isImport");
             } else {
                 repeatDay = dayPosition;
@@ -241,86 +238,58 @@ public class AddScheduleActivity extends AppCompatActivity {
     }
 
     private void addDateToAutoCompleteTextView() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String group = KfuUser.getGroup(this);
+        if(group!=null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(CustomScheduleConstants.TEACHERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arTeachers.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arTeachers.add(doc.get("name").toString());
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        db.collection(CustomScheduleConstants.SUBJECTS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arSubjects.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arSubjects.add(doc.get("name").toString());
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        db.collection(CustomScheduleConstants.CAMPUSES).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arCampuses.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arCampuses.add(doc.get("name").toString());
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        db.collection(CustomScheduleConstants.CAB_NUMBERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arCabs.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arCabs.add(doc.get("name").toString());
+                        }
                     }
                 }
-            }
-        });
-
-    }
-
-    private void addSubjectInFirstTime() {
-
-        Log.d(TAG, "addSubjectInFirstTime");
-
-        ArrayList<Subject> arSubjects = new ArrayList<>();
-
-        ArrayList<Day> arDays = new ArrayList<>();
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-
-        Weekend weekend = new Weekend(arDays);
-
-        ArrayList<Weekend> arWeekends = new ArrayList<>();
-        for (int i = 0; i < 56; i++) {
-            arWeekends.add(weekend);
+            });
         }
-
-        String userGroup = KfuUser.getGroup(this);
-        schedule = new Schedule(userGroup, arWeekends);
-
-        db.collection("Schedule").document(userGroup).set(schedule);
-
-        if(isImport) updateUI(subject);
     }
 
     public void getScheduleFromSite() {
@@ -348,81 +317,54 @@ public class AddScheduleActivity extends AppCompatActivity {
         Elements sibject  = doc.select("");
     }
 
-    private void getSchedule() {
+    private void addNewWords(String subjectName, String teacherName, String campusName, String cabNumber) {
         String group = KfuUser.getGroup(this);
-        if(group==null){
-            Toast.makeText(this, "Ошибка номера группы. Пожалуйста, переавторизуйтесь!", Toast.LENGTH_LONG).show();
-            return;
-        }
+        if(group!=null) {
+            if (!arSubjects.contains(subjectName)) {
 
-        db.collection("Schedule").document(group)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", subjectName);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            Log.d(TAG, "getSchedule onSuccess");
-                            schedule = documentSnapshot.toObject(Schedule.class);
-                            updateUI(subject);
-                        } else { //Документ с расписанием не создан
-                            addSubjectInFirstTime();
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                    public void onSuccess(DocumentReference documentReference) {
 
                     }
                 });
-    }
+            }
 
-    private void addNewWords(String subjectName, String teacherName, String campusName, String cabNumber) {
-        if (!arSubjects.contains(subjectName)) {
+            if (!arTeachers.contains(teacherName)) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", teacherName);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
 
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", subjectName);
-            db.collection(CustomScheduleConstants.SUBJECTS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
+                    }
+                });
+            }
 
-                }
-            });
+            if (!arCampuses.contains(campusName)) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", campusName);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                    }
+                });
+            }
+
+            if (!arTeachers.contains(cabNumber)) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", cabNumber);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                    }
+                });
+            }
         }
-
-        if (!arTeachers.contains(teacherName)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", teacherName);
-            db.collection(CustomScheduleConstants.TEACHERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-
-                }
-            });
-        }
-
-        if (!arCampuses.contains(campusName)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", campusName);
-            db.collection(CustomScheduleConstants.CAMPUSES).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-
-                }
-            });
-        }
-
-        if (!arTeachers.contains(cabNumber)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", cabNumber);
-            db.collection(CustomScheduleConstants.CAB_NUMBERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-
-                }
-            });
-        }
-
     }
 
     public void addBtnClick(View view) {
@@ -491,13 +433,13 @@ public class AddScheduleActivity extends AppCompatActivity {
             }
         }
 
-        SubjectToSchedule toSchedule = new SubjectToSchedule(this);
-        toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
+        SubjectToSchedule2 toSchedule = new SubjectToSchedule2(this);
+        toSchedule.addOnSuccesListener(new SubjectToSchedule2.OnSuccessListener() {
             @Override
             public void onSuccess() {
                 dialog.dismiss();
                 Intent intent = new Intent();
-                intent.putExtra("Subject", subject);
+                intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
                 setResult(RESULT_OK, intent);
                 String str;
                 if(!isEdit) str = "Расписание успешно добавлено!";
@@ -512,14 +454,18 @@ public class AddScheduleActivity extends AppCompatActivity {
             subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
             //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
             if (isEdit) {
-                toSchedule.edit(schedule, subject, subjectPosition, homeworks);
-            } else toSchedule.add(schedule, subject);
+                subject.setId(subjectFromIntent.getId());
+                subject.setArHomeWorks(subjectFromIntent.getArHomeWorks());
+                toSchedule.edit(subject);
+            } else toSchedule.add(subject);
         } else { //иначе, если выбраны произвольные даты
             subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), arCustomDays);
             //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
             if (isEdit) {
-                toSchedule.edit(schedule, subject, subjectPosition, homeworks);
-            } else toSchedule.add(schedule, subject);
+                subject.setId(subjectFromIntent.getId());
+                subject.setArHomeWorks(subjectFromIntent.getArHomeWorks());
+                toSchedule.edit(subject);
+            } else toSchedule.add(subject);
         }
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString(), actvCampus.getText().toString(), actvCab.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);

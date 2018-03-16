@@ -3,6 +3,7 @@ package com.kfu.lantimat.kfustudent.CustomSchedule;
 import android.content.Intent;
 
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
 
 import org.joda.time.LocalDate;
@@ -34,7 +35,7 @@ public interface CustomScheduleMVP {
         void addData();
         void nextWeek();
         void prevWeek();
-        void recyclerItemClick(int position, int day);
+        void recyclerItemClick(Subject subject);
         void fabCLick();
     }
 
