@@ -202,7 +202,7 @@ public class ScheduleActivity extends MainActivity {
         spinner.getBackground().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.spinner_list_item_array, R.layout.simple_spinner_item);
+                R.array.spinner_list_item_array, R.layout.simple_spinner_item_black);
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spinner.setVisibility(View.VISIBLE);
         spinner.setAdapter(adapter);
