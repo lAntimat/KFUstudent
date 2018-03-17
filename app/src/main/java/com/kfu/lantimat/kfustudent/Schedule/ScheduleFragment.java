@@ -206,11 +206,16 @@ public class ScheduleFragment extends Fragment implements
             e.printStackTrace();
         }
 
-        Subject subject = new Subject(startTime, endTime, null, null, schedule.getSubjectName(), "", schedule.getPlace(), "", "", day, 0);
+        String cab = schedule.getPlace();
+        cab = cab.substring(0, cab.indexOf(" "));
+        String campus = schedule.getPlace().replace(cab + " ", "");
+
+        Subject subject = new Subject(startTime, endTime, null, null, schedule.getSubjectName(), "", campus, cab, "", day, 0);
 
         Intent intent = new Intent(getContext(), AddScheduleActivity.class);
         intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
         intent.putExtra(CustomScheduleConstants.IS_IMPORT, true);
+        intent.putExtra("isOffline", false);
         startActivity(intent);
     }
 

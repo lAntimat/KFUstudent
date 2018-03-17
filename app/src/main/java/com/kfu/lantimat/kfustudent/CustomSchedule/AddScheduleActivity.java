@@ -43,6 +43,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
@@ -69,6 +71,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     private ArrayList<String> arCampuses = new ArrayList<>();
     private ArrayList<String> arCabs = new ArrayList<>();
     AutoCompleteTextView actvSubjectName, actvTeacher, actvCampus, actvCab;
+    ArrayAdapter<String> subjectsAdapter, teachersAdapter, campusAdapter, cabAdapters;
     private Schedule schedule;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -88,7 +91,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     int subjectPosition;
     int weekendPosition;
-    int dayPosition;
+    int dayPosition = 0;
     boolean isEdit;
     boolean isImport;
     Subject subjectFromIntent;
@@ -142,7 +145,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
             //schedule = getIntent().getParcelableExtra("Schedule");
 
-            if (subjectFromIntent == null & !isImport) {
+            /*if (subjectFromIntent == null) {
                 //Это нужно на случай если данные не спарсились
                 if (KfuUser.getGroup(getApplicationContext()) == null) {
                     CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
@@ -151,7 +154,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                         }
                     });
                 }
-            }
+            }*/
 
             if (isEdit) {
                 //subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
@@ -205,7 +208,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     private void initAutoCompleteTextView() {
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<String>
+        subjectsAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arSubjects);
         //Getting the instance of AutoCompleteTextView
         actvSubjectName = (AutoCompleteTextView) findViewById(R.id.tvSubjectName);
@@ -213,7 +216,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvSubjectName.setAdapter(subjectsAdapter);//setting the adapter data into the AutoCompleteTextView
 
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> teachersAdapter = new ArrayAdapter<String>
+        teachersAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arTeachers);
         //Getting the instance of AutoCompleteTextView
         actvTeacher = (AutoCompleteTextView) findViewById(R.id.tvTeacherName);
@@ -221,7 +224,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvTeacher.setAdapter(teachersAdapter);//setting the adapter data into the AutoCompleteTextView
 
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> campusAdapter = new ArrayAdapter<String>
+        campusAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arCampuses);
         //Getting the instance of AutoCompleteTextView
         actvCampus = (AutoCompleteTextView) findViewById(R.id.tvCampNumber);
@@ -229,7 +232,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvCampus.setAdapter(campusAdapter);//setting the adapter data into the AutoCompleteTextView
 
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> cabAdapters = new ArrayAdapter<String>
+        cabAdapters = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arCabs);
         //Getting the instance of AutoCompleteTextView
         actvCab = (AutoCompleteTextView) findViewById(R.id.tvCabNumber);
@@ -238,6 +241,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     }
 
     private void addDateToAutoCompleteTextView() {
+        Log.d(TAG, "AddDateToAutoComplete");
         String group = KfuUser.getGroup(this);
         if(group!=null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -250,6 +254,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arTeachers.add(doc.get("name").toString());
                         }
+                        teachersAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -261,7 +266,9 @@ public class AddScheduleActivity extends AppCompatActivity {
                         for (DocumentSnapshot doc : task.getResult()
                                 ) {
                             arSubjects.add(doc.get("name").toString());
+
                         }
+                        subjectsAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -274,18 +281,22 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arCampuses.add(doc.get("name").toString());
                         }
+                        campusAdapter.notifyDataSetChanged();
                     }
                 }
             });
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    getScheduleFromSite();
                     if (task.isSuccessful()) {
                         for (DocumentSnapshot doc : task.getResult()
                                 ) {
                             arCabs.add(doc.get("name").toString());
                         }
+                        cabAdapters.notifyDataSetChanged();
                     }
                 }
             });
@@ -313,54 +324,97 @@ public class AddScheduleActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Document doc = new Document(str);
-        Elements sibject  = doc.select("");
+        Document doc = Jsoup.parse(str);
+        List<String> subjects  = doc.select("select").get(2).select("option").eachText();
+        List<String> teachers  = doc.select("select").get(3).select("option").eachText();
+        List<String> campus  = doc.select("select").get(4).select("option").eachText();
+
+        Log.d(TAG, "parseScheduleFromSite");
+
+        for (String s:subjects
+             ) {
+            addNewSubjects(s);
+        }
+        for (String s:teachers
+             ) {
+            addNewTeachers(s);
+        }
+        /*for (String s:campus
+             ) {
+            addNewCampuses(s);
+        }*/
     }
 
     private void addNewWords(String subjectName, String teacherName, String campusName, String cabNumber) {
+       addNewSubjects(subjectName);
+       addNewTeachers(teacherName);
+       addNewCampuses(campusName);
+       addNewCabs(cabNumber);
+
+    }
+
+    private void addNewSubjects(String s) {
         String group = KfuUser.getGroup(this);
-        if(group!=null) {
-            if (!arSubjects.contains(subjectName)) {
+        if (group != null) {
+            if (!arSubjects.contains(s)) {
 
                 Map<String, Object> map = new HashMap<>();
-                map.put("name", subjectName);
+                map.put("name", s);
                 db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-
+                        Log.d(TAG, "new subject name added");
                     }
                 });
             }
+        }
+    }
 
-            if (!arTeachers.contains(teacherName)) {
+    private void addNewTeachers(String s) {
+        String group = KfuUser.getGroup(this);
+        if (group != null) {
+            if (!arTeachers.contains(s)) {
                 Map<String, Object> map = new HashMap<>();
-                map.put("name", teacherName);
-                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                map.put("name", s);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS)
+                        .add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-
+                        Log.d(TAG, "new teacher name added");
                     }
                 });
             }
+        }
+    }
 
-            if (!arCampuses.contains(campusName)) {
+    private void addNewCampuses(String s) {
+        String group = KfuUser.getGroup(this);
+        if (group != null) {
+            if (!arCampuses.contains(s)) {
                 Map<String, Object> map = new HashMap<>();
-                map.put("name", campusName);
-                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                map.put("name", s);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES)
+                        .add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-
+                        Log.d(TAG, "new campus name added");
                     }
                 });
             }
+        }
+        }
 
-            if (!arTeachers.contains(cabNumber)) {
+    private void addNewCabs(String s) {
+        String group = KfuUser.getGroup(this);
+        if (group != null) {
+            if (!arCabs.contains(s)) {
                 Map<String, Object> map = new HashMap<>();
-                map.put("name", cabNumber);
-                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                map.put("name", s);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS)
+                        .add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-
+                        Log.d(TAG, "new cab name added");
                     }
                 });
             }
@@ -556,9 +610,9 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     private void updateUI(Subject subject) {
         actvSubjectName.setText(subject.getSubjectName());
-        actvTeacher.setText(subject.getTeacherName());
         actvCampus.setText(subject.getCampusNumber());
         actvCab.setText(subject.getCabNumber());
+        if(!isImport) actvTeacher.setText(subject.getTeacherName());
 
         //set date to Calendar
         dateAndTime.setTime(subject.getStartTime());
