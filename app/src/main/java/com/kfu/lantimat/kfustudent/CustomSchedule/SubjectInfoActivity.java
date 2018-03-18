@@ -20,8 +20,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Adapters.HomeworksRecyclerAdapter;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
@@ -80,7 +84,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
 
         //schedule = getIntent().getParcelableExtra("Schedule");
         subject = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
-        if(subject.getArHomeWorks()!=null) arHomeWorks.addAll(subject.getArHomeWorks());
+        //if(subject.getArHomeWorks()!=null) arHomeWorks.addAll(subject.getArHomeWorks());
         dayPosition = getIntent().getIntExtra("day", -1);
         isOfflineMode = getIntent().getBooleanExtra("isOffline", false);
 
@@ -91,6 +95,8 @@ public class SubjectInfoActivity extends AppCompatActivity {
         //subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
         //getHomeWorks(subject.getSubjectName());
         updateUI(subject);
+
+        getHomeWorks();
 
 
     }
@@ -200,13 +206,37 @@ public class SubjectInfoActivity extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
             subject.setArHomeWorks(arHomeWorks);
-            db.collection("Schedule").document(group).collection(CustomScheduleConstants.SUBJECTS).document(subject.getId()).set(subject).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection("Schedule").document(group).collection(CustomScheduleConstants.SUBJECTS).document(subject.getId()).set(subject)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     Log.d(TAG, "homework setted");
 
                 }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(SubjectInfoActivity.this, R.string.connected_error, Toast.LENGTH_LONG).show();
+                }
             });
+    }
+
+    private void getHomeWorks() {
+        String group = KfuUser.getGroup(this);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS).document(subject.getId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Subject subject = documentSnapshot.toObject(Subject.class);
+                        arHomeWorks.clear();
+                        arHomeWorks.addAll(subject.getArHomeWorks());
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     private void initRecyclerView() {

@@ -4,12 +4,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
+import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +24,15 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
 
     private  ArrayList<Subject> mList;
 
+    private OnDotsClickListener onDotsClickListener;
+
+    public interface OnDotsClickListener {
+        void onClick(int position);
+    }
+
+    public void setOnDotsClickListener(OnDotsClickListener listener) {
+        onDotsClickListener = listener;
+    }
 
     public CustomScheduleRecyclerAdapter(ArrayList<Subject> itemList) {
         this.mList = itemList;
@@ -43,7 +54,7 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
 
     }
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         SimpleDateFormat sf = new SimpleDateFormat("HH:mm");
         Subject subject = mList.get(position);
         String date = sf.format(subject.getStartTime()) + " - " + sf.format(mList.get(position).getEndTime());
@@ -62,6 +73,12 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
                     ((SimpleViewHolder) holder).mName.setText(name);
                     ((SimpleViewHolder) holder).mPlace.setText(place);
                     ((SimpleViewHolder) holder).mTeacher.setText(teacher);
+                    ((SimpleViewHolder) holder).btnDots.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onDotsClickListener.onClick(position);
+                        }
+                    });
                     break;
             }
 
@@ -89,12 +106,14 @@ public class CustomScheduleRecyclerAdapter extends RecyclerView.Adapter<Recycler
         private TextView mTime;
         private TextView mPlace;
         private TextView mTeacher;
+        private ImageButton btnDots;
         public SimpleViewHolder(View itemView) {
             super(itemView);
             mName = (TextView) itemView.findViewById(R.id.tvName);
             mTime = (TextView) itemView.findViewById(R.id.tvTime);
             mPlace = (TextView) itemView.findViewById(R.id.tvDesc);
             mTeacher = (TextView) itemView.findViewById(R.id.tvTeacher);
+            btnDots = (ImageButton) itemView.findViewById(R.id.ivDots);
         }
     }
     public static class RatingViewHolder extends RecyclerView.ViewHolder {

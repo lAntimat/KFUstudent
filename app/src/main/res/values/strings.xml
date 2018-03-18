@@ -2,7 +2,7 @@
     <string name="app_name">КФУ</string>
     <string name="action_sign_in_short">Пароль</string>
     <string name="drawer_item_group">Группа</string>
-    <string name="drawer_item_timeline">Cобытия</string>
+    <string name="drawer_item_timeline">Новости</string>
     <string name="drawer_item_schedule">Расписание ЛК</string>
     <string name="drawer_item_custom_schedule">Моё расписание</string>
     <string name="drawer_item_marks">Успеваемость</string>
@@ -53,10 +53,15 @@
         <item>Импортировать в моё расписание</item>
     </string-array>
 
+    <string-array name="dialog_list_my_schedule">
+        <item>Открыть</item>
+    </string-array>
+
     <string name="title_activity_maps">Map</string>
     <string name="drawer_item_map">Карта</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="map_need_permission">Требуется разрешение!</string>
     <string name="map_need_permission_message">Для доступа к вашему местоположению, необходимо разрешить доступ к геоданным</string>
     <string name="title_activity_subject_info">SubjectInfoActivity</string>
+    <string name="connected_error">Ошибка соединения</string>
 </resources>

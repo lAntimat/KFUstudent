@@ -1,6 +1,7 @@
 
 package com.kfu.lantimat.kfustudent.Feeds;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -16,6 +17,7 @@ import android.widget.FrameLayout;
 
 import com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List.KfuFeedFragment;
 import com.kfu.lantimat.kfustudent.MainActivity;
+import com.kfu.lantimat.kfustudent.MainIntroActivity;
 import com.kfu.lantimat.kfustudent.R;
 
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public class FeedActivity extends MainActivity {
         //setTheme(R.style.AppTheme);
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_feeds, v);
-        getSupportActionBar().setTitle("События");
+        getSupportActionBar().setTitle("Новости");
         //getSupportActionBar().setSubtitle("Новостной молодежный медипортал");
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -51,6 +53,7 @@ public class FeedActivity extends MainActivity {
 
         result.setSelection(1, false);
         initViewPager();
+        //startActivity(new Intent(this, MainIntroActivity.class));
     }
 
     @Override

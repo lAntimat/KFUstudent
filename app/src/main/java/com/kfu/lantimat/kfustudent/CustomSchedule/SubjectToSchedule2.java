@@ -128,9 +128,9 @@ public class SubjectToSchedule2 {
         weekend = createWeekend();
         for (int i = 0; i < arSubjects.size(); i++) {
             Subject subject = arSubjects.get(i);
-            if (subject.getArCustomDates()!=null)
-                subjectWithCustomDaysToWeek(weekend, subject, localDate);
-            else subjectsToWeek(weekend, subject, localDate);
+            if (subject.getArCustomDates()==null || subject.getArCustomDates().isEmpty())
+                subjectsToWeek(weekend, subject, localDate);
+            else subjectWithCustomDaysToWeek(weekend, subject, localDate);
         }
         return weekend;
     }

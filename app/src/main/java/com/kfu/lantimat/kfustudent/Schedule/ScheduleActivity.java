@@ -1,5 +1,8 @@
 package com.kfu.lantimat.kfustudent.Schedule;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,10 +27,13 @@ import android.widget.Toast;
 import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
+import com.kfu.lantimat.kfustudent.MainIntroActivity;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
+import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
+import com.kfu.lantimat.kfustudent.utils.FirstCreateMsg;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.joda.time.DateTimeFieldType;
@@ -167,7 +173,11 @@ public class ScheduleActivity extends MainActivity {
         result.setSelection(2, false);
         initViewPager();
         //getScheduleOddWeek();
+
+        FirstCreateMsg.openIntro(getApplicationContext());
+
     }
+
 
 
     @Override

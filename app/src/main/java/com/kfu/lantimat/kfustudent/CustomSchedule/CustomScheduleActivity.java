@@ -35,6 +35,7 @@ import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
+import com.kfu.lantimat.kfustudent.utils.FirstCreateMsg;
 
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
@@ -259,6 +260,8 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
         if (CheckAuth.isAuth()) {
             presenter.getData();
         } else showNeedLogin();
+
+        FirstCreateMsg.openIntro(getApplicationContext());
     }
 
     @Override

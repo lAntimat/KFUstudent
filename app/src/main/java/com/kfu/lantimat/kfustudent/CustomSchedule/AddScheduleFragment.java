@@ -366,7 +366,7 @@ public class AddScheduleFragment extends Fragment {
     }
 
     private String formatDate(Date date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d MMMM", new Locale("ru", "RU"));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("d MMM", new Locale("ru", "RU"));
         return simpleDateFormat.format(date);
     }
 
