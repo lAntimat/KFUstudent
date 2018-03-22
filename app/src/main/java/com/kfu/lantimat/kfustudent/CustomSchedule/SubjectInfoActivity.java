@@ -233,7 +233,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         Subject subject = documentSnapshot.toObject(Subject.class);
                         arHomeWorks.clear();
-                        arHomeWorks.addAll(subject.getArHomeWorks());
+                        if(subject.getArCustomDates()!=null) arHomeWorks.addAll(subject.getArHomeWorks());
                         adapter.notifyDataSetChanged();
                     }
                 });

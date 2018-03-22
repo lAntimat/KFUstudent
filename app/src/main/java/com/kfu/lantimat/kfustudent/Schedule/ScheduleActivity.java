@@ -245,7 +245,7 @@ public class ScheduleActivity extends MainActivity {
         progressBar.setVisibility(View.INVISIBLE);
         textViewEmpty.setVisibility(View.VISIBLE);
         buttonSignEmpty.setVisibility(View.VISIBLE);
-        toolbar.setTitle("Расписание");
+        toolbar.setTitle("Расписание ЛК");
     }
 
     public void onFailureMethod() {
