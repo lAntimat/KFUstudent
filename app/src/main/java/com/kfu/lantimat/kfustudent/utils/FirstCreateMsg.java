@@ -21,11 +21,12 @@ public class FirstCreateMsg {
 
         if (!hasVisited) {
             // выводим нужную активность
-            context.startActivity(new Intent(context, MainIntroActivity.class));
             SharedPreferences.Editor e = sp.edit();
             e.putBoolean("hasVisited", true);
             e.apply(); // не забудьте подтвердить изменения
-
+            Intent i = new Intent(context, MainIntroActivity.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            context.startActivity(i);
         }
     }
 }

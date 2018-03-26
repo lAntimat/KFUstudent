@@ -151,7 +151,7 @@
                 android:paddingEnd="10dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
-                android:text="Обратите внимание: логин критичен к регистру"
+                android:text="Введите логин и пароль от личного кабинета КФУ"
                 android:textColor="@color/md_white_1000"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintLeft_toLeftOf="parent"

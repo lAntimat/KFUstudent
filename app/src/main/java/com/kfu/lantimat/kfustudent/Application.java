@@ -1,5 +1,7 @@
 package com.kfu.lantimat.kfustudent;
 
+import android.support.multidex.MultiDexApplication;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.FirebaseDatabase;
@@ -15,7 +17,7 @@ import net.danlew.android.joda.JodaTimeAndroid;
  * Created by User on 008 08.09.17.
  */
 
-public class Application extends android.app.Application {
+public class Application extends MultiDexApplication {
 
     private FirebaseAnalytics mFirebaseAnalytics;
 

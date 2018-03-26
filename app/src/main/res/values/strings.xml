@@ -1,11 +1,12 @@
 <resources>
-    <string name="app_name">КФУ</string>
+    <string name="app_name">KFUapp</string>
     <string name="action_sign_in_short">Пароль</string>
     <string name="drawer_item_group">Группа</string>
     <string name="drawer_item_timeline">Новости</string>
     <string name="drawer_item_schedule">Расписание ЛК</string>
-    <string name="drawer_item_custom_schedule">Моё расписание (Бета)</string>
+    <string name="drawer_item_custom_schedule">Моё расписание (BETA)</string>
     <string name="drawer_item_marks">Успеваемость</string>
+    <string name="drawer_item_guide">Guide</string>
     <string name="drawer_item_exit">Выйти</string>
     <string name="drawer_item_sign_in">Войти</string>
     <string name="drawer_item_about">О приложении</string>

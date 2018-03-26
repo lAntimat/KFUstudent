@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         PrimaryDrawerItem item11 = new PrimaryDrawerItem().withIdentifier(11).withName(R.string.drawer_item_custom_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_google_maps_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem itemGuide = new PrimaryDrawerItem().withIdentifier(12).withName(R.string.drawer_item_guide).withIcon(R.drawable.ic_lightbulb_on_outline_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem sign_exit;
         if(CheckAuth.isAuth()) sign_exit = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.drawer_item_exit).withIconColor(color);
         else sign_exit = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.drawer_item_sign_in).withIconColor(color);
@@ -273,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                         item4,
                         itemMap,
                         new DividerDrawerItem(),
+                        itemGuide,
                         about,
                         sign_exit
                 )
@@ -296,7 +298,13 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                             case 5:
                                 drawerIntent = new Intent(MainActivity.this, MapActivity.class);
                                 break;
-                            case 8:
+                            case 8: //TODO: вызов абаут
+                                new About().onCreateDialog(MainActivity.this).show();
+                            break;
+                            case 7:
+                                startActivity(new Intent(MainActivity.this, MainIntroActivity.class));
+                            break;
+                            case 9:
                                 if(CheckAuth.isAuth()) {
                                     CheckAuth.exit();
                                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
@@ -307,8 +315,6 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                                     dontFinish = true;
                                 }
                                 break;
-                            case 7: //TODO: вызов абаут
-                                new About().onCreateDialog(MainActivity.this).show();
                         }
                         result.closeDrawer();
                         return true;

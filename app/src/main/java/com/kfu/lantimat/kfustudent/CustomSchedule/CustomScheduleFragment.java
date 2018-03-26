@@ -27,8 +27,10 @@ import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
 
 public class CustomScheduleFragment extends Fragment implements
@@ -138,16 +140,28 @@ public class CustomScheduleFragment extends Fragment implements
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+    private Date getTimeWithoutData(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        calendar.set(Calendar.YEAR, 1970);
+        calendar.set(Calendar.MONTH, 1);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
     private void addDataToAdapter(ArrayList<Subject> arSubjects) {
 
         this.arSubjects.clear();
-        this.arSubjects.addAll(arSubjects);
 
-        Collections.sort(this.arSubjects, new Comparator<Subject>() {
+        Collections.sort(arSubjects, new Comparator<Subject>() {
             public int compare(Subject o1, Subject o2) {
-                return o1.getStartTime().compareTo(o2.getStartTime());
+                return getTimeWithoutData(o1.getStartTime()).compareTo(getTimeWithoutData(o2.getStartTime()));
             }
         });
+
+        this.arSubjects.addAll(arSubjects);
+
+        //Collections.reverse(arSubjects);
         progressBar.setVisibility(View.INVISIBLE);
         scheduleRecyclerAdapter.notifyDataSetChanged();
         recyclerView.invalidate();

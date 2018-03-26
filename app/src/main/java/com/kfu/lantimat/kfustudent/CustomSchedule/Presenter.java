@@ -105,6 +105,14 @@ public class Presenter implements CustomScheduleMVP.presenter {
                         view.hideLoading();
                         arSubjects.clear();
 
+                        if(documentSnapshots.getMetadata().isFromCache()) {
+                            view.onOfflineMode(true);
+                            isOfflineMode = true;
+                        } else {
+                            view.onOfflineMode(false);
+                            isOfflineMode = false;
+                        }
+
                         if(!documentSnapshots.isEmpty()) {
                             for (DocumentSnapshot documentSnapshot: documentSnapshots) {
                                 Subject subject = documentSnapshot.toObject(Subject.class);
@@ -119,19 +127,9 @@ public class Presenter implements CustomScheduleMVP.presenter {
                             view.updateDataTextView(localDate);
 
                         } else { //Документ с расписанием не создан
-                        view.firstOpenSchedule();
+                            if(!isOfflineMode)
+                                view.firstOpenSchedule();
                     }
-
-
-
-                            if(documentSnapshots.getMetadata().isFromCache()) {
-                                view.onOfflineMode(true);
-                                isOfflineMode = true;
-                            } else {
-                                view.onOfflineMode(false);
-                                isOfflineMode = false;
-                            }
-
                     }
                 })
         .addOnFailureListener(new OnFailureListener() {

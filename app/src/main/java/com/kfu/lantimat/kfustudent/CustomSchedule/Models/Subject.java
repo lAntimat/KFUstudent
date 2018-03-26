@@ -3,7 +3,10 @@ package com.kfu.lantimat.kfustudent.CustomSchedule.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -169,11 +172,20 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.arCustomDates = arCustomDates;
     }
 
+    private Date getTimeWithoutData(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        calendar.set(Calendar.YEAR, 1970);
+        calendar.set(Calendar.MONTH, 1);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
 
 
     @Override
     public int compareTo(Subject o) {
-        return getStartTime().compareTo(o.getStartTime());
+        return getTimeWithoutData(getStartTime()).compareTo(getTimeWithoutData(o.getStartTime()));
     }
 
 
