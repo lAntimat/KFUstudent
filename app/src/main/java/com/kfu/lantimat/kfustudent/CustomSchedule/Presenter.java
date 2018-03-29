@@ -1,17 +1,20 @@
 package com.kfu.lantimat.kfustudent.CustomSchedule;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.common.api.Batch;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
@@ -31,22 +34,30 @@ import java.util.ArrayList;
 
 public class Presenter implements CustomScheduleMVP.presenter {
 
+    private static String TAG = "CustomSchedulePresenter";
     private Context context;
     private CustomScheduleMVP.View view;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private LocalDate localDate;
     private Schedule schedule;
+    private boolean isOfflineMode = false;
+    private ArrayList<Subject> arSubjects = new ArrayList<>();
 
+    private String group;
+    private SubjectToSchedule2 subjectToSchedule;
 
     public Presenter(Context context) {
         localDate = new LocalDate(DateTimeZone.getDefault());
         this.context = context;
+        group = KfuUser.getGroup(context);
+        subjectToSchedule = new SubjectToSchedule2(context);
     }
 
     @Override
     public void attachVIew(CustomScheduleMVP.View view) {
         this.view = view;
+        view.updateDataTextView(localDate);
     }
 
     @Override
@@ -57,12 +68,14 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void getData() {
-        getUser();
+        view.showLoading();
+        //getUser();
+        getSchedule();
     }
 
     private void getUser() {
         String userId = KfuUser.getLogin(context);
-
+        Log.d(TAG, "getUser. userId = " + userId);
         if(userId!=null) {
             db.collection(CustomScheduleConstants.USERS).document(userId)
                     .get()
@@ -70,25 +83,62 @@ public class Presenter implements CustomScheduleMVP.presenter {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             User user = documentSnapshot.toObject(User.class);
-                            getSchedule(user);
+                            //getSchedule(user);
                         }
-                    });
+                    })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    view.hideLoading();
+                    view.showError(e.getLocalizedMessage());
+                }
+            });
         }
     }
 
-    private void getSchedule(User user) {
-        db.collection("Schedule").document(user.getGroup())
+    private void getSchedule() {
+        db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            schedule = documentSnapshot.toObject(Schedule.class);
-                            view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
-                            view.updateDataTextView(localDate);
+                    public void onSuccess(QuerySnapshot documentSnapshots) {
+                        view.hideLoading();
+                        arSubjects.clear();
+
+                        if(documentSnapshots.getMetadata().isFromCache()) {
+                            view.onOfflineMode(true);
+                            isOfflineMode = true;
+                        } else {
+                            view.onOfflineMode(false);
+                            isOfflineMode = false;
                         }
+
+                        if(!documentSnapshots.isEmpty()) {
+                            for (DocumentSnapshot documentSnapshot: documentSnapshots) {
+                                Subject subject = documentSnapshot.toObject(Subject.class);
+                                subject.setId(documentSnapshot.getId());
+                                arSubjects.add(subject);
+                            }
+
+                            //schedule = subjectToSchedule.getSchedule(arSubjects);
+                            //view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
+
+                            view.showData(subjectToSchedule.getWeekend(arSubjects, localDate));
+                            view.updateDataTextView(localDate);
+
+                        } else { //Документ с расписанием не создан
+                            if(!isOfflineMode)
+                                view.firstOpenSchedule();
                     }
-                });
+                    }
+                })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                view.hideLoading();
+                view.showError(e.getLocalizedMessage());
+            }
+        });
     }
 
     @Override
@@ -97,25 +147,24 @@ public class Presenter implements CustomScheduleMVP.presenter {
 
     @Override
     public void nextWeek() {
-        if (schedule != null) {
             localDate = localDate.plusWeeks(1);
-            view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
+            view.showData(subjectToSchedule.getWeekend(arSubjects, localDate));
             view.updateDataTextView(localDate);
-        }
     }
 
     @Override
     public void prevWeek() {
-        if (schedule != null) {
             localDate = localDate.minusWeeks(1);
-            view.showData(schedule.getArWeekends().get(localDate.getWeekOfWeekyear() - 1));
-            view.updateDataTextView(localDate);
-        }
+        view.showData(subjectToSchedule.getWeekend(arSubjects, localDate));
+        view.updateDataTextView(localDate);
     }
 
     @Override
-    public void recyclerItemClick(int position, int day) {
-        view.openSubjectInfo(schedule, position, day);
+    public void recyclerItemClick(Subject subject) {
+        Intent intent = new Intent(context, SubjectInfoActivity.class);
+        intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
+        intent.putExtra("isOffline", isOfflineMode);
+        view.openSubjectInfo(intent);
     }
 
     @Override

@@ -4,8 +4,6 @@ package com.kfu.lantimat.kfustudent.CustomSchedule;
  * Created by GabdrakhmanovII on 04.09.2017.
  */
 
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Adapters.CustomScheduleRecyclerAdapter;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.ItemClickSupport;
@@ -27,8 +27,10 @@ import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleRecyclerAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
 
 public class CustomScheduleFragment extends Fragment implements
@@ -79,10 +81,10 @@ public class CustomScheduleFragment extends Fragment implements
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), OrientationHelper.VERTICAL, false));
         recyclerView.setAdapter(scheduleRecyclerAdapter);
 
-        ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+        scheduleRecyclerAdapter.setOnDotsClickListener(new CustomScheduleRecyclerAdapter.OnDotsClickListener() {
             @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                ((CustomScheduleActivity)getActivity()).presenter.recyclerItemClick(position, day);
+            public void onClick(int position) {
+                showOptionsDialog(position);
             }
         });
 
@@ -127,16 +129,39 @@ public class CustomScheduleFragment extends Fragment implements
         if(this.day==dayNumber) addDataToAdapter(day.getSubjects());
     }
 
+    @Override
+    public void showLoading() {
+        swipeRefreshLayout.setRefreshing(true);
+    }
+
+    @Override
+    public void hideLoading() {
+        swipeRefreshLayout.setRefreshing(false);
+        progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    private Date getTimeWithoutData(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        calendar.set(Calendar.YEAR, 1970);
+        calendar.set(Calendar.MONTH, 1);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
     private void addDataToAdapter(ArrayList<Subject> arSubjects) {
 
         this.arSubjects.clear();
-        this.arSubjects.addAll(arSubjects);
 
-        Collections.sort(this.arSubjects, new Comparator<Subject>() {
+        Collections.sort(arSubjects, new Comparator<Subject>() {
             public int compare(Subject o1, Subject o2) {
-                return o1.getStartTime().compareTo(o2.getStartTime());
+                return getTimeWithoutData(o1.getStartTime()).compareTo(getTimeWithoutData(o2.getStartTime()));
             }
         });
+
+        this.arSubjects.addAll(arSubjects);
+
+        //Collections.reverse(arSubjects);
         progressBar.setVisibility(View.INVISIBLE);
         scheduleRecyclerAdapter.notifyDataSetChanged();
         recyclerView.invalidate();
@@ -154,6 +179,18 @@ public class CustomScheduleFragment extends Fragment implements
             imageView.setVisibility(View.GONE);
             textView.setVisibility(View.GONE);
         }
+    }
+
+    private void showOptionsDialog(final int position) {
+        new MaterialDialog.Builder(getActivity())
+                .items(R.array.dialog_list_my_schedule)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        ((CustomScheduleActivity)getActivity()).presenter.recyclerItemClick(arSubjects.get(position));
+                    }
+                })
+                .show();
     }
 
     @Override

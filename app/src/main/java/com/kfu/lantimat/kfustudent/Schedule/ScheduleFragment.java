@@ -4,6 +4,7 @@ package com.kfu.lantimat.kfustudent.Schedule;
  * Created by GabdrakhmanovII on 04.09.2017.
  */
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -18,13 +19,24 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.kfu.lantimat.kfustudent.CustomSchedule.AddScheduleActivity;
+import com.kfu.lantimat.kfustudent.CustomSchedule.CustomScheduleConstants;
+import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
+import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -83,6 +95,13 @@ public class ScheduleFragment extends Fragment implements
     private void initRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), OrientationHelper.VERTICAL, false));
         recyclerView.setAdapter(scheduleRecyclerAdapter);
+
+        scheduleRecyclerAdapter.setOnDotsClickListener(new ScheduleRecyclerAdapter.OnDotsClickListener() {
+            @Override
+            public void onClick(int position) {
+                showImportOptionsDialog(position);
+            }
+        });
 
 
     }
@@ -157,6 +176,49 @@ public class ScheduleFragment extends Fragment implements
             textView.setVisibility(View.GONE);
         }
     }
+
+    private void showImportOptionsDialog(final int position) {
+        new MaterialDialog.Builder(getActivity())
+                .items(R.array.dialog_list_import)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        subjectImportIntent(position);
+                    }
+                })
+                .show();
+    }
+
+    private void subjectImportIntent(int position) {
+        Schedule schedule = arSchedule.get(position);
+        String startStr = schedule.getTime().substring(0, 5);
+        String endStr = schedule.getTime().replace(startStr + "-", "");
+
+        SimpleDateFormat sf = new SimpleDateFormat("HH:mm", Locale.UK);
+
+        Date startTime = new Date();
+        Date endTime = new Date();
+
+        try {
+            startTime = sf.parse(startStr);
+            endTime = sf.parse(endStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        String cab = schedule.getPlace();
+        cab = cab.substring(0, cab.indexOf(" "));
+        String campus = schedule.getPlace().replace(cab + " ", "");
+
+        Subject subject = new Subject(startTime, endTime, null, null, schedule.getSubjectName(), "", campus, cab, "", day, 0);
+
+        Intent intent = new Intent(getContext(), AddScheduleActivity.class);
+        intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
+        intent.putExtra(CustomScheduleConstants.IS_IMPORT, true);
+        intent.putExtra("isOffline", false);
+        startActivity(intent);
+    }
+
 
     @Override
     public void onStop() {

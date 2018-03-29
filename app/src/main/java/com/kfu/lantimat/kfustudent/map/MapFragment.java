@@ -180,20 +180,22 @@ public class MapFragment extends SupportMapFragment
     }
 
     private void updateInfo(ArrayList<MapBuilds> arrayList) {
-        mGoogleMap.clear();
-        double lat = 0;
-        double lng = 0;
-        for (int i = 0; i < arrayList.size(); i++) {
-            MapBuilds m = arrayList.get(i);
-            lat = Double.parseDouble(m.getLat());
-            lng = Double.parseDouble(m.getLng());
-            showObject(m.getName(), m.getAddress(), new LatLng(lat, lng));
-            // Write a message to the database
-        }
+        if (mGoogleMap != null) {
+            mGoogleMap.clear();
+            double lat = 0;
+            double lng = 0;
+            for (int i = 0; i < arrayList.size(); i++) {
+                MapBuilds m = arrayList.get(i);
+                lat = Double.parseDouble(m.getLat());
+                lng = Double.parseDouble(m.getLng());
+                showObject(m.getName(), m.getAddress(), new LatLng(lat, lng));
+                // Write a message to the database
+            }
 
-        if(lat!=0) {
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lng)));
-            mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            if (lat != 0) {
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, lng)));
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            }
         }
     }
 

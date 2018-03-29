@@ -3,7 +3,10 @@ package com.kfu.lantimat.kfustudent.CustomSchedule.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -12,6 +15,7 @@ import java.util.Date;
 
 public class Subject implements Parcelable, Comparable<Subject> {
 
+    String id;
     Date startTime;
     Date endTime;
     Date startDate;
@@ -21,6 +25,8 @@ public class Subject implements Parcelable, Comparable<Subject> {
     String campusNumber;
     String cabNumber;
     String teacherName;
+    ArrayList<Date> arCustomDates;
+    ArrayList<String> arHomeWorks;
 
     int repeatDay = -1;
     int repeatWeek = -1;
@@ -40,6 +46,33 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.teacherName = teacherName;
         this.repeatDay = repeatDay;
         this.repeatWeek = repeatWeek;
+    }
+
+    public Subject(Date startTime, Date endTime, String subjectName, String subjectType, String campusNumber, String cabNumber, String teacherName, ArrayList<Date> arCustomDates) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.subjectName = subjectName;
+        this.subjectType = subjectType;
+        this.campusNumber = campusNumber;
+        this.cabNumber = cabNumber;
+        this.teacherName = teacherName;
+        this.arCustomDates = arCustomDates;
+    }
+
+    public ArrayList<String> getArHomeWorks() {
+        return arHomeWorks;
+    }
+
+    public void setArHomeWorks(ArrayList<String> arHomeWorks) {
+        this.arHomeWorks = arHomeWorks;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getSubjectType() {
@@ -131,10 +164,30 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.teacherName = teacherName;
     }
 
+    public ArrayList<Date> getArCustomDates() {
+        return arCustomDates;
+    }
+
+    public void setArCustomDates(ArrayList<Date> arCustomDates) {
+        this.arCustomDates = arCustomDates;
+    }
+
+    private Date getTimeWithoutData(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date.getTime());
+        calendar.set(Calendar.YEAR, 1970);
+        calendar.set(Calendar.MONTH, 1);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
+
+
     @Override
     public int compareTo(Subject o) {
-        return getStartTime().compareTo(o.getStartTime());
+        return getTimeWithoutData(getStartTime()).compareTo(getTimeWithoutData(o.getStartTime()));
     }
+
 
     @Override
     public int describeContents() {
@@ -143,6 +196,7 @@ public class Subject implements Parcelable, Comparable<Subject> {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
         dest.writeLong(this.startTime != null ? this.startTime.getTime() : -1);
         dest.writeLong(this.endTime != null ? this.endTime.getTime() : -1);
         dest.writeLong(this.startDate != null ? this.startDate.getTime() : -1);
@@ -152,11 +206,14 @@ public class Subject implements Parcelable, Comparable<Subject> {
         dest.writeString(this.campusNumber);
         dest.writeString(this.cabNumber);
         dest.writeString(this.teacherName);
+        dest.writeList(this.arCustomDates);
+        dest.writeStringList(this.arHomeWorks);
         dest.writeInt(this.repeatDay);
         dest.writeInt(this.repeatWeek);
     }
 
     protected Subject(Parcel in) {
+        this.id = in.readString();
         long tmpStartTime = in.readLong();
         this.startTime = tmpStartTime == -1 ? null : new Date(tmpStartTime);
         long tmpEndTime = in.readLong();
@@ -170,6 +227,9 @@ public class Subject implements Parcelable, Comparable<Subject> {
         this.campusNumber = in.readString();
         this.cabNumber = in.readString();
         this.teacherName = in.readString();
+        this.arCustomDates = new ArrayList<Date>();
+        in.readList(this.arCustomDates, Date.class.getClassLoader());
+        this.arHomeWorks = in.createStringArrayList();
         this.repeatDay = in.readInt();
         this.repeatWeek = in.readInt();
     }

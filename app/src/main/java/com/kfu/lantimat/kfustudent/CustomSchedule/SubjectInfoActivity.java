@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,17 +23,16 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Adapters.HomeworksRecyclerAdapter;
-import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.utils.CreateDialog;
+import com.kfu.lantimat.kfustudent.utils.KfuUser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,13 +53,10 @@ public class SubjectInfoActivity extends AppCompatActivity {
     protected TextView tvTeacherTitle;
 
     Schedule schedule;
-    int subjectPosition;
-    int weekendPosition;
     int dayPosition;
     Subject subject;
 
-    private HomeWorks homeWorks;
-    private ArrayList<String> ar = new ArrayList<>();
+    private ArrayList<String> arHomeWorks = new ArrayList<>();
 
     FloatingActionMenu fam;
     FloatingActionButton fabDelete, fabEdit, fabAdd;
@@ -70,7 +65,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
     private HomeworksRecyclerAdapter adapter;
     private MaterialDialog dialog;
     private EditText dialogEditText;
-    private ProgressBar progressBar;
+    private boolean isOfflineMode = false;
 
     //Toolbar back button click
     @Override
@@ -81,19 +76,27 @@ public class SubjectInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MyMaterialTheme);
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_subject_info);
         initView();
         initRecyclerView();
 
-        schedule = getIntent().getParcelableExtra("Schedule");
-        subjectPosition = getIntent().getIntExtra("subject", -1);
-        weekendPosition = getIntent().getIntExtra("week", -1);
+        //schedule = getIntent().getParcelableExtra("Schedule");
+        subject = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
+        //if(subject.getArHomeWorks()!=null) arHomeWorks.addAll(subject.getArHomeWorks());
         dayPosition = getIntent().getIntExtra("day", -1);
+        isOfflineMode = getIntent().getBooleanExtra("isOffline", false);
 
-        subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
-        getHomeWorks(subject.getSubjectName());
+        if(isOfflineMode) {
+            fam.hideMenu(false);
+        } else fam.showMenu(true);
+
+        //subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
+        //getHomeWorks(subject.getSubjectName());
         updateUI(subject);
+
+        getHomeWorks();
 
 
     }
@@ -127,7 +130,6 @@ public class SubjectInfoActivity extends AppCompatActivity {
         tvCab = (TextView) findViewById(R.id.tvCab);
         tvCabTitle = (TextView) findViewById(R.id.tvCabTitle);
         tvTeacherTitle = (TextView) findViewById(R.id.tvTeacherTitle);
-        progressBar = findViewById(R.id.progressBar);
 
         fam = findViewById(R.id.menu);
 
@@ -137,8 +139,8 @@ public class SubjectInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 fam.close(false);
                 final MaterialDialog dialog = CreateDialog.createPleaseWaitDialog(SubjectInfoActivity.this);
-                SubjectToSchedule toSchedule = new SubjectToSchedule(SubjectInfoActivity.this);
-                toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
+                SubjectToSchedule2 toSchedule = new SubjectToSchedule2(SubjectInfoActivity.this);
+                toSchedule.addOnSuccesListener(new SubjectToSchedule2.OnSuccessListener() {
                     @Override
                     public void onSuccess() {
                         dialog.dismiss();
@@ -147,7 +149,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
                     }
                 });
 
-                toSchedule.delete(schedule, subject, subjectPosition);
+                toSchedule.delete(subject);
             }
         });
         fabEdit = findViewById(R.id.edit);
@@ -156,11 +158,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 fam.close(false);
                 Intent intent = new Intent(SubjectInfoActivity.this, AddScheduleActivity.class);
-                intent.putExtra("Schedule", schedule);
-                intent.putExtra("subject", subjectPosition);
-                intent.putExtra("week", weekendPosition);
-                intent.putExtra("day", dayPosition);
-                intent.putExtra("homeworks", homeWorks);
+                intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
                 intent.putExtra("isEdit", true);
                 startActivityForResult(intent, 10);
 
@@ -187,11 +185,9 @@ public class SubjectInfoActivity extends AppCompatActivity {
                     @Override
                     public void onClick(MaterialDialog dialog, DialogAction which) {
                         if(homeworkPosition!=-1) {
-                            ar.set(homeworkPosition, dialogEditText.getText().toString());
-                        } else ar.add(dialogEditText.getText().toString());
-                        if(homeWorks!=null) {
-                            homeWorks.setArHomeworks(ar);
-                        } else homeWorks = new HomeWorks(subject.getSubjectName(), ar);
+                            arHomeWorks.set(homeworkPosition, dialogEditText.getText().toString());
+                        } else arHomeWorks.add(dialogEditText.getText().toString());
+
                         adapter.notifyDataSetChanged();
                         addHomeworksToFirebase();
                     }
@@ -202,28 +198,49 @@ public class SubjectInfoActivity extends AppCompatActivity {
     }
 
     private void addHomeworksToFirebase() {
+        String group = KfuUser.getGroup(this);
+        if(group==null) {
+            Toast.makeText(this, "Проблемы с номером группы. Переавторизуйтесь", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        if(homeWorks.getId()!=null) {
-            db.collection("Schedule").document("2141115").collection("homeworks").document(homeWorks.getId()).set(homeWorks).addOnCompleteListener(new OnCompleteListener<Void>() {
+            subject.setArHomeWorks(arHomeWorks);
+            db.collection("Schedule").document(group).collection(CustomScheduleConstants.SUBJECTS).document(subject.getId()).set(subject)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     Log.d(TAG, "homework setted");
 
                 }
-            });
-        } else {
-            db.collection("Schedule").document("2141115").collection("homeworks").add(homeWorks).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            })
+            .addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void onSuccess(DocumentReference documentReference) {
-                    Log.d(TAG, "homework added");
-                    homeWorks.setId(documentReference.getId());
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(SubjectInfoActivity.this, R.string.connected_error, Toast.LENGTH_LONG).show();
                 }
             });
-        }
+    }
+
+    private void getHomeWorks() {
+        String group = KfuUser.getGroup(this);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS).document(subject.getId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Subject subject = documentSnapshot.toObject(Subject.class);
+                        arHomeWorks.clear();
+                        if(subject.getArCustomDates()!=null) arHomeWorks.addAll(subject.getArHomeWorks());
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     private void initRecyclerView() {
-        adapter = new HomeworksRecyclerAdapter(ar);
+        adapter = new HomeworksRecyclerAdapter(arHomeWorks);
 
 
         recyclerView = findViewById(R.id.recyclerView);
@@ -242,13 +259,12 @@ public class SubjectInfoActivity extends AppCompatActivity {
                             public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                                 switch (which) {
                                     case 0:
-                                        ar.remove(position);
-                                        homeWorks.setArHomeworks(ar);
+                                        arHomeWorks.remove(position);
                                         adapter.notifyDataSetChanged();
                                         addHomeworksToFirebase();
                                         break;
                                     case 1:
-                                        showHomeWorkDialog(ar.get(position), position);
+                                        showHomeWorkDialog(arHomeWorks.get(position), position);
                                         break;
                                 }
                             }
@@ -259,38 +275,12 @@ public class SubjectInfoActivity extends AppCompatActivity {
         });
     }
 
-    private void getHomeWorks(String subjectName) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("Schedule").document("2141115").collection("homeworks")
-                .whereEqualTo("subjectName", subjectName)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot documentSnapshots) {
-                        for (DocumentSnapshot doc : documentSnapshots.getDocuments()) {
-                            homeWorks = doc.toObject(HomeWorks.class);
-                            homeWorks.setId(doc.getId());
-                            ar.clear();
-                            ar.addAll(homeWorks.getArHomeworks());
-                        }
-                        progressBar.setVisibility(View.INVISIBLE);
-                       adapter.notifyDataSetChanged();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-                });
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        subject = data.getParcelableExtra("Subject");
-        if (subject != null) {
-            setResult(RESULT_OK);
-            updateUI(subject);
+        if (data.hasExtra(CustomScheduleConstants.SUBJECT_MODEL)) {
+                subject = data.getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
+                setResult(RESULT_OK);
+                updateUI(subject);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

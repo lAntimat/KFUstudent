@@ -1,5 +1,9 @@
 package com.kfu.lantimat.kfustudent.Schedule;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -16,24 +20,24 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crash.FirebaseCrash;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
+import com.kfu.lantimat.kfustudent.MainIntroActivity;
 import com.kfu.lantimat.kfustudent.Marks.Mark;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.SharedPreferenceHelper;
+import com.kfu.lantimat.kfustudent.Timeline.TimeLineActivity;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
+import com.kfu.lantimat.kfustudent.utils.FirstCreateMsg;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-
-import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -42,9 +46,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -64,7 +66,7 @@ public class ScheduleActivity extends MainActivity {
     Button buttonSignEmpty;
     //@BindView(R.id.textView)
     TextView textViewEmpty;
-    //Spinner spinner;
+    Spinner spinner;
 
     //private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -87,6 +89,9 @@ public class ScheduleActivity extends MainActivity {
         FrameLayout v = (FrameLayout) findViewById(R.id.content_frame); //Remember this is the FrameLayout area within your activity_main.xml
         getLayoutInflater().inflate(R.layout.activity_schedule, v);
 
+        getSupportActionBar().setTitle("Расписание ЛК");
+
+        spinner = findViewById(R.id.spinner_nav2);
         textViewEmpty = (TextView) findViewById(R.id.textView);
         buttonSignEmpty = (Button) findViewById(R.id.btnSign);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -133,7 +138,7 @@ public class ScheduleActivity extends MainActivity {
         if (CheckAuth.isAuth()) initSpinner();
         else showNeedLogin();
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(adapter);
         //viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
@@ -168,7 +173,11 @@ public class ScheduleActivity extends MainActivity {
         result.setSelection(2, false);
         initViewPager();
         //getScheduleOddWeek();
+
+        FirstCreateMsg.openIntro(getApplicationContext());
+
     }
+
 
 
     @Override
@@ -200,8 +209,10 @@ public class ScheduleActivity extends MainActivity {
     }
 
     private void initSpinner() {
+        spinner.getBackground().setColorFilter(getResources().getColor(R.color.black), PorterDuff.Mode.SRC_ATOP);
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.spinner_list_item_array, R.layout.simple_spinner_item);
+                R.array.spinner_list_item_array, R.layout.simple_spinner_item_black);
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spinner.setVisibility(View.VISIBLE);
         spinner.setAdapter(adapter);
@@ -234,7 +245,7 @@ public class ScheduleActivity extends MainActivity {
         progressBar.setVisibility(View.INVISIBLE);
         textViewEmpty.setVisibility(View.VISIBLE);
         buttonSignEmpty.setVisibility(View.VISIBLE);
-        toolbar.setTitle("Расписание");
+        toolbar.setTitle("Расписание ЛК");
     }
 
     public void onFailureMethod() {

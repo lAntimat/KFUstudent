@@ -1,11 +1,12 @@
 <resources>
-    <string name="app_name">КФУ</string>
+    <string name="app_name">KFUapp</string>
     <string name="action_sign_in_short">Пароль</string>
     <string name="drawer_item_group">Группа</string>
-    <string name="drawer_item_timeline">Cобытия</string>
-    <string name="drawer_item_schedule">Расписание</string>
-    <string name="drawer_item_custom_schedule">Моё расписание</string>
+    <string name="drawer_item_timeline">Новости</string>
+    <string name="drawer_item_schedule">Расписание ЛК</string>
+    <string name="drawer_item_custom_schedule">Моё расписание (BETA)</string>
     <string name="drawer_item_marks">Успеваемость</string>
+    <string name="drawer_item_guide">Guide</string>
     <string name="drawer_item_exit">Выйти</string>
     <string name="drawer_item_sign_in">Войти</string>
     <string name="drawer_item_about">О приложении</string>
@@ -49,12 +50,19 @@
         <item>Изменить</item>
     </string-array>
 
+    <string-array name="dialog_list_import">
+        <item>Импортировать в моё расписание</item>
+    </string-array>
+
+    <string-array name="dialog_list_my_schedule">
+        <item>Открыть</item>
+    </string-array>
+
     <string name="title_activity_maps">Map</string>
     <string name="drawer_item_map">Карта</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="map_need_permission">Требуется разрешение!</string>
     <string name="map_need_permission_message">Для доступа к вашему местоположению, необходимо разрешить доступ к геоданным</string>
     <string name="title_activity_subject_info">SubjectInfoActivity</string>
-    <string name="info_odd_week_next">Неделя начала занятий нечетная (верхняя), расписание будет добавлено со следующий недели</string>
-    <string name="info_even_week_next">Неделя начала занятий четная (нижняя), расписание будет добавлено со следующий недели</string>
+    <string name="connected_error">Ошибка соединения</string>
 </resources>

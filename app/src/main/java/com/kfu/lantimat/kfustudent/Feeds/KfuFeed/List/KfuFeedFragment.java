@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Feeds.KfuFeed;
+package com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List;
 
 /**
  * Created by GabdrakhmanovII on 04.09.2017.
@@ -18,11 +18,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.kfu.lantimat.kfustudent.Feeds.Feed;
-import com.kfu.lantimat.kfustudent.Feeds.FeedPresenter;
-import com.kfu.lantimat.kfustudent.Feeds.FeedView;
-import com.kfu.lantimat.kfustudent.Feeds.FeedsRecyclerAdapter;
-import com.kfu.lantimat.kfustudent.Feeds.FullFeeds.FullFeedsActivity;
 import com.kfu.lantimat.kfustudent.ItemClickSupport;
 import com.kfu.lantimat.kfustudent.R;
 
@@ -67,7 +62,8 @@ public class KfuFeedFragment extends Fragment implements KfuNewsMVP.View {
         ar = new ArrayList<>();
         adapter = new KfuNewsRecyclerAdapter(getContext(), ar);
 
-        presenter = new KfuNewsPresenter(this);
+        presenter = new KfuNewsPresenter();
+        presenter.attachView(getContext(), this);
     }
 
     private void initRecyclerView() {
@@ -95,7 +91,8 @@ public class KfuFeedFragment extends Fragment implements KfuNewsMVP.View {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                startFeedActivity(ar.get(position).getUrl(), ar.get(position).getImage());
+                //startFeedActivity(ar.get(position).getUrl(), ar.get(position).getImage());
+                presenter.recyclerClick(position);
             }
         });
     }
@@ -170,10 +167,7 @@ public class KfuFeedFragment extends Fragment implements KfuNewsMVP.View {
     }
 
     @Override
-    public void startFeedActivity(String url, String img) {
-        Intent intent = new Intent(getContext(), FullFeedsActivity.class);
-        intent.putExtra("url", url);
-        intent.putExtra("img", img);
+    public void startFeedActivity(Intent intent) {
         startActivity(intent);
     }
 

@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Feeds.KfuFeed;
+package com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List;
 
 /**
  * Created by GabdrakhmanovII on 04.09.2017.

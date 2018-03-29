@@ -1,4 +1,4 @@
-package com.kfu.lantimat.kfustudent.Feeds.KfuFeed;
+package com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.kfu.lantimat.kfustudent.Feeds.Feed;
+import com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List.KfuNews;
 import com.kfu.lantimat.kfustudent.R;
 import com.squareup.picasso.Picasso;
 
@@ -54,7 +54,7 @@ public class KfuNewsRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                 ((NormalFeedViewHolder) holder).date.setText(date);
                 ((NormalFeedViewHolder) holder).visitCount.setText(visitCount);
                 ((NormalFeedViewHolder) holder).commentCount.setText(commentCount);
-                Picasso.with(context).load(image).fit().placeholder(R.drawable.studprofoper).into(((NormalFeedViewHolder) holder).mImg);
+                Picasso.with(context).load(image).placeholder(R.drawable.bg).into(((NormalFeedViewHolder) holder).mImg);
     }
 
     @Override

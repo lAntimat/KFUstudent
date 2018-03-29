@@ -6,25 +6,27 @@
     android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:cardElevation="2dp"
+        app:cardElevation="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
             android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
             android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+            android:text="15 янв"
             android:textAppearance="?android:attr/textAppearanceListItemSmall" />
     </android.support.v7.widget.CardView>
 

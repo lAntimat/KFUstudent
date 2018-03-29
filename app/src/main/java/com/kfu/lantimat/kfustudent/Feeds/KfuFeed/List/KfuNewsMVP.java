@@ -1,6 +1,8 @@
-package com.kfu.lantimat.kfustudent.Feeds.KfuFeed;
+package com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List;
 
-import com.kfu.lantimat.kfustudent.Feeds.Feed;
+import android.content.Context;
+import android.content.Intent;
+
 import com.kfu.lantimat.kfustudent.LoadingView;
 
 import java.util.ArrayList;
@@ -14,13 +16,15 @@ public interface KfuNewsMVP {
 
     interface View extends LoadingView {
         void showData(ArrayList<KfuNews> ar);
-
-        void startFeedActivity(String url, String img);
+        void startFeedActivity(Intent intent);
     }
 
     interface Presenter {
+        void attachView(Context context, View view);
+        void detachView();
         void loadData();
         void refreshData();
+        void recyclerClick(int position);
     }
 
 }

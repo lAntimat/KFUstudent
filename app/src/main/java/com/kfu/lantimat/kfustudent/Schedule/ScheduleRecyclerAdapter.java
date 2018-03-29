@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +24,15 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private  ArrayList<Schedule> mList;
 
+    private OnDotsClickListener onDotsClickListener;
+
+    interface OnDotsClickListener {
+        void onClick(int position);
+    }
+
+    public void setOnDotsClickListener(OnDotsClickListener listener) {
+        onDotsClickListener = listener;
+    }
 
     public ScheduleRecyclerAdapter(ArrayList<Schedule> itemList) {
         this.mList = itemList;
@@ -44,9 +54,9 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     }
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        SimpleDateFormat sf = new SimpleDateFormat("HH:mm");
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         Schedule schedule = mList.get(position);
+        String date = schedule.getDate();
         String time = schedule.getTime();
         String name = schedule.getSubjectName();
         String place = schedule.getPlace();
@@ -60,6 +70,12 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
                     ((SimpleViewHolder) holder).mTime.setText(time);
                     ((SimpleViewHolder) holder).mName.setText(name);
                     ((SimpleViewHolder) holder).mPlace.setText(place);
+                    ((SimpleViewHolder) holder).btnDots.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onDotsClickListener.onClick(position);
+                        }
+                    });
 
                     break;
             }
@@ -87,11 +103,13 @@ public class ScheduleRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         private TextView mName;
         private TextView mTime;
         private TextView mPlace;
+        private ImageButton btnDots;
         public SimpleViewHolder(View itemView) {
             super(itemView);
             mName = (TextView) itemView.findViewById(R.id.tvName);
             mTime = (TextView) itemView.findViewById(R.id.tvTime);
             mPlace = (TextView) itemView.findViewById(R.id.tvDesc);
+            btnDots = (ImageButton) itemView.findViewById(R.id.ivDots);
         }
     }
     public static class RatingViewHolder extends RecyclerView.ViewHolder {

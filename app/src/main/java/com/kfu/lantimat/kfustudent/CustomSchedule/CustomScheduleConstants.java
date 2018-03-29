@@ -18,8 +18,12 @@ public class CustomScheduleConstants {
     public static final int EVEN_WEEK = 1;
     public static final int ODD_WEEK = 2;
     public static final String SUBJECTS = "Subjects";
+    public static final String SUBJECTS_NAME = "SubjectNames";
     public static final String TEACHERS = "Teachers";
     public static final String CAMPUSES = "Campuses";
     public static final String CAB_NUMBERS = "CabNumbers";
     public static final String USERS = "Users";
+    public static final String SUBJECT_MODEL = "SubjectModel";
+    public static final String IS_IMPORT = "isImport";
+    public static final String SCHEDULE = "Schedule";
 }

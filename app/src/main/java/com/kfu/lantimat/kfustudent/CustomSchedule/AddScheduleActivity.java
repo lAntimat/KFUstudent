@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,24 +33,34 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.HomeWorks;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Subject;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
+import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.kfu.lantimat.kfustudent.utils.CreateDialog;
 import com.kfu.lantimat.kfustudent.utils.KfuUser;
 import com.kfu.lantimat.kfustudent.utils.User;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import cz.msebera.android.httpclient.Header;
 
 public class AddScheduleActivity extends AppCompatActivity {
 
+    private static final String TAG = "AddScheduleActivity";
     private String USER_ID;
 
     private TextView tvStartTIme, tvEndTime, tvSubjectType;
@@ -59,6 +71,7 @@ public class AddScheduleActivity extends AppCompatActivity {
     private ArrayList<String> arCampuses = new ArrayList<>();
     private ArrayList<String> arCabs = new ArrayList<>();
     AutoCompleteTextView actvSubjectName, actvTeacher, actvCampus, actvCab;
+    ArrayAdapter<String> subjectsAdapter, teachersAdapter, campusAdapter, cabAdapters;
     private Schedule schedule;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -78,70 +91,83 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     int subjectPosition;
     int weekendPosition;
-    int dayPosition;
+    int dayPosition = 0;
     boolean isEdit;
+    boolean isImport;
+    Subject subjectFromIntent;
     Subject subject;
     String subjectType;
     private HomeWorks homeworks;
+    public ArrayList<Date> arCustomDays;
+    public boolean isCustomDay = false;
 
     //Toolbar back button click
     @Override
     public boolean onSupportNavigateUp() {
-        onBackPressed();
+        backClick(null);
         return super.onSupportNavigateUp();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.MyMaterialTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_schedule);
-
-         USER_ID = KfuUser.getLogin(this);
-
         tvStartTIme = findViewById(R.id.tvStartTime);
         tvEndTime = findViewById(R.id.tvEndTime);
         tvSubjectType = findViewById(R.id.tvSubjectType);
+        //getScheduleFromSite();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Добавить занятие");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        initButtons();
-
-        initAutoCompleteTextView();
-        addDateToAutoCompleteTextView();
-        //loadSchedule();
-        initTimePickers();
-        initTimeTextViewClickListeners();
-
-        schedule = getIntent().getParcelableExtra("Schedule");
-        if(schedule==null) {
-            //Это нужно на случай если данные не спарсились
-            if(KfuUser.getGroup(getApplicationContext())==null){
-                CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
-                    @Override
-                    public void onSuccess(User user) {
-                        addSubjectInFirstTime();
-                    }
-                });
-            } else addSubjectInFirstTime();
-        }
-
-        subjectPosition = getIntent().getIntExtra("subject", -1);
-        weekendPosition = getIntent().getIntExtra("week", -1);
-        dayPosition = getIntent().getIntExtra("day", -1);
-        homeworks = getIntent().getParcelableExtra("homeworks");
-        isEdit = getIntent().getBooleanExtra("isEdit", false);
-
-        if(isEdit) {
-            subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
-            updateUI(subject);
+        if (!CheckAuth.isAuth()) {
+            Toast.makeText(getApplicationContext(), "Вы не авторизованы!", Toast.LENGTH_SHORT).show();
+            finish();
         } else {
-            repeatDay = dayPosition;
-        }
 
+            USER_ID = KfuUser.getLogin(this);
+
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle("Добавить занятие");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+            initButtons();
+
+            initAutoCompleteTextView();
+            addDateToAutoCompleteTextView();
+            //loadSchedule();
+            initTimePickers();
+            initTimeTextViewClickListeners();
+
+            subjectFromIntent = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
+            isEdit = getIntent().getBooleanExtra("isEdit", false);
+            isImport = getIntent().getBooleanExtra(CustomScheduleConstants.IS_IMPORT, false);
+
+            //schedule = getIntent().getParcelableExtra("Schedule");
+
+            /*if (subjectFromIntent == null) {
+                //Это нужно на случай если данные не спарсились
+                if (KfuUser.getGroup(getApplicationContext()) == null) {
+                    CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
+                        @Override
+                        public void onSuccess(User user) {
+                        }
+                    });
+                }
+            }*/
+
+            if (isEdit) {
+                //subject = schedule.getArWeekends().get(weekendPosition).getArDays().get(dayPosition).getSubjects().get(subjectPosition);
+                updateUI(subjectFromIntent);
+                Log.d(TAG, "if isEdit");
+            } else if(isImport) {
+                //subject = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
+                updateUI(subjectFromIntent);
+                Log.d(TAG, "if isImport");
+            } else {
+                repeatDay = dayPosition;
+            }
+        }
     }
 
     private void initButtons() {
@@ -182,7 +208,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     private void initAutoCompleteTextView() {
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> subjectsAdapter = new ArrayAdapter<String>
+        subjectsAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arSubjects);
         //Getting the instance of AutoCompleteTextView
         actvSubjectName = (AutoCompleteTextView) findViewById(R.id.tvSubjectName);
@@ -190,7 +216,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvSubjectName.setAdapter(subjectsAdapter);//setting the adapter data into the AutoCompleteTextView
 
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> teachersAdapter = new ArrayAdapter<String>
+        teachersAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arTeachers);
         //Getting the instance of AutoCompleteTextView
         actvTeacher = (AutoCompleteTextView) findViewById(R.id.tvTeacherName);
@@ -198,7 +224,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvTeacher.setAdapter(teachersAdapter);//setting the adapter data into the AutoCompleteTextView
 
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> campusAdapter = new ArrayAdapter<String>
+        campusAdapter = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arCampuses);
         //Getting the instance of AutoCompleteTextView
         actvCampus = (AutoCompleteTextView) findViewById(R.id.tvCampNumber);
@@ -206,7 +232,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         actvCampus.setAdapter(campusAdapter);//setting the adapter data into the AutoCompleteTextView
 
         //Creating the instance of ArrayAdapter containing list of fruit names
-        ArrayAdapter<String> cabAdapters = new ArrayAdapter<String>
+        cabAdapters = new ArrayAdapter<String>
                 (this, android.R.layout.select_dialog_item, arCabs);
         //Getting the instance of AutoCompleteTextView
         actvCab = (AutoCompleteTextView) findViewById(R.id.tvCabNumber);
@@ -215,130 +241,184 @@ public class AddScheduleActivity extends AppCompatActivity {
     }
 
     private void addDateToAutoCompleteTextView() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Log.d(TAG, "AddDateToAutoComplete");
+        String group = KfuUser.getGroup(this);
+        if(group!=null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(CustomScheduleConstants.TEACHERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arTeachers.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arTeachers.add(doc.get("name").toString());
+                        }
+                        teachersAdapter.notifyDataSetChanged();
                     }
                 }
-            }
-        });
+            });
 
-        db.collection(CustomScheduleConstants.SUBJECTS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arSubjects.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arSubjects.add(doc.get("name").toString());
+
+                        }
+                        subjectsAdapter.notifyDataSetChanged();
                     }
                 }
-            }
-        });
+            });
 
-        db.collection(CustomScheduleConstants.CAMPUSES).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arCampuses.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arCampuses.add(doc.get("name").toString());
+                        }
+                        campusAdapter.notifyDataSetChanged();
                     }
                 }
-            }
-        });
+            });
 
-        db.collection(CustomScheduleConstants.CAB_NUMBERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot doc : task.getResult()
-                            ) {
-                        arCabs.add(doc.get("name").toString());
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    getScheduleFromSite();
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot doc : task.getResult()
+                                ) {
+                            arCabs.add(doc.get("name").toString());
+                        }
+                        cabAdapters.notifyDataSetChanged();
                     }
                 }
-            }
-        });
-
+            });
+        }
     }
 
-    private void addSubjectInFirstTime() {
+    public void getScheduleFromSite() {
+        KFURestClient.get("SITE_STUDENT_SH_PR_AC.shedule?p_menu=1", null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                parseScheduleFromSite(responseBody);
+            }
 
-        ArrayList<Subject> arSubjects = new ArrayList<>();
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
 
-        ArrayList<Day> arDays = new ArrayList<>();
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
-        arDays.add(new Day(arSubjects));
+            }
+        });
+    }
 
-        Weekend weekend = new Weekend(arDays);
-
-        ArrayList<Weekend> arWeekends = new ArrayList<>();
-        for (int i = 0; i < 56; i++) {
-            arWeekends.add(weekend);
+    private void parseScheduleFromSite(byte[] responseBody) {
+        String str = null;
+        try {
+            str = new String(responseBody, "windows-1251");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
+        Document doc = Jsoup.parse(str);
+        List<String> subjects  = doc.select("select").get(2).select("option").eachText();
+        List<String> teachers  = doc.select("select").get(3).select("option").eachText();
+        List<String> campus  = doc.select("select").get(4).select("option").eachText();
 
-        String userGroup = KfuUser.getGroup(this);
-        schedule = new Schedule(userGroup, arWeekends);
+        Log.d(TAG, "parseScheduleFromSite");
 
-        db.collection("Schedule").document(userGroup).set(schedule);
+        for (String s:subjects
+             ) {
+            addNewSubjects(s);
+        }
+        for (String s:teachers
+             ) {
+            addNewTeachers(s);
+        }
+        /*for (String s:campus
+             ) {
+            addNewCampuses(s);
+        }*/
     }
 
     private void addNewWords(String subjectName, String teacherName, String campusName, String cabNumber) {
-        if (!arSubjects.contains(subjectName)) {
+       addNewSubjects(subjectName);
+       addNewTeachers(teacherName);
+       addNewCampuses(campusName);
+       addNewCabs(cabNumber);
 
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", subjectName);
-            db.collection(CustomScheduleConstants.SUBJECTS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
+    }
 
-                }
-            });
+    private void addNewSubjects(String s) {
+        String group = KfuUser.getGroup(this);
+        if (group != null) {
+            if (!arSubjects.contains(s)) {
+
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", s);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "new subject name added");
+                    }
+                });
+            }
+        }
+    }
+
+    private void addNewTeachers(String s) {
+        String group = KfuUser.getGroup(this);
+        if (group != null) {
+            if (!arTeachers.contains(s)) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", s);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS)
+                        .add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "new teacher name added");
+                    }
+                });
+            }
+        }
+    }
+
+    private void addNewCampuses(String s) {
+        String group = KfuUser.getGroup(this);
+        if (group != null) {
+            if (!arCampuses.contains(s)) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", s);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES)
+                        .add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "new campus name added");
+                    }
+                });
+            }
+        }
         }
 
-        if (!arTeachers.contains(teacherName)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", teacherName);
-            db.collection(CustomScheduleConstants.TEACHERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-
-                }
-            });
+    private void addNewCabs(String s) {
+        String group = KfuUser.getGroup(this);
+        if (group != null) {
+            if (!arCabs.contains(s)) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", s);
+                db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS)
+                        .add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "new cab name added");
+                    }
+                });
+            }
         }
-
-        if (!arCampuses.contains(campusName)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", campusName);
-            db.collection(CustomScheduleConstants.CAMPUSES).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-
-                }
-            });
-        }
-
-        if (!arTeachers.contains(cabNumber)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", cabNumber);
-            db.collection(CustomScheduleConstants.CAB_NUMBERS).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                @Override
-                public void onSuccess(DocumentReference documentReference) {
-
-                }
-            });
-        }
-
     }
 
     public void addBtnClick(View view) {
@@ -363,28 +443,57 @@ public class AddScheduleActivity extends AppCompatActivity {
             return;
         }
 
-        if (repeatWeek == -1) {
-            Toast.makeText(this, "Введите неделю для повтора", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (repeatDay == -1) {
-            Toast.makeText(this, "Выберите день предмета", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         if (TextUtils.isEmpty(subjectType)) {
             Toast.makeText(this, "Выберите тип пары", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        SubjectToSchedule toSchedule = new SubjectToSchedule(this);
-        toSchedule.addOnSuccesListener(new SubjectToSchedule.OnSuccessListener() {
+        if(!isCustomDay) {
+            if (repeatWeek == -1) {
+                Toast.makeText(this, "Введите неделю для повтора", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (repeatDay == -1) {
+                Toast.makeText(this, "Выберите день предмета", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(startDate==null) {
+                Toast.makeText(this, "Выберите дату начало занятий", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(endDate==null) {
+                Toast.makeText(this, "Выберите дату окончания занятий", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if((startDate.plusWeeks(2).toDate().getTime() > endDate.toDate().getTime())) {
+                Toast.makeText(this, "Минимальный период две недели. Воспользуйтесь произвольной датой.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+        } else {
+            if(arCustomDays==null) {
+                Toast.makeText(this, "Добавьте произвольные дни", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                if (arCustomDays.size() == 1) {
+                    Toast.makeText(this, "Добавьте произвольные дни", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        }
+
+        SubjectToSchedule2 toSchedule = new SubjectToSchedule2(this);
+        toSchedule.addOnSuccesListener(new SubjectToSchedule2.OnSuccessListener() {
             @Override
             public void onSuccess() {
                 dialog.dismiss();
                 Intent intent = new Intent();
-                intent.putExtra("Subject", subject);
+                intent.putExtra(CustomScheduleConstants.SUBJECT_MODEL, subject);
                 setResult(RESULT_OK, intent);
                 String str;
                 if(!isEdit) str = "Расписание успешно добавлено!";
@@ -394,12 +503,24 @@ public class AddScheduleActivity extends AppCompatActivity {
             }
         });
 
-        subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
-        //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
-        if(isEdit) {
-            toSchedule.edit(schedule, subject, subjectPosition, homeworks);
+        //Если добавляем период
+        if(!isCustomDay) {
+            subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), startDate.toDate(), endDate.toDate(), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), repeatDay, repeatWeek);
+            //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
+            if (isEdit) {
+                subject.setId(subjectFromIntent.getId());
+                subject.setArHomeWorks(subjectFromIntent.getArHomeWorks());
+                toSchedule.edit(subject);
+            } else toSchedule.add(subject);
+        } else { //иначе, если выбраны произвольные даты
+            subject = new Subject(new Date(dateAndTime.getTimeInMillis()), new Date(dateAndTime2.getTimeInMillis()), actvSubjectName.getText().toString(), subjectType, actvCampus.getText().toString(), actvCab.getText().toString(), actvTeacher.getText().toString(), arCustomDays);
+            //addSubject(subject, repeatDay, repeatWeek, startDate, endDate);
+            if (isEdit) {
+                subject.setId(subjectFromIntent.getId());
+                subject.setArHomeWorks(subjectFromIntent.getArHomeWorks());
+                toSchedule.edit(subject);
+            } else toSchedule.add(subject);
         }
-        else toSchedule.add(schedule, subject);
         addNewWords(actvSubjectName.getText().toString(), actvTeacher.getText().toString(), actvCampus.getText().toString(), actvCab.getText().toString());
         dialog = CreateDialog.createPleaseWaitDialog(AddScheduleActivity.this);
 
@@ -489,18 +610,34 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     private void updateUI(Subject subject) {
         actvSubjectName.setText(subject.getSubjectName());
-        actvTeacher.setText(subject.getTeacherName());
         actvCampus.setText(subject.getCampusNumber());
         actvCab.setText(subject.getCabNumber());
+        if(!isImport) actvTeacher.setText(subject.getTeacherName());
 
-        repeatDay = subject.getRepeatDay();
-        repeatWeek = subject.getRepeatWeek();
-
+        //set date to Calendar
         dateAndTime.setTime(subject.getStartTime());
         dateAndTime2.setTime(subject.getEndTime());
 
-        startDate = new LocalDate(subject.getStartDate());
-        endDate = new LocalDate(subject.getEndDate());
+        //set Date to TextViews
+        tvStartTIme.setText(getFormattedTime(subject.getStartTime()));
+        tvEndTime.setText(getFormattedTime(subject.getEndTime()));
+
+
+        if(subject.getArCustomDates() == null || subject.getArCustomDates().isEmpty()) {
+            repeatDay = subject.getRepeatDay();
+            repeatWeek = subject.getRepeatWeek();
+
+            if(subject.getStartDate()!=null) {
+                startDate = new LocalDate(subject.getStartDate());
+                endDate = new LocalDate(subject.getEndDate());
+            }
+
+            isCustomDay = false;
+
+        } else {
+            arCustomDays = subject.getArCustomDates();
+            isCustomDay = true;
+        }
 
         subjectType = subject.getSubjectType();
         tvSubjectType.setText(subjectType);
@@ -509,10 +646,12 @@ public class AddScheduleActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Редактирование");
         } else getSupportActionBar().setTitle("Добавить занятие");
 
-
     }
 
     public void backClick(View view) {
+        Intent intent = new Intent();
+        intent.putExtra("Subject", subject);
+        setResult(RESULT_OK, intent);
         onBackPressed();
     }
 

@@ -6,12 +6,11 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -27,7 +26,6 @@ import com.kfu.lantimat.kfustudent.map.MapActivity;
 import com.kfu.lantimat.kfustudent.utils.About;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
 import com.kfu.lantimat.kfustudent.utils.KfuUser;
-import com.kfu.lantimat.kfustudent.utils.User;
 import com.loopj.android.http.PersistentCookieStore;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -58,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
     public Drawer result;
     public FrameLayout frameLayout;
     public FrameLayout frameLayout2;
+    public CoordinatorLayout topLayout;
     Intent drawerIntent = null;
     boolean dontFinish = false;
     SecondaryDrawerItem sign_exit;
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        topLayout = findViewById(R.id.coordinator);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(toolbar);
@@ -103,12 +103,12 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
             @Override
             public Drawable placeholder(Context ctx) {
-                return null;
+                return ContextCompat.getDrawable(ctx, R.mipmap.ic_launcher);
             }
 
             @Override
             public Drawable placeholder(Context ctx, String tag) {
-                return null;
+                return ContextCompat.getDrawable(ctx, R.mipmap.ic_launcher);
             }
         });
 
@@ -164,6 +164,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
 
     public void btnLoginClick(View view) {
         startActivity(new Intent(this, LoginActivity.class));
+        finish();
     }
 
     public void updateDrawer() {
@@ -232,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                     .withHeaderBackground(R.drawable.bg)
                     //.withCompactStyle(true)
                     .addProfiles(profileDrawerItem)
+                    .withSelectionListEnabledForSingleProfile(false)
                     .build();
         } else {
             headerResult = new AccountHeaderBuilder()
@@ -251,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
         PrimaryDrawerItem item11 = new PrimaryDrawerItem().withIdentifier(11).withName(R.string.drawer_item_custom_schedule).withIcon(R.drawable.ic_school_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem item4 = new PrimaryDrawerItem().withIdentifier(3).withName(R.string.drawer_item_marks).withIcon(R.drawable.ic_calendar_multiple_grey600_24dp).withIconColor(color);
         PrimaryDrawerItem itemMap = new PrimaryDrawerItem().withIdentifier(4).withName(R.string.drawer_item_map).withIcon(R.drawable.ic_google_maps_grey600_24dp).withIconColor(color);
+        PrimaryDrawerItem itemGuide = new PrimaryDrawerItem().withIdentifier(12).withName(R.string.drawer_item_guide).withIcon(R.drawable.ic_lightbulb_on_outline_grey600_24dp).withIconColor(color);
         SecondaryDrawerItem sign_exit;
         if(CheckAuth.isAuth()) sign_exit = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.drawer_item_exit).withIconColor(color);
         else sign_exit = new SecondaryDrawerItem().withIdentifier(6).withName(R.string.drawer_item_sign_in).withIconColor(color);
@@ -271,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                         item4,
                         itemMap,
                         new DividerDrawerItem(),
+                        itemGuide,
                         about,
                         sign_exit
                 )
@@ -285,7 +289,8 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                                 break;
                             case 2: drawerIntent = new Intent(MainActivity.this, ScheduleActivity.class);
                                 break;
-                            case 3: drawerIntent = new Intent(MainActivity.this, CustomScheduleActivity.class);
+                            case 3:
+                                drawerIntent = new Intent(MainActivity.this, CustomScheduleActivity.class);
                                 break;
                             case 4:
                                 drawerIntent = new Intent(MainActivity.this, MarksActivity.class);
@@ -293,10 +298,16 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                             case 5:
                                 drawerIntent = new Intent(MainActivity.this, MapActivity.class);
                                 break;
-                            case 8:
+                            case 8: //TODO: вызов абаут
+                                new About().onCreateDialog(MainActivity.this).show();
+                            break;
+                            case 7:
+                                startActivity(new Intent(MainActivity.this, MainIntroActivity.class));
+                            break;
+                            case 9:
                                 if(CheckAuth.isAuth()) {
                                     CheckAuth.exit();
-                                    startActivity(new Intent(MainActivity.this, TimeLineActivity.class));
+                                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
                                     finish();
                                 }
                                 else {
@@ -304,8 +315,6 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                                     dontFinish = true;
                                 }
                                 break;
-                            case 7: //TODO: вызов абаут
-                                new About().onCreateDialog(MainActivity.this).show();
                         }
                         result.closeDrawer();
                         return true;

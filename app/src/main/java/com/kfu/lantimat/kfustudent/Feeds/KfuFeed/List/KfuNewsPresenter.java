@@ -1,12 +1,12 @@
-package com.kfu.lantimat.kfustudent.Feeds.KfuFeed;
+package com.kfu.lantimat.kfustudent.Feeds.KfuFeed.List;
 
-import com.kfu.lantimat.kfustudent.Feeds.FeedView;
-import com.kfu.lantimat.kfustudent.Feeds.KfuFeed.KfuNews;
-import com.kfu.lantimat.kfustudent.Feeds.KfuFeed.KfuNewsMVP;
+import android.content.Context;
+import android.content.Intent;
+
+import com.kfu.lantimat.kfustudent.Feeds.FullFeeds.FullFeedsActivity;
+import com.kfu.lantimat.kfustudent.Feeds.KfuFeed.full.FullKfuNewsActivity;
 import com.kfu.lantimat.kfustudent.Feeds.Repository;
-import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MediaKfuRestClient;
-import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.utils.Constants;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -25,15 +25,15 @@ import cz.msebera.android.httpclient.Header;
 
 public class KfuNewsPresenter implements KfuNewsMVP.Presenter {
 
+    private Context context;
     private KfuNewsMVP.View view;
     private Repository repository;
-    private int page = 1;
+    private int page = 0;
     private boolean isLoading = false;
     private static boolean isOnRefresh = false;
     private ArrayList<KfuNews> ar = new ArrayList<>();
 
-    public KfuNewsPresenter(KfuNewsMVP.View view) {
-        this.view = view;
+    public KfuNewsPresenter() {
     }
 
     private void parseDate(byte[] bytes) {
@@ -93,13 +93,24 @@ public class KfuNewsPresenter implements KfuNewsMVP.Presenter {
     }
 
     @Override
+    public void attachView(Context context, KfuNewsMVP.View view) {
+        this.context = context;
+        this.view = view;
+    }
+
+    @Override
+    public void detachView() {
+
+    }
+
+    @Override
     public void loadData() {
         if(!isLoading) {
             if(!isOnRefresh) view.showLoading();
             isLoading = true;
             RequestParams requestParams = new RequestParams();
             //requestParams.add();
-            MediaKfuRestClient.get("", null, new AsyncHttpResponseHandler() {
+            MediaKfuRestClient.get("news?page=" + page, null, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     parseDate(responseBody);
@@ -115,8 +126,16 @@ public class KfuNewsPresenter implements KfuNewsMVP.Presenter {
 
     @Override
     public void refreshData() {
-        page = 1;
+        page = 0;
         isOnRefresh = true;
         loadData();
+    }
+
+    @Override
+    public void recyclerClick(int position) {
+        Intent intent = new Intent(context, FullKfuNewsActivity.class);
+        intent.putExtra("url", ar.get(position).getUrl());
+        intent.putExtra("img", ar.get(position).getImage());
+        view.startFeedActivity(intent);
     }
 }

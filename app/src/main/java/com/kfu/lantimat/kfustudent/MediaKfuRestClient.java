@@ -12,7 +12,7 @@ import com.loopj.android.http.RequestParams;
  */
 
 public class MediaKfuRestClient {
-    public static final String BASE_URL = "https://media.kpfu.ru/news";
+    public static final String BASE_URL = "https://media.kpfu.ru/";
 
     public static AsyncHttpClient client = new AsyncHttpClient();
     static PersistentCookieStore myCookieStore;
@@ -27,7 +27,7 @@ public class MediaKfuRestClient {
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
     public static void getUrl(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
-        Log.d("KfuRestClient", "get " + getAbsoluteUrl(url));
+        Log.d("KfuRestClient", "get " + url);
         client.setTimeout(20000);
         client.setEnableRedirects(true);
         client.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");

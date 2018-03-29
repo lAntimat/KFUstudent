@@ -18,10 +18,12 @@ public class MainIntroActivity extends IntroActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setButtonCtaVisible(false);
+
         addSlide(new SimpleSlide.Builder()
-                .title("Привет!")
-                .description("Это приложения для удобного доступа к личному кабинету сайта КФУ. Пока что это первая версия (бета), в которой возможны незначительные неполадки :) ")
-                .image(R.drawable.logo_white)
+                .title("Дорогой друг!")
+                .description("Как тебе известно, расписание в личном кабинете сайта не всегда верное, поэтому есть раздел «Мое расписание»")
+                .image(R.drawable.intro_1)
                 .background(R.color.accent)
                 .backgroundDark(R.color.primary_dark)
                 .scrollable(true)
@@ -29,24 +31,25 @@ public class MainIntroActivity extends IntroActivity{
                 .build());
 
         addSlide(new SimpleSlide.Builder()
-                .title("Раcписание")
-                .description("Cмотри расписание в удобном виде и не пропускай пары ;)")
-                .image(R.drawable.calendar_flat_intro)
-                .background(R.color.md_teal_800)
+                .title("Моё расписание")
+                .description("Тут можно изменять, добавлять новые предметы и записывать домашнее задание. Все добавленные предметы появятся у твоих одногруппников")
+                .image(R.drawable.intro_3)
+                .background(R.color.accent)
                 .backgroundDark(R.color.primary_dark)
-
                 .scrollable(false)
                 //.permission(Manifest.permission.CAMERA)
                 .build());
 
         addSlide(new SimpleSlide.Builder()
-                .title("Успеваемость")
-                .description("А так же не забывай следить за баллами и не набирать долгов. Удачной учебы!")
-                .image(R.drawable.study_circle_flat)
-                .background(R.color.md_cyan_800)
+                .title("Раcписание ЛК")
+                .description("Здесь можно посмотреть расписание с личного кабинета и, при желании, импортировать его в «Мое расписание»")
+                .image(R.drawable.intro_2)
+                .background(R.color.accent)
                 .backgroundDark(R.color.primary_dark)
                 .scrollable(false)
                 //.permission(Manifest.permission.CAMERA)
                 .build());
+
+
     }
 }
