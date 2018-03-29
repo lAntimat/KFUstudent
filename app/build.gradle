@@ -14,7 +14,10 @@ android {
         flatDir {
             dirs 'libs'
         }
-
+        maven {
+            url 'https://dl.bintray.com/kotlin/kotlin-dev/'
+        }
+        google()
 
         dataBinding {
             enabled = true

@@ -71,6 +71,7 @@ public class CheckAuth {
 
     public interface SaveSessionCookieCallback {
         void onSuccess(String response);
+        void onFailure();
     }
 
     static PersistentCookieStore myCookieStore;
@@ -124,6 +125,11 @@ public class CheckAuth {
                                     authCallback.onLoggedIn();
                                     //Log.d("ПРОФИЛЬ", responce);
                                     Log.d("saveSessionCookies", "Success");
+                                }
+
+                                @Override
+                                public void onFailure() {
+
                                 }
                             });
                         }
@@ -229,7 +235,7 @@ public class CheckAuth {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.wtf("login", "loged");
+                Log.wtf("login", "on Failure");
                 Toast.makeText(context, R.string.connection_error, Toast.LENGTH_SHORT).show();
                 loginCallback.onConnectFail();
 
@@ -257,17 +263,19 @@ public class CheckAuth {
                 //Log.d("saveSessionCookies", "onSuccess");
                 //Log.d("saveSessionCookies", responseString);
 
-                Pattern pattern = Pattern.compile("h_id=(.*);domain");
+                Pattern pattern = Pattern.compile("'h_id', '(.*', ')");
                 Matcher matcher = pattern.matcher(responseString);
                 if (matcher.find()) {
-                    BasicClientCookie basicClientCookie = new BasicClientCookie("h_id", matcher.group(1));
+                    String hid = matcher.group(1);
+                    hid = hid.substring(0, hid.indexOf("', '"));
+                    BasicClientCookie basicClientCookie = new BasicClientCookie("h_id", hid);
                     basicClientCookie.setDomain("kpfu.ru");
                     basicClientCookie.setPath("/");
                     myCookieStore.addCookie(basicClientCookie);
                 }
 
 
-                pattern = Pattern.compile("s_id=(.*);domain");
+                pattern = Pattern.compile("'s_id', '(.*)' ");
                 matcher = pattern.matcher(responseString);
                 if (matcher.find()) {
                     BasicClientCookie basicClientCookie = new BasicClientCookie("s_id", matcher.group(1));

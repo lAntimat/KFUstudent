@@ -77,13 +77,13 @@ public class LoginActivity extends AppCompatActivity {
                 CheckAuth.login(l, p, new CheckAuth.LoginCallback() {
                     @Override
                     public void onSuccess(String url) {
-                        Toast.makeText(getApplicationContext(), R.string.auth_succes, Toast.LENGTH_SHORT).show();
-                        SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
 
                         CheckAuth.saveSessionCookies(url, new CheckAuth.SaveSessionCookieCallback() {
                             @Override
                             public void onSuccess(String response) {
-                                //Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), R.string.auth_succes, Toast.LENGTH_SHORT).show();
+                                SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
+
                                 CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
                                     @Override
                                     public void onSuccess(User user) {
@@ -94,6 +94,11 @@ public class LoginActivity extends AppCompatActivity {
                                         finish();
                                     }
                                 });
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Toast.makeText(getApplicationContext(), R.string.auth_error, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
