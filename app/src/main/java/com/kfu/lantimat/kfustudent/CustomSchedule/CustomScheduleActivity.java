@@ -123,7 +123,7 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
     @Override
     public void openAddSubject(Schedule schedule) {
         Intent intent = new Intent(getApplicationContext(), AddScheduleActivity.class);
-        intent.putExtra("day", viewPager.getCurrentItem());
+        intent.putExtra(CustomScheduleConstants.DAY_OF_WEEK, viewPager.getCurrentItem());
         startActivityForResult(intent, 10);
     }
 

@@ -24,6 +24,7 @@ public class CustomScheduleConstants {
     public static final String CAB_NUMBERS = "CabNumbers";
     public static final String USERS = "Users";
     public static final String SUBJECT_MODEL = "SubjectModel";
+    public static final String DAY_OF_WEEK = "DayOfWeek";
     public static final String IS_IMPORT = "isImport";
     public static final String SCHEDULE = "Schedule";
 }

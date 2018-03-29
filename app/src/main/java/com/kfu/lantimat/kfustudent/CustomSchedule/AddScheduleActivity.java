@@ -142,7 +142,7 @@ public class AddScheduleActivity extends AppCompatActivity {
             subjectFromIntent = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
             isEdit = getIntent().getBooleanExtra("isEdit", false);
             isImport = getIntent().getBooleanExtra(CustomScheduleConstants.IS_IMPORT, false);
-
+            dayPosition = getIntent().getIntExtra(CustomScheduleConstants.DAY_OF_WEEK, 0);
             //schedule = getIntent().getParcelableExtra("Schedule");
 
             /*if (subjectFromIntent == null) {
@@ -195,8 +195,10 @@ public class AddScheduleActivity extends AppCompatActivity {
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                subjectType = getResources().getStringArray(R.array.dialog_list_subject_type)[which];
-                                tvSubjectType.setText(subjectType);
+                                if(which!=-1) {
+                                    subjectType = getResources().getStringArray(R.array.dialog_list_subject_type)[which];
+                                    tvSubjectType.setText(subjectType);
+                                }
                                 return true;
                             }
                         })
@@ -324,11 +326,14 @@ public class AddScheduleActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        if(str.contains("устарела сессия")) return;
         Document doc = Jsoup.parse(str);
         List<String> subjects  = doc.select("select").get(2).select("option").eachText();
         List<String> teachers  = doc.select("select").get(3).select("option").eachText();
         List<String> campus  = doc.select("select").get(4).select("option").eachText();
 
+        if(subjects.size() > 100 | teachers.size() > 100) return;
         Log.d(TAG, "parseScheduleFromSite");
 
         for (String s:subjects
