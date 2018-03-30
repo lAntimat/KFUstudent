@@ -347,7 +347,7 @@ public class CheckAuth {
                                 SharedPreferenceHelper.setSharedPreferenceString(context, IMG_URL, imtUrl);
                                 user.setImgUrl(imtUrl);
                             } catch (Exception e) {
-
+                                user.setImgUrl("123");
                             }
                         }
 

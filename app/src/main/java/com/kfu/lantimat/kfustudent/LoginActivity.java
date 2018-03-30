@@ -81,12 +81,13 @@ public class LoginActivity extends AppCompatActivity {
                         CheckAuth.saveSessionCookies(url, new CheckAuth.SaveSessionCookieCallback() {
                             @Override
                             public void onSuccess(String response) {
-                                Toast.makeText(getApplicationContext(), R.string.auth_succes, Toast.LENGTH_SHORT).show();
-                                SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
-
                                 CheckAuth.getUserInfo(new CheckAuth.UserInfoCallback() {
                                     @Override
                                     public void onSuccess(User user) {
+
+                                        Toast.makeText(getApplicationContext(), R.string.auth_succes, Toast.LENGTH_SHORT).show();
+                                        SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), AUTH, true);
+
                                         Intent intent = new Intent(LoginActivity.this, FeedActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

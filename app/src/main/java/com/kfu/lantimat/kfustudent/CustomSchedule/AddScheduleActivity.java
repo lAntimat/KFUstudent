@@ -255,7 +255,8 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arTeachers.add(doc.get("name").toString());
                         }
-                        teachersAdapter.notifyDataSetChanged();
+                        //teachersAdapter.notifyDataSetChanged();
+                        initAutoCompleteTextView();
                     }
                 }
             });
@@ -269,7 +270,8 @@ public class AddScheduleActivity extends AppCompatActivity {
                             arSubjects.add(doc.get("name").toString());
 
                         }
-                        subjectsAdapter.notifyDataSetChanged();
+                        //subjectsAdapter.notifyDataSetChanged();
+                        initAutoCompleteTextView();
                     }
                 }
             });
@@ -282,7 +284,9 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arCampuses.add(doc.get("name").toString());
                         }
-                        campusAdapter.notifyDataSetChanged();
+                        //campusAdapter.notifyDataSetChanged();
+                        initAutoCompleteTextView();
+
                     }
                 }
             });
@@ -297,7 +301,9 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arCabs.add(doc.get("name").toString());
                         }
-                        cabAdapters.notifyDataSetChanged();
+                        //cabAdapters.notifyDataSetChanged();
+                        initAutoCompleteTextView();
+
                     }
                 }
             });
@@ -332,13 +338,17 @@ public class AddScheduleActivity extends AppCompatActivity {
 
         Log.d(TAG, "parseScheduleFromSite");
 
-        for (String s:subjects
-             ) {
-            addNewSubjects(s);
+        if(subjects.size()<30) {
+            for (String s : subjects
+                    ) {
+                addNewSubjects(s);
+            }
         }
-        for (String s:teachers
-             ) {
-            addNewTeachers(s);
+        if(teachers.size()<20) {
+            for (String s : teachers
+                    ) {
+                addNewTeachers(s);
+            }
         }
         /*for (String s:campus
              ) {
