@@ -142,6 +142,7 @@ public class AddScheduleActivity extends AppCompatActivity {
             subjectFromIntent = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
             isEdit = getIntent().getBooleanExtra("isEdit", false);
             isImport = getIntent().getBooleanExtra(CustomScheduleConstants.IS_IMPORT, false);
+            dayPosition = getIntent().getIntExtra(CustomScheduleConstants.DAY_POSITION, 0);
 
             //schedule = getIntent().getParcelableExtra("Schedule");
 
@@ -246,7 +247,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         if(group!=null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).limit(100).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
@@ -259,7 +260,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 }
             });
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).limit(100).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
@@ -273,7 +274,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 }
             });
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).limit(100).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
@@ -286,7 +287,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                 }
             });
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).get()
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).limit(100).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {

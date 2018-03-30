@@ -50,7 +50,8 @@
                 app:layout_constraintLeft_toLeftOf="@+id/logoView"
                 app:layout_constraintRight_toRightOf="@+id/logoView"
                 app:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
-                android:hint="Пароль">
+                android:hint="Пароль"
+                android:importantForAutofill="yes">
 
                 <EditText
                     android:id="@+id/passEditText"
@@ -63,6 +64,7 @@
                     android:backgroundTint="@color/md_white_1000"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
+                    android:autofillHints="password"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
                     android:maxLines="1"
@@ -172,7 +174,9 @@
                 app:layout_constraintLeft_toLeftOf="@+id/logoView"
                 app:layout_constraintRight_toRightOf="@+id/logoView"
                 app:layout_constraintTop_toBottomOf="@+id/textView2"
-                android:hint="Логин">
+                android:hint="Логин"
+                android:autofillHints="login"
+                android:importantForAutofill="yes">
 
                 <AutoCompleteTextView
                     android:id="@+id/loginEditText"
@@ -189,7 +193,8 @@
                     android:nextFocusDown="@id/passEditText"
                     android:singleLine="true"
                     android:textColor="@color/md_white_1000"
-                    android:textColorLink="@color/md_white_1000" />
+                    android:textColorLink="@color/md_white_1000"
+                    android:importantForAutofill="yes"/>
 
             </android.support.design.widget.TextInputLayout>
         </android.support.constraint.ConstraintLayout>

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -65,6 +66,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
     private HomeworksRecyclerAdapter adapter;
     private MaterialDialog dialog;
     private EditText dialogEditText;
+    private ProgressBar progressBar;
     private boolean isOfflineMode = false;
 
     //Toolbar back button click
@@ -85,7 +87,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
         //schedule = getIntent().getParcelableExtra("Schedule");
         subject = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
         //if(subject.getArHomeWorks()!=null) arHomeWorks.addAll(subject.getArHomeWorks());
-        dayPosition = getIntent().getIntExtra("day", -1);
+        dayPosition = getIntent().getIntExtra(CustomScheduleConstants.DAY_POSITION, -1);
         isOfflineMode = getIntent().getBooleanExtra("isOffline", false);
 
         if(isOfflineMode) {
@@ -130,6 +132,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
         tvCab = (TextView) findViewById(R.id.tvCab);
         tvCabTitle = (TextView) findViewById(R.id.tvCabTitle);
         tvTeacherTitle = (TextView) findViewById(R.id.tvTeacherTitle);
+        progressBar = findViewById(R.id.progressBar);
 
         fam = findViewById(R.id.menu);
 
@@ -223,6 +226,7 @@ public class SubjectInfoActivity extends AppCompatActivity {
     }
 
     private void getHomeWorks() {
+        progressBar.setVisibility(View.VISIBLE);
         String group = KfuUser.getGroup(this);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -235,6 +239,8 @@ public class SubjectInfoActivity extends AppCompatActivity {
                         arHomeWorks.clear();
                         if(subject.getArCustomDates()!=null) arHomeWorks.addAll(subject.getArHomeWorks());
                         adapter.notifyDataSetChanged();
+                        progressBar.setVisibility(View.INVISIBLE);
+
                     }
                 });
     }
