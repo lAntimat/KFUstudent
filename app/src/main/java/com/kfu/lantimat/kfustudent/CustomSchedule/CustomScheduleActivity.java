@@ -32,6 +32,7 @@ import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Day;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Schedule;
 import com.kfu.lantimat.kfustudent.CustomSchedule.Models.Weekend;
 import com.kfu.lantimat.kfustudent.MainActivity;
+import com.kfu.lantimat.kfustudent.MainIntroActivity;
 import com.kfu.lantimat.kfustudent.R;
 import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 import com.kfu.lantimat.kfustudent.utils.CheckAuth;
@@ -261,7 +262,13 @@ public class CustomScheduleActivity extends MainActivity implements CustomSchedu
             presenter.getData();
         } else showNeedLogin();
 
-        FirstCreateMsg.openIntro(getApplicationContext());
+        if(FirstCreateMsg.isFirstOpen(getApplicationContext())) {
+            try {
+                startActivity(new Intent(CustomScheduleActivity.this, MainIntroActivity.class));
+            } catch (Exception e) {
+
+            }
+        }
     }
 
     @Override

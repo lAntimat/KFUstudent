@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.kfu.lantimat.kfustudent.CustomSchedule.CustomScheduleActivity;
 import com.kfu.lantimat.kfustudent.KFURestClient;
 import com.kfu.lantimat.kfustudent.MainActivity;
 import com.kfu.lantimat.kfustudent.MainIntroActivity;
@@ -174,7 +175,13 @@ public class ScheduleActivity extends MainActivity {
         initViewPager();
         //getScheduleOddWeek();
 
-        FirstCreateMsg.openIntro(getApplicationContext());
+        if(FirstCreateMsg.isFirstOpen(getApplicationContext())) {
+            try {
+                startActivity(new Intent(ScheduleActivity.this, MainIntroActivity.class));
+            } catch (Exception e) {
+
+            }
+        }
 
     }
 

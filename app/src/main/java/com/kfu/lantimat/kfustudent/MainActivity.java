@@ -302,7 +302,11 @@ public class MainActivity extends AppCompatActivity implements CheckAuth.AuthCal
                                 new About().onCreateDialog(MainActivity.this).show();
                             break;
                             case 7:
-                                startActivity(new Intent(MainActivity.this, MainIntroActivity.class));
+                                try {
+                                    startActivity(new Intent(MainActivity.this, MainIntroActivity.class));
+                                } catch (Exception e) {
+
+                                }
                             break;
                             case 9:
                                 if(CheckAuth.isAuth()) {

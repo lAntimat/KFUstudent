@@ -112,7 +112,7 @@ public class AddScheduleFragment extends Fragment {
 
         Toolbar toolbar = v.findViewById(R.id.toolbar);
         customScheduleActivity.setSupportActionBar(toolbar);
-        customScheduleActivity.getSupportActionBar().setTitle("Повторения");
+        customScheduleActivity.getSupportActionBar().setTitle("Дата");
         customScheduleActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         customScheduleActivity.getSupportActionBar().setDisplayShowHomeEnabled(true);
 

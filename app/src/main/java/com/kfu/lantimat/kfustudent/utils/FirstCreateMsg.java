@@ -13,7 +13,7 @@ import com.kfu.lantimat.kfustudent.Schedule.ScheduleActivity;
 
 public class FirstCreateMsg {
 
-    public static void openIntro(Context context) {
+    public static boolean isFirstOpen(Context context) {
         SharedPreferences sp = context.getSharedPreferences("scheduleIntro",
                 Context.MODE_PRIVATE);
         // проверяем, первый ли раз открывается программа
@@ -24,9 +24,10 @@ public class FirstCreateMsg {
             SharedPreferences.Editor e = sp.edit();
             e.putBoolean("hasVisited", true);
             e.apply(); // не забудьте подтвердить изменения
-            Intent i = new Intent(context, MainIntroActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-            context.startActivity(i);
+            //Intent i = new Intent(context, MainIntroActivity.class);
+            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+            //context.startActivity(i);
+            return true;
+        } else return false;
         }
     }
-}
