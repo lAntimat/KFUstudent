@@ -2,6 +2,8 @@ package com.kfu.lantimat.kfustudent.utils;
 
 import android.text.format.DateUtils;
 
+import org.joda.time.LocalDate;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,5 +44,11 @@ public class DateTimeUtils {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public static boolean isEvenWeek(LocalDate localDate) {
+        if ((localDate.getWeekOfWeekyear() & 1) == 0) {
+            return true;
+        } else return false;
     }
 }

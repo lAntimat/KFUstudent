@@ -49,18 +49,18 @@
                 app:hintTextAppearance="@style/TextAppearance.AppCompat.Inverse"
                 app:layout_constraintLeft_toLeftOf="@+id/logoView"
                 app:layout_constraintRight_toRightOf="@+id/logoView"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
+                android:hint="Пароль">
 
                 <EditText
                     android:id="@+id/passEditText"
                     style="@style/MyEditTextTheme"
-                    android:importantForAutofill="noExcludeDescendants"
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:backgroundTint="@color/md_white_1000"
-                    android:hint="Пароль"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionDone"
@@ -68,7 +68,8 @@
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textColor="@color/md_white_1000"
-                    android:textColorLink="@color/md_white_1000" />
+                    android:textColorLink="@color/md_white_1000"
+                    android:importantForAutofill="yes"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -170,7 +171,8 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="@+id/logoView"
                 app:layout_constraintRight_toRightOf="@+id/logoView"
-                app:layout_constraintTop_toBottomOf="@+id/textView2">
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                android:hint="Логин">
 
                 <AutoCompleteTextView
                     android:id="@+id/loginEditText"
@@ -181,8 +183,6 @@
                     android:layout_marginRight="20dp"
                     android:autofillHints="@color/md_white_1000"
                     android:backgroundTint="@color/md_white_1000"
-                    android:hint="Логин"
-                    android:importantForAutofill="noExcludeDescendants"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"

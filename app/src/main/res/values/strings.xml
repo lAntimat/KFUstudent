@@ -11,6 +11,7 @@
     <string name="drawer_item_sign_in">Войти</string>
     <string name="drawer_item_about">О приложении</string>
     <string name="auth_succes">Авторизация прошла успешно!</string>
+    <string name="auth_error">Ошибка при авторизации</string>
     <string name="about">О программе</string>
     <string name="login_error_log_and_pass">Извините, неверно введены имя или пароль!</string>
     <string name="connection_error">Ошибка соединения</string>

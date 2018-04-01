@@ -142,7 +142,8 @@ public class AddScheduleActivity extends AppCompatActivity {
             subjectFromIntent = getIntent().getParcelableExtra(CustomScheduleConstants.SUBJECT_MODEL);
             isEdit = getIntent().getBooleanExtra("isEdit", false);
             isImport = getIntent().getBooleanExtra(CustomScheduleConstants.IS_IMPORT, false);
-            dayPosition = getIntent().getIntExtra(CustomScheduleConstants.DAY_OF_WEEK, 0);
+            dayPosition = getIntent().getIntExtra(CustomScheduleConstants.DAY_POSITION, 0);
+
             //schedule = getIntent().getParcelableExtra("Schedule");
 
             /*if (subjectFromIntent == null) {
@@ -195,10 +196,8 @@ public class AddScheduleActivity extends AppCompatActivity {
                                  * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
                                  * returning false here won't allow the newly selected radio button to actually be selected.
                                  **/
-                                if(which!=-1) {
-                                    subjectType = getResources().getStringArray(R.array.dialog_list_subject_type)[which];
-                                    tvSubjectType.setText(subjectType);
-                                }
+                                subjectType = getResources().getStringArray(R.array.dialog_list_subject_type)[which];
+                                tvSubjectType.setText(subjectType);
                                 return true;
                             }
                         })
@@ -248,7 +247,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         if(group!=null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.TEACHERS).limit(100).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
@@ -256,12 +255,13 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arTeachers.add(doc.get("name").toString());
                         }
-                        teachersAdapter.notifyDataSetChanged();
+                        //teachersAdapter.notifyDataSetChanged();
+                        initAutoCompleteTextView();
                     }
                 }
             });
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.SUBJECTS_NAME).limit(100).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
@@ -270,12 +270,13 @@ public class AddScheduleActivity extends AppCompatActivity {
                             arSubjects.add(doc.get("name").toString());
 
                         }
-                        subjectsAdapter.notifyDataSetChanged();
+                        //subjectsAdapter.notifyDataSetChanged();
+                        initAutoCompleteTextView();
                     }
                 }
             });
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAMPUSES).limit(100).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
@@ -283,12 +284,14 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arCampuses.add(doc.get("name").toString());
                         }
-                        campusAdapter.notifyDataSetChanged();
+                        //campusAdapter.notifyDataSetChanged();
+                        initAutoCompleteTextView();
+
                     }
                 }
             });
 
-            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).get()
+            db.collection(CustomScheduleConstants.SCHEDULE).document(group).collection(CustomScheduleConstants.CAB_NUMBERS).limit(100).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -298,7 +301,9 @@ public class AddScheduleActivity extends AppCompatActivity {
                                 ) {
                             arCabs.add(doc.get("name").toString());
                         }
-                        cabAdapters.notifyDataSetChanged();
+                        //cabAdapters.notifyDataSetChanged();
+                        initAutoCompleteTextView();
+
                     }
                 }
             });
@@ -326,23 +331,24 @@ public class AddScheduleActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
-        if(str.contains("устарела сессия")) return;
         Document doc = Jsoup.parse(str);
         List<String> subjects  = doc.select("select").get(2).select("option").eachText();
         List<String> teachers  = doc.select("select").get(3).select("option").eachText();
         List<String> campus  = doc.select("select").get(4).select("option").eachText();
 
-        if(subjects.size() > 100 | teachers.size() > 100) return;
         Log.d(TAG, "parseScheduleFromSite");
 
-        for (String s:subjects
-             ) {
-            addNewSubjects(s);
+        if(subjects.size()<30) {
+            for (String s : subjects
+                    ) {
+                addNewSubjects(s);
+            }
         }
-        for (String s:teachers
-             ) {
-            addNewTeachers(s);
+        if(teachers.size()<20) {
+            for (String s : teachers
+                    ) {
+                addNewTeachers(s);
+            }
         }
         /*for (String s:campus
              ) {

@@ -1,0 +1,203 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <!-- Login progress -->
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintVertical_bias="1.0">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="8dp"
+            android:animateLayoutChanges="true">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/textInputLayout4"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:textColorHint="@color/md_white_1000"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Inverse"
+                app:layout_constraintLeft_toLeftOf="@+id/logoView"
+                app:layout_constraintRight_toRightOf="@+id/logoView"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
+                android:hint="Пароль"
+                android:importantForAutofill="yes">
+
+                <EditText
+                    android:id="@+id/passEditText"
+                    style="@style/MyEditTextTheme"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:backgroundTint="@color/md_white_1000"
+                    android:imeActionId="@+id/login"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:autofillHints="password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/md_white_1000"
+                    android:textColorLink="@color/md_white_1000"
+                    android:importantForAutofill="yes"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/forgotButton"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="bottom|center_horizontal"
+                android:text="Забыл пароль"
+                android:textColor="@color/md_white_1000"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/loginButton"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <Button
+                android:id="@+id/loginButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Войти"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="@+id/textInputLayout4"
+                app:layout_constraintRight_toRightOf="@+id/textInputLayout4"
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
+
+            <ImageView
+                android:id="@+id/logoView"
+                android:layout_width="0dp"
+                android:layout_height="212dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:padding="10dp"
+                android:tint="@color/md_white_1000"
+                android:visibility="visible"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/logo" />
+
+            <ProgressBar
+                android:id="@+id/login_progress"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:paddingBottom="10dp"
+                android:paddingEnd="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="Введите логин и пароль от личного кабинета КФУ"
+                android:textColor="@color/md_white_1000"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/login_progress" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/textInputLayout3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="-23dp"
+                android:textColorHint="@color/md_white_1000"
+                app:hintTextAppearance="@style/TextAppearance.AppCompat.Inverse"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="@+id/logoView"
+                app:layout_constraintRight_toRightOf="@+id/logoView"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                android:hint="Логин"
+                android:autofillHints="login"
+                android:importantForAutofill="yes">
+
+                <AutoCompleteTextView
+                    android:id="@+id/loginEditText"
+                    style="@style/MyEditTextTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:autofillHints="@color/md_white_1000"
+                    android:backgroundTint="@color/md_white_1000"
+                    android:imeOptions="actionNext"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:nextFocusDown="@id/passEditText"
+                    android:singleLine="true"
+                    android:textColor="@color/md_white_1000"
+                    android:textColorLink="@color/md_white_1000"
+                    android:importantForAutofill="yes"/>
+
+            </android.support.design.widget.TextInputLayout>
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
